@@ -9,38 +9,312 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as SubmitRouteImport } from './routes/submit'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as NewsRouteImport } from './routes/news'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as HelpRouteImport } from './routes/help'
+import { Route as EcosystemRouteImport } from './routes/ecosystem'
+import { Route as DevelopersRouteImport } from './routes/developers'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProjectSlugRouteImport } from './routes/project.$slug'
+import { Route as NewsSlugRouteImport } from './routes/news.$slug'
+import { Route as DirectoryCategoryRouteImport } from './routes/directory.$category'
+import { Route as DevelopersApiRouteImport } from './routes/developers.api'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubmitRoute = SubmitRouteImport.update({
+  id: '/submit',
+  path: '/submit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EcosystemRoute = EcosystemRouteImport.update({
+  id: '/ecosystem',
+  path: '/ecosystem',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevelopersRoute = DevelopersRouteImport.update({
+  id: '/developers',
+  path: '/developers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProjectSlugRoute = ProjectSlugRouteImport.update({
+  id: '/project/$slug',
+  path: '/project/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsSlugRoute = NewsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => NewsRoute,
+} as any)
+const DirectoryCategoryRoute = DirectoryCategoryRouteImport.update({
+  id: '/directory/$category',
+  path: '/directory/$category',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevelopersApiRoute = DevelopersApiRouteImport.update({
+  id: '/api',
+  path: '/api',
+  getParentRoute: () => DevelopersRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/developers': typeof DevelopersRouteWithChildren
+  '/ecosystem': typeof EcosystemRoute
+  '/help': typeof HelpRoute
+  '/login': typeof LoginRoute
+  '/news': typeof NewsRouteWithChildren
+  '/privacy': typeof PrivacyRoute
+  '/search': typeof SearchRoute
+  '/signup': typeof SignupRoute
+  '/submit': typeof SubmitRoute
+  '/terms': typeof TermsRoute
+  '/developers/api': typeof DevelopersApiRoute
+  '/directory/$category': typeof DirectoryCategoryRoute
+  '/news/$slug': typeof NewsSlugRoute
+  '/project/$slug': typeof ProjectSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/developers': typeof DevelopersRouteWithChildren
+  '/ecosystem': typeof EcosystemRoute
+  '/help': typeof HelpRoute
+  '/login': typeof LoginRoute
+  '/news': typeof NewsRouteWithChildren
+  '/privacy': typeof PrivacyRoute
+  '/search': typeof SearchRoute
+  '/signup': typeof SignupRoute
+  '/submit': typeof SubmitRoute
+  '/terms': typeof TermsRoute
+  '/developers/api': typeof DevelopersApiRoute
+  '/directory/$category': typeof DirectoryCategoryRoute
+  '/news/$slug': typeof NewsSlugRoute
+  '/project/$slug': typeof ProjectSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/developers': typeof DevelopersRouteWithChildren
+  '/ecosystem': typeof EcosystemRoute
+  '/help': typeof HelpRoute
+  '/login': typeof LoginRoute
+  '/news': typeof NewsRouteWithChildren
+  '/privacy': typeof PrivacyRoute
+  '/search': typeof SearchRoute
+  '/signup': typeof SignupRoute
+  '/submit': typeof SubmitRoute
+  '/terms': typeof TermsRoute
+  '/developers/api': typeof DevelopersApiRoute
+  '/directory/$category': typeof DirectoryCategoryRoute
+  '/news/$slug': typeof NewsSlugRoute
+  '/project/$slug': typeof ProjectSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/developers'
+    | '/ecosystem'
+    | '/help'
+    | '/login'
+    | '/news'
+    | '/privacy'
+    | '/search'
+    | '/signup'
+    | '/submit'
+    | '/terms'
+    | '/developers/api'
+    | '/directory/$category'
+    | '/news/$slug'
+    | '/project/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/developers'
+    | '/ecosystem'
+    | '/help'
+    | '/login'
+    | '/news'
+    | '/privacy'
+    | '/search'
+    | '/signup'
+    | '/submit'
+    | '/terms'
+    | '/developers/api'
+    | '/directory/$category'
+    | '/news/$slug'
+    | '/project/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/developers'
+    | '/ecosystem'
+    | '/help'
+    | '/login'
+    | '/news'
+    | '/privacy'
+    | '/search'
+    | '/signup'
+    | '/submit'
+    | '/terms'
+    | '/developers/api'
+    | '/directory/$category'
+    | '/news/$slug'
+    | '/project/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  DevelopersRoute: typeof DevelopersRouteWithChildren
+  EcosystemRoute: typeof EcosystemRoute
+  HelpRoute: typeof HelpRoute
+  LoginRoute: typeof LoginRoute
+  NewsRoute: typeof NewsRouteWithChildren
+  PrivacyRoute: typeof PrivacyRoute
+  SearchRoute: typeof SearchRoute
+  SignupRoute: typeof SignupRoute
+  SubmitRoute: typeof SubmitRoute
+  TermsRoute: typeof TermsRoute
+  DirectoryCategoryRoute: typeof DirectoryCategoryRoute
+  ProjectSlugRoute: typeof ProjectSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/submit': {
+      id: '/submit'
+      path: '/submit'
+      fullPath: '/submit'
+      preLoaderRoute: typeof SubmitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ecosystem': {
+      id: '/ecosystem'
+      path: '/ecosystem'
+      fullPath: '/ecosystem'
+      preLoaderRoute: typeof EcosystemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/developers': {
+      id: '/developers'
+      path: '/developers'
+      fullPath: '/developers'
+      preLoaderRoute: typeof DevelopersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +322,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/project/$slug': {
+      id: '/project/$slug'
+      path: '/project/$slug'
+      fullPath: '/project/$slug'
+      preLoaderRoute: typeof ProjectSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news/$slug': {
+      id: '/news/$slug'
+      path: '/$slug'
+      fullPath: '/news/$slug'
+      preLoaderRoute: typeof NewsSlugRouteImport
+      parentRoute: typeof NewsRoute
+    }
+    '/directory/$category': {
+      id: '/directory/$category'
+      path: '/directory/$category'
+      fullPath: '/directory/$category'
+      preLoaderRoute: typeof DirectoryCategoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/developers/api': {
+      id: '/developers/api'
+      path: '/api'
+      fullPath: '/developers/api'
+      preLoaderRoute: typeof DevelopersApiRouteImport
+      parentRoute: typeof DevelopersRoute
+    }
   }
 }
 
+interface DevelopersRouteChildren {
+  DevelopersApiRoute: typeof DevelopersApiRoute
+}
+
+const DevelopersRouteChildren: DevelopersRouteChildren = {
+  DevelopersApiRoute: DevelopersApiRoute,
+}
+
+const DevelopersRouteWithChildren = DevelopersRoute._addFileChildren(
+  DevelopersRouteChildren,
+)
+
+interface NewsRouteChildren {
+  NewsSlugRoute: typeof NewsSlugRoute
+}
+
+const NewsRouteChildren: NewsRouteChildren = {
+  NewsSlugRoute: NewsSlugRoute,
+}
+
+const NewsRouteWithChildren = NewsRoute._addFileChildren(NewsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  DevelopersRoute: DevelopersRouteWithChildren,
+  EcosystemRoute: EcosystemRoute,
+  HelpRoute: HelpRoute,
+  LoginRoute: LoginRoute,
+  NewsRoute: NewsRouteWithChildren,
+  PrivacyRoute: PrivacyRoute,
+  SearchRoute: SearchRoute,
+  SignupRoute: SignupRoute,
+  SubmitRoute: SubmitRoute,
+  TermsRoute: TermsRoute,
+  DirectoryCategoryRoute: DirectoryCategoryRoute,
+  ProjectSlugRoute: ProjectSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
