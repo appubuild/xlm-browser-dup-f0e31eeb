@@ -9,38 +9,546 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as SubmitRouteImport } from './routes/submit'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as NewsRouteImport } from './routes/news'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as HelpRouteImport } from './routes/help'
+import { Route as EcosystemRouteImport } from './routes/ecosystem'
+import { Route as DevelopersRouteImport } from './routes/developers'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PanelIndexRouteImport } from './routes/panel.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as ProjectSlugRouteImport } from './routes/project.$slug'
+import { Route as PanelSubmissionsRouteImport } from './routes/panel.submissions'
+import { Route as PanelSettingsRouteImport } from './routes/panel.settings'
+import { Route as PanelNotificationsRouteImport } from './routes/panel.notifications'
+import { Route as PanelHistoryRouteImport } from './routes/panel.history'
+import { Route as PanelBookmarksRouteImport } from './routes/panel.bookmarks'
+import { Route as NewsSlugRouteImport } from './routes/news.$slug'
+import { Route as DirectoryCategoryRouteImport } from './routes/directory.$category'
+import { Route as DevelopersApiRouteImport } from './routes/developers.api'
+import { Route as AdminWalletConnectConfigRouteImport } from './routes/admin.wallet-connect-config'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminTickersRouteImport } from './routes/admin.tickers'
+import { Route as AdminSiteSettingsRouteImport } from './routes/admin.site-settings'
+import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
+import { Route as AdminNotificationsRouteImport } from './routes/admin.notifications'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
+import { Route as AdminBlogRouteImport } from './routes/admin.blog'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
+import { Route as AdminProjectsPendingRouteImport } from './routes/admin.projects.pending'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubmitRoute = SubmitRouteImport.update({
+  id: '/submit',
+  path: '/submit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EcosystemRoute = EcosystemRouteImport.update({
+  id: '/ecosystem',
+  path: '/ecosystem',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevelopersRoute = DevelopersRouteImport.update({
+  id: '/developers',
+  path: '/developers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PanelIndexRoute = PanelIndexRouteImport.update({
+  id: '/panel/',
+  path: '/panel/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectSlugRoute = ProjectSlugRouteImport.update({
+  id: '/project/$slug',
+  path: '/project/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PanelSubmissionsRoute = PanelSubmissionsRouteImport.update({
+  id: '/panel/submissions',
+  path: '/panel/submissions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PanelSettingsRoute = PanelSettingsRouteImport.update({
+  id: '/panel/settings',
+  path: '/panel/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PanelNotificationsRoute = PanelNotificationsRouteImport.update({
+  id: '/panel/notifications',
+  path: '/panel/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PanelHistoryRoute = PanelHistoryRouteImport.update({
+  id: '/panel/history',
+  path: '/panel/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PanelBookmarksRoute = PanelBookmarksRouteImport.update({
+  id: '/panel/bookmarks',
+  path: '/panel/bookmarks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsSlugRoute = NewsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => NewsRoute,
+} as any)
+const DirectoryCategoryRoute = DirectoryCategoryRouteImport.update({
+  id: '/directory/$category',
+  path: '/directory/$category',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevelopersApiRoute = DevelopersApiRouteImport.update({
+  id: '/api',
+  path: '/api',
+  getParentRoute: () => DevelopersRoute,
+} as any)
+const AdminWalletConnectConfigRoute =
+  AdminWalletConnectConfigRouteImport.update({
+    id: '/admin/wallet-connect-config',
+    path: '/admin/wallet-connect-config',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminTickersRoute = AdminTickersRouteImport.update({
+  id: '/admin/tickers',
+  path: '/admin/tickers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSiteSettingsRoute = AdminSiteSettingsRouteImport.update({
+  id: '/admin/site-settings',
+  path: '/admin/site-settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminProjectsRoute = AdminProjectsRouteImport.update({
+  id: '/admin/projects',
+  path: '/admin/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminNotificationsRoute = AdminNotificationsRouteImport.update({
+  id: '/admin/notifications',
+  path: '/admin/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
+  id: '/admin/categories',
+  path: '/admin/categories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminBlogRoute = AdminBlogRouteImport.update({
+  id: '/admin/blog',
+  path: '/admin/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/admin/analytics',
+  path: '/admin/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminProjectsPendingRoute = AdminProjectsPendingRouteImport.update({
+  id: '/pending',
+  path: '/pending',
+  getParentRoute: () => AdminProjectsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/developers': typeof DevelopersRouteWithChildren
+  '/ecosystem': typeof EcosystemRoute
+  '/help': typeof HelpRoute
+  '/login': typeof LoginRoute
+  '/news': typeof NewsRouteWithChildren
+  '/privacy': typeof PrivacyRoute
+  '/search': typeof SearchRoute
+  '/signup': typeof SignupRoute
+  '/submit': typeof SubmitRoute
+  '/terms': typeof TermsRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/blog': typeof AdminBlogRoute
+  '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/notifications': typeof AdminNotificationsRoute
+  '/admin/projects': typeof AdminProjectsRouteWithChildren
+  '/admin/site-settings': typeof AdminSiteSettingsRoute
+  '/admin/tickers': typeof AdminTickersRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/wallet-connect-config': typeof AdminWalletConnectConfigRoute
+  '/developers/api': typeof DevelopersApiRoute
+  '/directory/$category': typeof DirectoryCategoryRoute
+  '/news/$slug': typeof NewsSlugRoute
+  '/panel/bookmarks': typeof PanelBookmarksRoute
+  '/panel/history': typeof PanelHistoryRoute
+  '/panel/notifications': typeof PanelNotificationsRoute
+  '/panel/settings': typeof PanelSettingsRoute
+  '/panel/submissions': typeof PanelSubmissionsRoute
+  '/project/$slug': typeof ProjectSlugRoute
+  '/admin/': typeof AdminIndexRoute
+  '/panel/': typeof PanelIndexRoute
+  '/admin/projects/pending': typeof AdminProjectsPendingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/developers': typeof DevelopersRouteWithChildren
+  '/ecosystem': typeof EcosystemRoute
+  '/help': typeof HelpRoute
+  '/login': typeof LoginRoute
+  '/news': typeof NewsRouteWithChildren
+  '/privacy': typeof PrivacyRoute
+  '/search': typeof SearchRoute
+  '/signup': typeof SignupRoute
+  '/submit': typeof SubmitRoute
+  '/terms': typeof TermsRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/blog': typeof AdminBlogRoute
+  '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/notifications': typeof AdminNotificationsRoute
+  '/admin/projects': typeof AdminProjectsRouteWithChildren
+  '/admin/site-settings': typeof AdminSiteSettingsRoute
+  '/admin/tickers': typeof AdminTickersRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/wallet-connect-config': typeof AdminWalletConnectConfigRoute
+  '/developers/api': typeof DevelopersApiRoute
+  '/directory/$category': typeof DirectoryCategoryRoute
+  '/news/$slug': typeof NewsSlugRoute
+  '/panel/bookmarks': typeof PanelBookmarksRoute
+  '/panel/history': typeof PanelHistoryRoute
+  '/panel/notifications': typeof PanelNotificationsRoute
+  '/panel/settings': typeof PanelSettingsRoute
+  '/panel/submissions': typeof PanelSubmissionsRoute
+  '/project/$slug': typeof ProjectSlugRoute
+  '/admin': typeof AdminIndexRoute
+  '/panel': typeof PanelIndexRoute
+  '/admin/projects/pending': typeof AdminProjectsPendingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/developers': typeof DevelopersRouteWithChildren
+  '/ecosystem': typeof EcosystemRoute
+  '/help': typeof HelpRoute
+  '/login': typeof LoginRoute
+  '/news': typeof NewsRouteWithChildren
+  '/privacy': typeof PrivacyRoute
+  '/search': typeof SearchRoute
+  '/signup': typeof SignupRoute
+  '/submit': typeof SubmitRoute
+  '/terms': typeof TermsRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/blog': typeof AdminBlogRoute
+  '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/notifications': typeof AdminNotificationsRoute
+  '/admin/projects': typeof AdminProjectsRouteWithChildren
+  '/admin/site-settings': typeof AdminSiteSettingsRoute
+  '/admin/tickers': typeof AdminTickersRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/wallet-connect-config': typeof AdminWalletConnectConfigRoute
+  '/developers/api': typeof DevelopersApiRoute
+  '/directory/$category': typeof DirectoryCategoryRoute
+  '/news/$slug': typeof NewsSlugRoute
+  '/panel/bookmarks': typeof PanelBookmarksRoute
+  '/panel/history': typeof PanelHistoryRoute
+  '/panel/notifications': typeof PanelNotificationsRoute
+  '/panel/settings': typeof PanelSettingsRoute
+  '/panel/submissions': typeof PanelSubmissionsRoute
+  '/project/$slug': typeof ProjectSlugRoute
+  '/admin/': typeof AdminIndexRoute
+  '/panel/': typeof PanelIndexRoute
+  '/admin/projects/pending': typeof AdminProjectsPendingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/developers'
+    | '/ecosystem'
+    | '/help'
+    | '/login'
+    | '/news'
+    | '/privacy'
+    | '/search'
+    | '/signup'
+    | '/submit'
+    | '/terms'
+    | '/admin/analytics'
+    | '/admin/blog'
+    | '/admin/categories'
+    | '/admin/login'
+    | '/admin/notifications'
+    | '/admin/projects'
+    | '/admin/site-settings'
+    | '/admin/tickers'
+    | '/admin/users'
+    | '/admin/wallet-connect-config'
+    | '/developers/api'
+    | '/directory/$category'
+    | '/news/$slug'
+    | '/panel/bookmarks'
+    | '/panel/history'
+    | '/panel/notifications'
+    | '/panel/settings'
+    | '/panel/submissions'
+    | '/project/$slug'
+    | '/admin/'
+    | '/panel/'
+    | '/admin/projects/pending'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/developers'
+    | '/ecosystem'
+    | '/help'
+    | '/login'
+    | '/news'
+    | '/privacy'
+    | '/search'
+    | '/signup'
+    | '/submit'
+    | '/terms'
+    | '/admin/analytics'
+    | '/admin/blog'
+    | '/admin/categories'
+    | '/admin/login'
+    | '/admin/notifications'
+    | '/admin/projects'
+    | '/admin/site-settings'
+    | '/admin/tickers'
+    | '/admin/users'
+    | '/admin/wallet-connect-config'
+    | '/developers/api'
+    | '/directory/$category'
+    | '/news/$slug'
+    | '/panel/bookmarks'
+    | '/panel/history'
+    | '/panel/notifications'
+    | '/panel/settings'
+    | '/panel/submissions'
+    | '/project/$slug'
+    | '/admin'
+    | '/panel'
+    | '/admin/projects/pending'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/developers'
+    | '/ecosystem'
+    | '/help'
+    | '/login'
+    | '/news'
+    | '/privacy'
+    | '/search'
+    | '/signup'
+    | '/submit'
+    | '/terms'
+    | '/admin/analytics'
+    | '/admin/blog'
+    | '/admin/categories'
+    | '/admin/login'
+    | '/admin/notifications'
+    | '/admin/projects'
+    | '/admin/site-settings'
+    | '/admin/tickers'
+    | '/admin/users'
+    | '/admin/wallet-connect-config'
+    | '/developers/api'
+    | '/directory/$category'
+    | '/news/$slug'
+    | '/panel/bookmarks'
+    | '/panel/history'
+    | '/panel/notifications'
+    | '/panel/settings'
+    | '/panel/submissions'
+    | '/project/$slug'
+    | '/admin/'
+    | '/panel/'
+    | '/admin/projects/pending'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  DevelopersRoute: typeof DevelopersRouteWithChildren
+  EcosystemRoute: typeof EcosystemRoute
+  HelpRoute: typeof HelpRoute
+  LoginRoute: typeof LoginRoute
+  NewsRoute: typeof NewsRouteWithChildren
+  PrivacyRoute: typeof PrivacyRoute
+  SearchRoute: typeof SearchRoute
+  SignupRoute: typeof SignupRoute
+  SubmitRoute: typeof SubmitRoute
+  TermsRoute: typeof TermsRoute
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminBlogRoute: typeof AdminBlogRoute
+  AdminCategoriesRoute: typeof AdminCategoriesRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminNotificationsRoute: typeof AdminNotificationsRoute
+  AdminProjectsRoute: typeof AdminProjectsRouteWithChildren
+  AdminSiteSettingsRoute: typeof AdminSiteSettingsRoute
+  AdminTickersRoute: typeof AdminTickersRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  AdminWalletConnectConfigRoute: typeof AdminWalletConnectConfigRoute
+  DirectoryCategoryRoute: typeof DirectoryCategoryRoute
+  PanelBookmarksRoute: typeof PanelBookmarksRoute
+  PanelHistoryRoute: typeof PanelHistoryRoute
+  PanelNotificationsRoute: typeof PanelNotificationsRoute
+  PanelSettingsRoute: typeof PanelSettingsRoute
+  PanelSubmissionsRoute: typeof PanelSubmissionsRoute
+  ProjectSlugRoute: typeof ProjectSlugRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  PanelIndexRoute: typeof PanelIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/submit': {
+      id: '/submit'
+      path: '/submit'
+      fullPath: '/submit'
+      preLoaderRoute: typeof SubmitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ecosystem': {
+      id: '/ecosystem'
+      path: '/ecosystem'
+      fullPath: '/ecosystem'
+      preLoaderRoute: typeof EcosystemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/developers': {
+      id: '/developers'
+      path: '/developers'
+      fullPath: '/developers'
+      preLoaderRoute: typeof DevelopersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +556,230 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/panel/': {
+      id: '/panel/'
+      path: '/panel'
+      fullPath: '/panel/'
+      preLoaderRoute: typeof PanelIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/project/$slug': {
+      id: '/project/$slug'
+      path: '/project/$slug'
+      fullPath: '/project/$slug'
+      preLoaderRoute: typeof ProjectSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/submissions': {
+      id: '/panel/submissions'
+      path: '/panel/submissions'
+      fullPath: '/panel/submissions'
+      preLoaderRoute: typeof PanelSubmissionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/settings': {
+      id: '/panel/settings'
+      path: '/panel/settings'
+      fullPath: '/panel/settings'
+      preLoaderRoute: typeof PanelSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/notifications': {
+      id: '/panel/notifications'
+      path: '/panel/notifications'
+      fullPath: '/panel/notifications'
+      preLoaderRoute: typeof PanelNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/history': {
+      id: '/panel/history'
+      path: '/panel/history'
+      fullPath: '/panel/history'
+      preLoaderRoute: typeof PanelHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/bookmarks': {
+      id: '/panel/bookmarks'
+      path: '/panel/bookmarks'
+      fullPath: '/panel/bookmarks'
+      preLoaderRoute: typeof PanelBookmarksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news/$slug': {
+      id: '/news/$slug'
+      path: '/$slug'
+      fullPath: '/news/$slug'
+      preLoaderRoute: typeof NewsSlugRouteImport
+      parentRoute: typeof NewsRoute
+    }
+    '/directory/$category': {
+      id: '/directory/$category'
+      path: '/directory/$category'
+      fullPath: '/directory/$category'
+      preLoaderRoute: typeof DirectoryCategoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/developers/api': {
+      id: '/developers/api'
+      path: '/api'
+      fullPath: '/developers/api'
+      preLoaderRoute: typeof DevelopersApiRouteImport
+      parentRoute: typeof DevelopersRoute
+    }
+    '/admin/wallet-connect-config': {
+      id: '/admin/wallet-connect-config'
+      path: '/admin/wallet-connect-config'
+      fullPath: '/admin/wallet-connect-config'
+      preLoaderRoute: typeof AdminWalletConnectConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/tickers': {
+      id: '/admin/tickers'
+      path: '/admin/tickers'
+      fullPath: '/admin/tickers'
+      preLoaderRoute: typeof AdminTickersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/site-settings': {
+      id: '/admin/site-settings'
+      path: '/admin/site-settings'
+      fullPath: '/admin/site-settings'
+      preLoaderRoute: typeof AdminSiteSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/projects': {
+      id: '/admin/projects'
+      path: '/admin/projects'
+      fullPath: '/admin/projects'
+      preLoaderRoute: typeof AdminProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/notifications': {
+      id: '/admin/notifications'
+      path: '/admin/notifications'
+      fullPath: '/admin/notifications'
+      preLoaderRoute: typeof AdminNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/categories': {
+      id: '/admin/categories'
+      path: '/admin/categories'
+      fullPath: '/admin/categories'
+      preLoaderRoute: typeof AdminCategoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/blog': {
+      id: '/admin/blog'
+      path: '/admin/blog'
+      fullPath: '/admin/blog'
+      preLoaderRoute: typeof AdminBlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/admin/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/projects/pending': {
+      id: '/admin/projects/pending'
+      path: '/pending'
+      fullPath: '/admin/projects/pending'
+      preLoaderRoute: typeof AdminProjectsPendingRouteImport
+      parentRoute: typeof AdminProjectsRoute
+    }
   }
 }
 
+interface DevelopersRouteChildren {
+  DevelopersApiRoute: typeof DevelopersApiRoute
+}
+
+const DevelopersRouteChildren: DevelopersRouteChildren = {
+  DevelopersApiRoute: DevelopersApiRoute,
+}
+
+const DevelopersRouteWithChildren = DevelopersRoute._addFileChildren(
+  DevelopersRouteChildren,
+)
+
+interface NewsRouteChildren {
+  NewsSlugRoute: typeof NewsSlugRoute
+}
+
+const NewsRouteChildren: NewsRouteChildren = {
+  NewsSlugRoute: NewsSlugRoute,
+}
+
+const NewsRouteWithChildren = NewsRoute._addFileChildren(NewsRouteChildren)
+
+interface AdminProjectsRouteChildren {
+  AdminProjectsPendingRoute: typeof AdminProjectsPendingRoute
+}
+
+const AdminProjectsRouteChildren: AdminProjectsRouteChildren = {
+  AdminProjectsPendingRoute: AdminProjectsPendingRoute,
+}
+
+const AdminProjectsRouteWithChildren = AdminProjectsRoute._addFileChildren(
+  AdminProjectsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  DevelopersRoute: DevelopersRouteWithChildren,
+  EcosystemRoute: EcosystemRoute,
+  HelpRoute: HelpRoute,
+  LoginRoute: LoginRoute,
+  NewsRoute: NewsRouteWithChildren,
+  PrivacyRoute: PrivacyRoute,
+  SearchRoute: SearchRoute,
+  SignupRoute: SignupRoute,
+  SubmitRoute: SubmitRoute,
+  TermsRoute: TermsRoute,
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminBlogRoute: AdminBlogRoute,
+  AdminCategoriesRoute: AdminCategoriesRoute,
+  AdminLoginRoute: AdminLoginRoute,
+  AdminNotificationsRoute: AdminNotificationsRoute,
+  AdminProjectsRoute: AdminProjectsRouteWithChildren,
+  AdminSiteSettingsRoute: AdminSiteSettingsRoute,
+  AdminTickersRoute: AdminTickersRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminWalletConnectConfigRoute: AdminWalletConnectConfigRoute,
+  DirectoryCategoryRoute: DirectoryCategoryRoute,
+  PanelBookmarksRoute: PanelBookmarksRoute,
+  PanelHistoryRoute: PanelHistoryRoute,
+  PanelNotificationsRoute: PanelNotificationsRoute,
+  PanelSettingsRoute: PanelSettingsRoute,
+  PanelSubmissionsRoute: PanelSubmissionsRoute,
+  ProjectSlugRoute: ProjectSlugRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  PanelIndexRoute: PanelIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
