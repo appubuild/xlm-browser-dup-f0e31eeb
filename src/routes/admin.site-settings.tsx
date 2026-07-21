@@ -1,0 +1,64 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { AdminShell } from "@/components/admin-shell";
+import { useApp } from "@/lib/app-store";
+import { toast } from "sonner";
+
+export const Route = createFileRoute("/admin/site-settings")({ component: SiteSettings });
+
+function SiteSettings() {
+  const { siteSettings, updateSiteSettings } = useApp();
+  return (
+    <AdminShell>
+      <h1 className="text-2xl font-semibold">Site Settings</h1>
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <Card title="General">
+          <F label="Site name"><input value={siteSettings.siteName} onChange={(e) => updateSiteSettings({ siteName: e.target.value })} className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" /></F>
+          <F label="Meta description"><textarea value={siteSettings.metaDescription} onChange={(e) => updateSiteSettings({ metaDescription: e.target.value })} className="min-h-16 w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" /></F>
+          <F label="Logo upload"><input type="file" className="text-sm" /></F>
+          <F label="Favicon upload"><input type="file" className="text-sm" /></F>
+        </Card>
+        <Card title="Theme Defaults">
+          <F label="Default theme">
+            <select value={siteSettings.defaultTheme} onChange={(e) => updateSiteSettings({ defaultTheme: e.target.value as never })} className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm">
+              <option value="light">Light</option><option value="dark">Dark (Retro)</option>
+            </select>
+          </F>
+          <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={siteSettings.allowUserOverride} onChange={(e) => updateSiteSettings({ allowUserOverride: e.target.checked })} /> Allow user override</label>
+        </Card>
+        <Card title="Feature Flags">
+          <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={siteSettings.enableIframe} onChange={(e) => updateSiteSettings({ enableIframe: e.target.checked })} /> Browser Viewport iframe mode</label>
+          <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={siteSettings.enableSubmissions} onChange={(e) => updateSiteSettings({ enableSubmissions: e.target.checked })} /> Enable submissions</label>
+          <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={siteSettings.maintenanceMode} onChange={(e) => updateSiteSettings({ maintenanceMode: e.target.checked })} /> Maintenance mode</label>
+        </Card>
+        <Card title="Contact">
+          <F label="Email"><input value={siteSettings.contactEmail} onChange={(e) => updateSiteSettings({ contactEmail: e.target.value })} className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" /></F>
+          <F label="Company"><input value={siteSettings.contactCompany} onChange={(e) => updateSiteSettings({ contactCompany: e.target.value })} className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" /></F>
+          <F label="Location"><input value={siteSettings.contactLocation} onChange={(e) => updateSiteSettings({ contactLocation: e.target.value })} className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" /></F>
+        </Card>
+        <Card title="API Settings">
+          <F label="Rate limit (req/min)"><input defaultValue={60} type="number" className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" /></F>
+          <div className="text-xs text-slate-400">Issued keys</div>
+          <table className="w-full text-xs"><tbody>
+            {["xrpb_ab12cd34", "xrpb_ef56gh78"].map((k) => (
+              <tr key={k}><td className="py-1 font-mono">{k}</td><td className="text-right"><button onClick={() => toast("Revoked")} className="text-rose-400 hover:underline">Revoke</button></td></tr>
+            ))}
+          </tbody></table>
+        </Card>
+        <Card title="Footer Links">
+          <div className="text-sm text-slate-300">Manage legal / footer links (mock)</div>
+          <ul className="text-xs text-slate-400">
+            <li>/about · /privacy · /terms · /help</li>
+          </ul>
+        </Card>
+      </div>
+      <button onClick={() => toast.success("Settings saved")} className="mt-4 rounded bg-sky-500 px-4 py-2 text-sm text-white">Save all</button>
+    </AdminShell>
+  );
+}
+
+function Card({ title, children }: { title: string; children: React.ReactNode }) {
+  return <div className="rounded-xl border border-slate-800 bg-slate-900 p-4"><div className="mb-3 text-sm font-semibold">{title}</div><div className="space-y-3">{children}</div></div>;
+}
+function F({ label, children }: { label: string; children: React.ReactNode }) {
+  return <label className="block text-xs"><div className="mb-1 text-slate-400">{label}</div>{children}</label>;
+}

@@ -21,7 +21,13 @@ import { Route as EcosystemRouteImport } from './routes/ecosystem'
 import { Route as DevelopersRouteImport } from './routes/developers'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PanelIndexRouteImport } from './routes/panel.index'
 import { Route as ProjectSlugRouteImport } from './routes/project.$slug'
+import { Route as PanelSubmissionsRouteImport } from './routes/panel.submissions'
+import { Route as PanelSettingsRouteImport } from './routes/panel.settings'
+import { Route as PanelNotificationsRouteImport } from './routes/panel.notifications'
+import { Route as PanelHistoryRouteImport } from './routes/panel.history'
+import { Route as PanelBookmarksRouteImport } from './routes/panel.bookmarks'
 import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 import { Route as DirectoryCategoryRouteImport } from './routes/directory.$category'
 import { Route as DevelopersApiRouteImport } from './routes/developers.api'
@@ -86,9 +92,39 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PanelIndexRoute = PanelIndexRouteImport.update({
+  id: '/panel/',
+  path: '/panel/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectSlugRoute = ProjectSlugRouteImport.update({
   id: '/project/$slug',
   path: '/project/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PanelSubmissionsRoute = PanelSubmissionsRouteImport.update({
+  id: '/panel/submissions',
+  path: '/panel/submissions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PanelSettingsRoute = PanelSettingsRouteImport.update({
+  id: '/panel/settings',
+  path: '/panel/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PanelNotificationsRoute = PanelNotificationsRouteImport.update({
+  id: '/panel/notifications',
+  path: '/panel/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PanelHistoryRoute = PanelHistoryRouteImport.update({
+  id: '/panel/history',
+  path: '/panel/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PanelBookmarksRoute = PanelBookmarksRouteImport.update({
+  id: '/panel/bookmarks',
+  path: '/panel/bookmarks',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NewsSlugRoute = NewsSlugRouteImport.update({
@@ -123,7 +159,13 @@ export interface FileRoutesByFullPath {
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
   '/news/$slug': typeof NewsSlugRoute
+  '/panel/bookmarks': typeof PanelBookmarksRoute
+  '/panel/history': typeof PanelHistoryRoute
+  '/panel/notifications': typeof PanelNotificationsRoute
+  '/panel/settings': typeof PanelSettingsRoute
+  '/panel/submissions': typeof PanelSubmissionsRoute
   '/project/$slug': typeof ProjectSlugRoute
+  '/panel/': typeof PanelIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -141,7 +183,13 @@ export interface FileRoutesByTo {
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
   '/news/$slug': typeof NewsSlugRoute
+  '/panel/bookmarks': typeof PanelBookmarksRoute
+  '/panel/history': typeof PanelHistoryRoute
+  '/panel/notifications': typeof PanelNotificationsRoute
+  '/panel/settings': typeof PanelSettingsRoute
+  '/panel/submissions': typeof PanelSubmissionsRoute
   '/project/$slug': typeof ProjectSlugRoute
+  '/panel': typeof PanelIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -160,7 +208,13 @@ export interface FileRoutesById {
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
   '/news/$slug': typeof NewsSlugRoute
+  '/panel/bookmarks': typeof PanelBookmarksRoute
+  '/panel/history': typeof PanelHistoryRoute
+  '/panel/notifications': typeof PanelNotificationsRoute
+  '/panel/settings': typeof PanelSettingsRoute
+  '/panel/submissions': typeof PanelSubmissionsRoute
   '/project/$slug': typeof ProjectSlugRoute
+  '/panel/': typeof PanelIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -180,7 +234,13 @@ export interface FileRouteTypes {
     | '/developers/api'
     | '/directory/$category'
     | '/news/$slug'
+    | '/panel/bookmarks'
+    | '/panel/history'
+    | '/panel/notifications'
+    | '/panel/settings'
+    | '/panel/submissions'
     | '/project/$slug'
+    | '/panel/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -198,7 +258,13 @@ export interface FileRouteTypes {
     | '/developers/api'
     | '/directory/$category'
     | '/news/$slug'
+    | '/panel/bookmarks'
+    | '/panel/history'
+    | '/panel/notifications'
+    | '/panel/settings'
+    | '/panel/submissions'
     | '/project/$slug'
+    | '/panel'
   id:
     | '__root__'
     | '/'
@@ -216,7 +282,13 @@ export interface FileRouteTypes {
     | '/developers/api'
     | '/directory/$category'
     | '/news/$slug'
+    | '/panel/bookmarks'
+    | '/panel/history'
+    | '/panel/notifications'
+    | '/panel/settings'
+    | '/panel/submissions'
     | '/project/$slug'
+    | '/panel/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -233,7 +305,13 @@ export interface RootRouteChildren {
   SubmitRoute: typeof SubmitRoute
   TermsRoute: typeof TermsRoute
   DirectoryCategoryRoute: typeof DirectoryCategoryRoute
+  PanelBookmarksRoute: typeof PanelBookmarksRoute
+  PanelHistoryRoute: typeof PanelHistoryRoute
+  PanelNotificationsRoute: typeof PanelNotificationsRoute
+  PanelSettingsRoute: typeof PanelSettingsRoute
+  PanelSubmissionsRoute: typeof PanelSubmissionsRoute
   ProjectSlugRoute: typeof ProjectSlugRoute
+  PanelIndexRoute: typeof PanelIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -322,11 +400,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/panel/': {
+      id: '/panel/'
+      path: '/panel'
+      fullPath: '/panel/'
+      preLoaderRoute: typeof PanelIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/project/$slug': {
       id: '/project/$slug'
       path: '/project/$slug'
       fullPath: '/project/$slug'
       preLoaderRoute: typeof ProjectSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/submissions': {
+      id: '/panel/submissions'
+      path: '/panel/submissions'
+      fullPath: '/panel/submissions'
+      preLoaderRoute: typeof PanelSubmissionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/settings': {
+      id: '/panel/settings'
+      path: '/panel/settings'
+      fullPath: '/panel/settings'
+      preLoaderRoute: typeof PanelSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/notifications': {
+      id: '/panel/notifications'
+      path: '/panel/notifications'
+      fullPath: '/panel/notifications'
+      preLoaderRoute: typeof PanelNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/history': {
+      id: '/panel/history'
+      path: '/panel/history'
+      fullPath: '/panel/history'
+      preLoaderRoute: typeof PanelHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/bookmarks': {
+      id: '/panel/bookmarks'
+      path: '/panel/bookmarks'
+      fullPath: '/panel/bookmarks'
+      preLoaderRoute: typeof PanelBookmarksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/news/$slug': {
@@ -389,7 +509,13 @@ const rootRouteChildren: RootRouteChildren = {
   SubmitRoute: SubmitRoute,
   TermsRoute: TermsRoute,
   DirectoryCategoryRoute: DirectoryCategoryRoute,
+  PanelBookmarksRoute: PanelBookmarksRoute,
+  PanelHistoryRoute: PanelHistoryRoute,
+  PanelNotificationsRoute: PanelNotificationsRoute,
+  PanelSettingsRoute: PanelSettingsRoute,
+  PanelSubmissionsRoute: PanelSubmissionsRoute,
   ProjectSlugRoute: ProjectSlugRoute,
+  PanelIndexRoute: PanelIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
