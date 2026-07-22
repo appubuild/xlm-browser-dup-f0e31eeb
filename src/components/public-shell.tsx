@@ -151,6 +151,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
             )}
           </nav>
         </aside>
+        )}
 
         <main className="min-w-0 flex-1">{children}</main>
       </div>
