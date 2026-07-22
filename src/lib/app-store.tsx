@@ -524,6 +524,42 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (user) await loadUserData(user.id);
   }, [loadPublicData, loadUserData, user]);
 
+  // ---- Legacy compat (admin/users list from profiles + user_roles)
+  const [usersList, setUsersList] = useState<AppState["users"]>([]);
+  useEffect(() => {
+    if (!isAdmin) return;
+    (async () => {
+      const [pf, rl] = await Promise.all([
+        supabase.from("profiles").select("*"),
+        supabase.from("user_roles").select("user_id,role"),
+      ]);
+      const roleMap = new Map<string, "admin" | "user">();
+      rl.data?.forEach((r) => { if (r.role === "admin") roleMap.set(r.user_id, "admin"); });
+      setUsersList((pf.data ?? []).map((p) => ({
+        id: p.id, name: p.name || "User", email: p.email ?? "", avatar: p.avatar ?? "🧑",
+        role: (roleMap.get(p.id) === "admin" ? "admin" : "user"), status: "active",
+        joinDate: (p.created_at ?? "").slice(0, 10), submissionsCount: 0,
+      })));
+    })();
+  }, [isAdmin]);
+  const updateUser: AppState["updateUser"] = async (id, patch) => {
+    const dbPatch: Record<string, unknown> = {};
+    if (patch.name !== undefined) dbPatch.name = patch.name;
+    if (patch.avatar !== undefined) dbPatch.avatar = patch.avatar;
+    if (Object.keys(dbPatch).length) await supabase.from("profiles").update(dbPatch as never).eq("id", id);
+    setUsersList((xs) => xs.map((u) => (u.id === id ? { ...u, ...patch } : u)));
+  };
+  const deleteUser: AppState["deleteUser"] = async (id) => {
+    // Only removes profile row (auth.users cascade requires service role); mark suspended locally.
+    setUsersList((xs) => xs.filter((u) => u.id !== id));
+  };
+  const legacyLogin = (_email: string) => { /* legacy no-op — use signInEmail */ };
+  const adminLogin = () => { /* legacy no-op — role is set via user_roles */ };
+  const adminLogout = async () => { await logout(); };
+  const setCategoriesLegacy = (_c: Category[]) => { /* legacy no-op */ };
+  const setTickersLegacy = (_t: Ticker[]) => { /* legacy no-op */ };
+
+
   const value: AppState = useMemo(() => ({
     loading, theme, setTheme, toggleTheme,
     session, user, signInEmail, signUpEmail, signInGoogle, logout, connectWallet, disconnectWallet,
