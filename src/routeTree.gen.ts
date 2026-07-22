@@ -36,6 +36,7 @@ import { Route as AdminWalletConnectConfigRouteImport } from './routes/admin.wal
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminTickersRouteImport } from './routes/admin.tickers'
 import { Route as AdminSiteSettingsRouteImport } from './routes/admin.site-settings'
+import { Route as AdminSidebarRouteImport } from './routes/admin.sidebar'
 import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
 import { Route as AdminNotificationsRouteImport } from './routes/admin.notifications'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
@@ -181,6 +182,11 @@ const AdminSiteSettingsRoute = AdminSiteSettingsRouteImport.update({
   path: '/admin/site-settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSidebarRoute = AdminSidebarRouteImport.update({
+  id: '/admin/sidebar',
+  path: '/admin/sidebar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminProjectsRoute = AdminProjectsRouteImport.update({
   id: '/admin/projects',
   path: '/admin/projects',
@@ -242,6 +248,7 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/projects': typeof AdminProjectsRouteWithChildren
+  '/admin/sidebar': typeof AdminSidebarRoute
   '/admin/site-settings': typeof AdminSiteSettingsRoute
   '/admin/tickers': typeof AdminTickersRoute
   '/admin/users': typeof AdminUsersRoute
@@ -279,6 +286,7 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/projects': typeof AdminProjectsRouteWithChildren
+  '/admin/sidebar': typeof AdminSidebarRoute
   '/admin/site-settings': typeof AdminSiteSettingsRoute
   '/admin/tickers': typeof AdminTickersRoute
   '/admin/users': typeof AdminUsersRoute
@@ -317,6 +325,7 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/projects': typeof AdminProjectsRouteWithChildren
+  '/admin/sidebar': typeof AdminSidebarRoute
   '/admin/site-settings': typeof AdminSiteSettingsRoute
   '/admin/tickers': typeof AdminTickersRoute
   '/admin/users': typeof AdminUsersRoute
@@ -356,6 +365,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/notifications'
     | '/admin/projects'
+    | '/admin/sidebar'
     | '/admin/site-settings'
     | '/admin/tickers'
     | '/admin/users'
@@ -393,6 +403,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/notifications'
     | '/admin/projects'
+    | '/admin/sidebar'
     | '/admin/site-settings'
     | '/admin/tickers'
     | '/admin/users'
@@ -430,6 +441,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/notifications'
     | '/admin/projects'
+    | '/admin/sidebar'
     | '/admin/site-settings'
     | '/admin/tickers'
     | '/admin/users'
@@ -468,6 +480,7 @@ export interface RootRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
   AdminNotificationsRoute: typeof AdminNotificationsRoute
   AdminProjectsRoute: typeof AdminProjectsRouteWithChildren
+  AdminSidebarRoute: typeof AdminSidebarRoute
   AdminSiteSettingsRoute: typeof AdminSiteSettingsRoute
   AdminTickersRoute: typeof AdminTickersRoute
   AdminUsersRoute: typeof AdminUsersRoute
@@ -674,6 +687,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSiteSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/sidebar': {
+      id: '/admin/sidebar'
+      path: '/admin/sidebar'
+      fullPath: '/admin/sidebar'
+      preLoaderRoute: typeof AdminSidebarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/projects': {
       id: '/admin/projects'
       path: '/admin/projects'
@@ -787,6 +807,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
   AdminNotificationsRoute: AdminNotificationsRoute,
   AdminProjectsRoute: AdminProjectsRouteWithChildren,
+  AdminSidebarRoute: AdminSidebarRoute,
   AdminSiteSettingsRoute: AdminSiteSettingsRoute,
   AdminTickersRoute: AdminTickersRoute,
   AdminUsersRoute: AdminUsersRoute,
