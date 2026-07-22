@@ -8,24 +8,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { toast } from "sonner";
 import { useViewport } from "@/components/browser-viewport";
 
-const NAV = [
-  { to: "/", label: "Home", icon: "🏠" },
-  { to: "/search", label: "Web Search", icon: "🔍" },
-  { to: "/ecosystem", label: "XRPL Ecosystem", icon: "🌐" },
-  { to: "/directory/dapps", label: "dApps", icon: "📱" },
-  { to: "/directory/tokens", label: "Tokens", icon: "🪙" },
-  { to: "/directory/nfts", label: "NFTs", icon: "🖼️" },
-  { to: "/directory/wallets", label: "Wallets", icon: "👛" },
-  { to: "/news", label: "News", icon: "📰" },
-  { to: "/developers", label: "Developers", icon: "</>" },
-  { to: "/panel/bookmarks", label: "Bookmarks", icon: "🔖" },
-  { to: "/panel/history", label: "History", icon: "🕐" },
-  { to: "/panel/settings", label: "Settings", icon: "⚙️" },
-  { to: "/help", label: "Help & Support", icon: "❓" },
-] as const;
 
 export function PublicShell({ children }: { children: ReactNode }) {
-  const { theme, toggleTheme, user, logout, connectWallet, disconnectWallet, projects, xrpPrice, ledgerIndex, tickers, siteSettings } = useApp();
+  const { theme, toggleTheme, user, logout, connectWallet, disconnectWallet, projects, xrpPrice, ledgerIndex, tickers, siteSettings, sidebarItems } = useApp();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [walletOpen, setWalletOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
@@ -33,6 +18,9 @@ export function PublicShell({ children }: { children: ReactNode }) {
   const isRetro = theme === "dark";
   const viewport = useViewport();
   const featured = projects.filter((p) => p.featured && p.status === "approved").slice(0, 5);
+  const nav = [...sidebarItems]
+    .filter((s) => s.visible && (!s.requiresAuth || user))
+    .sort((a, b) => a.sortOrder - b.sortOrder);
 
   // Retro loading bar on route change
   const [routeLoading, setRouteLoading] = useState(false);
@@ -126,10 +114,10 @@ export function PublicShell({ children }: { children: ReactNode }) {
               <button onClick={() => setCollapsed((v) => !v)} className="rounded p-1 hover:bg-sidebar-accent" title="Collapse"><ChevronLeft className={`h-4 w-4 transition ${collapsed ? "rotate-180" : ""}`} /></button>
             </div>
             <div className="flex-1 space-y-0.5 overflow-y-auto px-2 pb-4">
-              {NAV.map((n) => {
-                const active = path === n.to || (n.to !== "/" && path.startsWith(n.to));
+              {nav.map((n) => {
+                const active = path === n.path || (n.path !== "/" && path.startsWith(n.path));
                 return (
-                  <Link key={n.to} to={n.to} onClick={() => setMobileNav(false)} className={`flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm ${active ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" : "hover:bg-sidebar-accent"}`}>
+                  <Link key={n.id} to={n.path} onClick={() => setMobileNav(false)} className={`flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm ${active ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" : "hover:bg-sidebar-accent"}`}>
                     <span className="text-base">{n.icon}</span>
                     {!collapsed && <span>{n.label}</span>}
                   </Link>

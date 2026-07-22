@@ -36,9 +36,11 @@ import { Route as AdminWalletConnectConfigRouteImport } from './routes/admin.wal
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminTickersRouteImport } from './routes/admin.tickers'
 import { Route as AdminSiteSettingsRouteImport } from './routes/admin.site-settings'
+import { Route as AdminSidebarRouteImport } from './routes/admin.sidebar'
 import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
 import { Route as AdminNotificationsRouteImport } from './routes/admin.notifications'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminLandingRouteImport } from './routes/admin.landing'
 import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
 import { Route as AdminBlogRouteImport } from './routes/admin.blog'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
@@ -180,6 +182,11 @@ const AdminSiteSettingsRoute = AdminSiteSettingsRouteImport.update({
   path: '/admin/site-settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSidebarRoute = AdminSidebarRouteImport.update({
+  id: '/admin/sidebar',
+  path: '/admin/sidebar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminProjectsRoute = AdminProjectsRouteImport.update({
   id: '/admin/projects',
   path: '/admin/projects',
@@ -193,6 +200,11 @@ const AdminNotificationsRoute = AdminNotificationsRouteImport.update({
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLandingRoute = AdminLandingRouteImport.update({
+  id: '/admin/landing',
+  path: '/admin/landing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
@@ -232,9 +244,11 @@ export interface FileRoutesByFullPath {
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/projects': typeof AdminProjectsRouteWithChildren
+  '/admin/sidebar': typeof AdminSidebarRoute
   '/admin/site-settings': typeof AdminSiteSettingsRoute
   '/admin/tickers': typeof AdminTickersRoute
   '/admin/users': typeof AdminUsersRoute
@@ -268,9 +282,11 @@ export interface FileRoutesByTo {
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/projects': typeof AdminProjectsRouteWithChildren
+  '/admin/sidebar': typeof AdminSidebarRoute
   '/admin/site-settings': typeof AdminSiteSettingsRoute
   '/admin/tickers': typeof AdminTickersRoute
   '/admin/users': typeof AdminUsersRoute
@@ -305,9 +321,11 @@ export interface FileRoutesById {
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/projects': typeof AdminProjectsRouteWithChildren
+  '/admin/sidebar': typeof AdminSidebarRoute
   '/admin/site-settings': typeof AdminSiteSettingsRoute
   '/admin/tickers': typeof AdminTickersRoute
   '/admin/users': typeof AdminUsersRoute
@@ -343,9 +361,11 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/blog'
     | '/admin/categories'
+    | '/admin/landing'
     | '/admin/login'
     | '/admin/notifications'
     | '/admin/projects'
+    | '/admin/sidebar'
     | '/admin/site-settings'
     | '/admin/tickers'
     | '/admin/users'
@@ -379,9 +399,11 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/blog'
     | '/admin/categories'
+    | '/admin/landing'
     | '/admin/login'
     | '/admin/notifications'
     | '/admin/projects'
+    | '/admin/sidebar'
     | '/admin/site-settings'
     | '/admin/tickers'
     | '/admin/users'
@@ -415,9 +437,11 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/blog'
     | '/admin/categories'
+    | '/admin/landing'
     | '/admin/login'
     | '/admin/notifications'
     | '/admin/projects'
+    | '/admin/sidebar'
     | '/admin/site-settings'
     | '/admin/tickers'
     | '/admin/users'
@@ -452,9 +476,11 @@ export interface RootRouteChildren {
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminBlogRoute: typeof AdminBlogRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
+  AdminLandingRoute: typeof AdminLandingRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminNotificationsRoute: typeof AdminNotificationsRoute
   AdminProjectsRoute: typeof AdminProjectsRouteWithChildren
+  AdminSidebarRoute: typeof AdminSidebarRoute
   AdminSiteSettingsRoute: typeof AdminSiteSettingsRoute
   AdminTickersRoute: typeof AdminTickersRoute
   AdminUsersRoute: typeof AdminUsersRoute
@@ -661,6 +687,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSiteSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/sidebar': {
+      id: '/admin/sidebar'
+      path: '/admin/sidebar'
+      fullPath: '/admin/sidebar'
+      preLoaderRoute: typeof AdminSidebarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/projects': {
       id: '/admin/projects'
       path: '/admin/projects'
@@ -680,6 +713,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/landing': {
+      id: '/admin/landing'
+      path: '/admin/landing'
+      fullPath: '/admin/landing'
+      preLoaderRoute: typeof AdminLandingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/categories': {
@@ -763,9 +803,11 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminBlogRoute: AdminBlogRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
+  AdminLandingRoute: AdminLandingRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminNotificationsRoute: AdminNotificationsRoute,
   AdminProjectsRoute: AdminProjectsRouteWithChildren,
+  AdminSidebarRoute: AdminSidebarRoute,
   AdminSiteSettingsRoute: AdminSiteSettingsRoute,
   AdminTickersRoute: AdminTickersRoute,
   AdminUsersRoute: AdminUsersRoute,
@@ -783,13 +825,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

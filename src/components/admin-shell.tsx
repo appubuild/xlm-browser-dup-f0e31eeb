@@ -9,6 +9,8 @@ const ADMIN_NAV = [
   { to: "/admin/projects", label: "Projects", icon: "📦" },
   { to: "/admin/projects/pending", label: "Moderation Queue", icon: "🛡️" },
   { to: "/admin/categories", label: "Categories", icon: "🏷️" },
+  { to: "/admin/landing", label: "Landing Page", icon: "🎨" },
+  { to: "/admin/sidebar", label: "Sidebar Menu", icon: "🧭" },
   { to: "/admin/users", label: "Users", icon: "👥" },
   { to: "/admin/blog", label: "News / Blog", icon: "📰" },
   { to: "/admin/tickers", label: "Tickers", icon: "📡" },

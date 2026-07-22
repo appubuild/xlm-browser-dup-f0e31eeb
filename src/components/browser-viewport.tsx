@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { X, ArrowLeft, ArrowRight, RotateCw, Home, Star, ExternalLink, Plus } from "lucide-react";
 import { useApp } from "@/lib/app-store";
-import type { Project } from "@/lib/mock-data";
+import type { Project } from "@/lib/app-store";
 
 interface Tab { id: string; project: Project; loading: boolean; blocked: boolean }
 
