@@ -19,7 +19,7 @@ function AdminTickers() {
           <option value="">Link to project (optional)</option>
           {projects.filter((p) => p.status === "approved").map((p) => <option key={p.id} value={p.slug}>{p.name}</option>)}
         </select>
-        <button onClick={() => { if (!label) return; setTickers([...tickers, { id: Math.random().toString(36).slice(2), label, linkedProjectSlug: slug || undefined, order: tickers.length + 1 }]); setLabel(""); setSlug(""); toast.success("Ticker added"); }} className="rounded bg-sky-500 px-3 py-2 text-sm text-white">Add</button>
+        <button onClick={() => { if (!label) return; setTickers([...tickers, { id: Math.random().toString(36).slice(2), label, linkedProjectSlug: slug || undefined, sortOrder: tickers.length + 1, visible: true }]); setLabel(""); setSlug(""); toast.success("Ticker added"); }} className="rounded bg-sky-500 px-3 py-2 text-sm text-white">Add</button>
       </div>
       <ul className="mt-4 space-y-2">
         {tickers.map((t, i) => (
