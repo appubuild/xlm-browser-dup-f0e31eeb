@@ -1,6 +1,6 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { Sun, Moon, Wallet, Rocket, Menu, User as UserIcon, Bell, Search, ChevronLeft } from "lucide-react";
+import { Sun, Moon, Wallet, Rocket, Menu, User as UserIcon, Bell, Search, ChevronLeft, Shield } from "lucide-react";
 import { useApp } from "@/lib/app-store";
 import { WALLETS } from "@/lib/mock-data";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -10,13 +10,15 @@ import { useViewport } from "@/components/browser-viewport";
 
 
 export function PublicShell({ children }: { children: ReactNode }) {
-  const { theme, toggleTheme, user, logout, connectWallet, disconnectWallet, projects, xrpPrice, ledgerIndex, tickers, siteSettings, sidebarItems } = useApp();
+  const { theme, toggleTheme, user, logout, connectWallet, disconnectWallet, projects, xrpPrice, ledgerIndex, tickers, siteSettings, sidebarItems, isAdmin } = useApp();
   const path = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
   const [walletOpen, setWalletOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [mobileNav, setMobileNav] = useState(false);
   const isRetro = theme === "dark";
   const viewport = useViewport();
+  const hideSidebar = path.startsWith("/panel") || path.startsWith("/admin");
   const featured = projects.filter((p) => p.featured && p.status === "approved").slice(0, 5);
   const nav = [...sidebarItems]
     .filter((s) => s.visible && (!s.requiresAuth || user))
@@ -90,6 +92,14 @@ export function PublicShell({ children }: { children: ReactNode }) {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                {isAdmin && (
+                  <>
+                    <DropdownMenuItem onClick={() => navigate({ to: "/admin" })}>
+                      <Shield className="mr-2 h-4 w-4" /> Admin Panel
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuItem asChild><Link to="/panel">My Panel</Link></DropdownMenuItem>
                 <DropdownMenuItem asChild><Link to="/panel/bookmarks">Bookmarks</Link></DropdownMenuItem>
                 <DropdownMenuItem asChild><Link to="/panel/submissions">Submitted Projects</Link></DropdownMenuItem>
@@ -108,6 +118,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
 
       <div className="flex flex-1">
         {/* Sidebar */}
+        {!hideSidebar && (
         <aside className={`${collapsed ? "w-14" : "w-60"} ${mobileNav ? "block" : "hidden"} shrink-0 border-r bg-sidebar text-sidebar-foreground transition-all md:block`}>
           <nav className="sticky top-16 flex h-[calc(100vh-4rem)] flex-col">
             <div className="flex justify-end p-2">
@@ -140,6 +151,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
             )}
           </nav>
         </aside>
+        )}
 
         <main className="min-w-0 flex-1">{children}</main>
       </div>
