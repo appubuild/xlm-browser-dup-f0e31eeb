@@ -129,10 +129,10 @@ export function PublicShell({ children }: { children: ReactNode }) {
               <button onClick={() => setCollapsed((v) => !v)} className="rounded p-1 hover:bg-sidebar-accent" title="Collapse"><ChevronLeft className={`h-4 w-4 transition ${collapsed ? "rotate-180" : ""}`} /></button>
             </div>
             <div className="flex-1 space-y-0.5 overflow-y-auto px-2 pb-4">
-              {NAV.map((n) => {
-                const active = path === n.to || (n.to !== "/" && path.startsWith(n.to));
+              {nav.map((n) => {
+                const active = path === n.path || (n.path !== "/" && path.startsWith(n.path));
                 return (
-                  <Link key={n.to} to={n.to} onClick={() => setMobileNav(false)} className={`flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm ${active ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" : "hover:bg-sidebar-accent"}`}>
+                  <Link key={n.id} to={n.path} onClick={() => setMobileNav(false)} className={`flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm ${active ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" : "hover:bg-sidebar-accent"}`}>
                     <span className="text-base">{n.icon}</span>
                     {!collapsed && <span>{n.label}</span>}
                   </Link>
