@@ -324,7 +324,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.featured !== undefined) dbPatch.featured = patch.featured;
     if (patch.liveStatus !== undefined) dbPatch.live_status = patch.liveStatus;
     if (patch.visits !== undefined) dbPatch.visits = patch.visits;
-    const { error } = await supabase.from("projects").update(dbPatch).eq("id", id);
+    const { error } = await supabase.from("projects").update(dbPatch as never).eq("id", id);
     if (!error) setProjects((ps) => ps.map((p) => (p.id === id ? { ...p, ...patch } : p)));
   };
   const deleteProject = async (id: string) => {
@@ -351,7 +351,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.body !== undefined) dbPatch.body = patch.body;
     if (patch.publishDate !== undefined) dbPatch.publish_date = patch.publishDate;
     if (patch.status !== undefined) dbPatch.status = patch.status;
-    await supabase.from("news").update(dbPatch).eq("id", id);
+    await supabase.from("news").update(dbPatch as never).eq("id", id);
     setNews((n) => n.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   };
   const deleteNews = async (id: string) => {
@@ -373,7 +373,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.linkedProjectSlug !== undefined) dbPatch.linked_project_slug = patch.linkedProjectSlug;
     if (patch.sortOrder !== undefined) dbPatch.sort_order = patch.sortOrder;
     if (patch.visible !== undefined) dbPatch.visible = patch.visible;
-    await supabase.from("tickers").update(dbPatch).eq("id", id);
+    await supabase.from("tickers").update(dbPatch as never).eq("id", id);
     setTickers((xs) => xs.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   };
   const deleteTicker = async (id: string) => {
@@ -397,7 +397,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.description !== undefined) dbPatch.description = patch.description;
     if (patch.visible !== undefined) dbPatch.visible = patch.visible;
     if (patch.sortOrder !== undefined) dbPatch.sort_order = patch.sortOrder;
-    await supabase.from("categories").update(dbPatch).eq("id", id);
+    await supabase.from("categories").update(dbPatch as never).eq("id", id);
     setCategories((xs) => xs.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   };
   const deleteCategory = async (id: string) => {
@@ -422,7 +422,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.sortOrder !== undefined) dbPatch.sort_order = patch.sortOrder;
     if (patch.visible !== undefined) dbPatch.visible = patch.visible;
     if (patch.requiresAuth !== undefined) dbPatch.requires_auth = patch.requiresAuth;
-    await supabase.from("sidebar_menu").update(dbPatch).eq("id", id);
+    await supabase.from("sidebar_menu").update(dbPatch as never).eq("id", id);
     setSidebarItems((xs) => xs.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   };
   const deleteSidebarItem = async (id: string) => {
@@ -442,7 +442,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.visible !== undefined) dbPatch.visible = patch.visible;
     if (patch.sortOrder !== undefined) dbPatch.sort_order = patch.sortOrder;
     if (patch.config !== undefined) dbPatch.config = patch.config;
-    await supabase.from("landing_sections").update(dbPatch).eq("id", id);
+    await supabase.from("landing_sections").update(dbPatch as never).eq("id", id);
     setLandingSections((xs) => xs.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   };
 
@@ -498,7 +498,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.contactCompany !== undefined) dbPatch.contact_company = patch.contactCompany;
     if (patch.contactLocation !== undefined) dbPatch.contact_location = patch.contactLocation;
     if (patch.autoApprove !== undefined) dbPatch.auto_approve = patch.autoApprove;
-    await supabase.from("site_settings").update(dbPatch).eq("id", 1);
+    await supabase.from("site_settings").update(dbPatch as never).eq("id", 1);
     setSiteSettings((s) => ({ ...s, ...patch }));
   };
 
