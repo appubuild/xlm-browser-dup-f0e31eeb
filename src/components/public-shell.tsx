@@ -8,21 +8,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { toast } from "sonner";
 import { useViewport } from "@/components/browser-viewport";
 
-const NAV = [
-  { to: "/", label: "Home", icon: "🏠" },
-  { to: "/search", label: "Web Search", icon: "🔍" },
-  { to: "/ecosystem", label: "XRPL Ecosystem", icon: "🌐" },
-  { to: "/directory/dapps", label: "dApps", icon: "📱" },
-  { to: "/directory/tokens", label: "Tokens", icon: "🪙" },
-  { to: "/directory/nfts", label: "NFTs", icon: "🖼️" },
-  { to: "/directory/wallets", label: "Wallets", icon: "👛" },
-  { to: "/news", label: "News", icon: "📰" },
-  { to: "/developers", label: "Developers", icon: "</>" },
-  { to: "/panel/bookmarks", label: "Bookmarks", icon: "🔖" },
-  { to: "/panel/history", label: "History", icon: "🕐" },
-  { to: "/panel/settings", label: "Settings", icon: "⚙️" },
-  { to: "/help", label: "Help & Support", icon: "❓" },
-] as const;
 
 export function PublicShell({ children }: { children: ReactNode }) {
   const { theme, toggleTheme, user, logout, connectWallet, disconnectWallet, projects, xrpPrice, ledgerIndex, tickers, siteSettings, sidebarItems } = useApp();
