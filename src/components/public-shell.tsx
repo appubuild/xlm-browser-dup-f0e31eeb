@@ -92,6 +92,14 @@ export function PublicShell({ children }: { children: ReactNode }) {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                {isAdmin && (
+                  <>
+                    <DropdownMenuItem onClick={() => navigate({ to: "/admin" })}>
+                      <Shield className="mr-2 h-4 w-4" /> Admin Panel
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuItem asChild><Link to="/panel">My Panel</Link></DropdownMenuItem>
                 <DropdownMenuItem asChild><Link to="/panel/bookmarks">Bookmarks</Link></DropdownMenuItem>
                 <DropdownMenuItem asChild><Link to="/panel/submissions">Submitted Projects</Link></DropdownMenuItem>
