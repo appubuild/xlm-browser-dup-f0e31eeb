@@ -14,16 +14,444 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bookmarks: {
+        Row: {
+          created_at: string
+          id: string
+          project_slug: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          project_slug: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          project_slug?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          icon: string
+          id: string
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+          visible: boolean
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          name?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Relationships: []
+      }
+      history: {
+        Row: {
+          id: string
+          project_slug: string
+          user_id: string
+          visited_at: string
+        }
+        Insert: {
+          id?: string
+          project_slug: string
+          user_id: string
+          visited_at?: string
+        }
+        Update: {
+          id?: string
+          project_slug?: string
+          user_id?: string
+          visited_at?: string
+        }
+        Relationships: []
+      }
+      landing_sections: {
+        Row: {
+          config: Json
+          id: string
+          section_key: string
+          sort_order: number
+          subtitle: string | null
+          title: string
+          updated_at: string
+          visible: boolean
+        }
+        Insert: {
+          config?: Json
+          id?: string
+          section_key: string
+          sort_order?: number
+          subtitle?: string | null
+          title?: string
+          updated_at?: string
+          visible?: boolean
+        }
+        Update: {
+          config?: Json
+          id?: string
+          section_key?: string
+          sort_order?: number
+          subtitle?: string | null
+          title?: string
+          updated_at?: string
+          visible?: boolean
+        }
+        Relationships: []
+      }
+      news: {
+        Row: {
+          author: string
+          body: string | null
+          category: string
+          cover_image: string | null
+          created_at: string
+          excerpt: string | null
+          id: string
+          publish_date: string
+          slug: string
+          status: Database["public"]["Enums"]["news_status"]
+          title: string
+          updated_at: string
+          views: number
+        }
+        Insert: {
+          author?: string
+          body?: string | null
+          category?: string
+          cover_image?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          publish_date?: string
+          slug: string
+          status?: Database["public"]["Enums"]["news_status"]
+          title: string
+          updated_at?: string
+          views?: number
+        }
+        Update: {
+          author?: string
+          body?: string | null
+          category?: string
+          cover_image?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          publish_date?: string
+          slug?: string
+          status?: Database["public"]["Enums"]["news_status"]
+          title?: string
+          updated_at?: string
+          views?: number
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          read: boolean
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          read?: boolean
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar: string | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          updated_at: string
+          wallet_address: string | null
+        }
+        Insert: {
+          avatar?: string | null
+          created_at?: string
+          email?: string | null
+          id: string
+          name?: string
+          updated_at?: string
+          wallet_address?: string | null
+        }
+        Update: {
+          avatar?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+          wallet_address?: string | null
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          category: string
+          created_at: string
+          date_added: string
+          description: string | null
+          featured: boolean
+          id: string
+          live_status: Database["public"]["Enums"]["live_status"]
+          logo: string | null
+          name: string
+          screenshots: string[]
+          slug: string
+          socials: Json
+          status: Database["public"]["Enums"]["project_status"]
+          submitter_email: string | null
+          submitter_id: string | null
+          submitter_name: string | null
+          tagline: string | null
+          updated_at: string
+          url: string
+          verified: boolean
+          visits: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          date_added?: string
+          description?: string | null
+          featured?: boolean
+          id?: string
+          live_status?: Database["public"]["Enums"]["live_status"]
+          logo?: string | null
+          name: string
+          screenshots?: string[]
+          slug: string
+          socials?: Json
+          status?: Database["public"]["Enums"]["project_status"]
+          submitter_email?: string | null
+          submitter_id?: string | null
+          submitter_name?: string | null
+          tagline?: string | null
+          updated_at?: string
+          url: string
+          verified?: boolean
+          visits?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          date_added?: string
+          description?: string | null
+          featured?: boolean
+          id?: string
+          live_status?: Database["public"]["Enums"]["live_status"]
+          logo?: string | null
+          name?: string
+          screenshots?: string[]
+          slug?: string
+          socials?: Json
+          status?: Database["public"]["Enums"]["project_status"]
+          submitter_email?: string | null
+          submitter_id?: string | null
+          submitter_name?: string | null
+          tagline?: string | null
+          updated_at?: string
+          url?: string
+          verified?: boolean
+          visits?: number
+        }
+        Relationships: []
+      }
+      sidebar_menu: {
+        Row: {
+          created_at: string
+          icon: string | null
+          id: string
+          label: string
+          path: string
+          requires_auth: boolean
+          sort_order: number
+          updated_at: string
+          visible: boolean
+        }
+        Insert: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          label: string
+          path: string
+          requires_auth?: boolean
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Update: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          label?: string
+          path?: string
+          requires_auth?: boolean
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          allow_user_override: boolean
+          auto_approve: boolean
+          contact_company: string | null
+          contact_email: string | null
+          contact_location: string | null
+          default_theme: string
+          enable_iframe: boolean
+          enable_submissions: boolean
+          id: number
+          maintenance_mode: boolean
+          meta_description: string
+          site_name: string
+          updated_at: string
+        }
+        Insert: {
+          allow_user_override?: boolean
+          auto_approve?: boolean
+          contact_company?: string | null
+          contact_email?: string | null
+          contact_location?: string | null
+          default_theme?: string
+          enable_iframe?: boolean
+          enable_submissions?: boolean
+          id?: number
+          maintenance_mode?: boolean
+          meta_description?: string
+          site_name?: string
+          updated_at?: string
+        }
+        Update: {
+          allow_user_override?: boolean
+          auto_approve?: boolean
+          contact_company?: string | null
+          contact_email?: string | null
+          contact_location?: string | null
+          default_theme?: string
+          enable_iframe?: boolean
+          enable_submissions?: boolean
+          id?: number
+          maintenance_mode?: boolean
+          meta_description?: string
+          site_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tickers: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          linked_project_slug: string | null
+          sort_order: number
+          updated_at: string
+          visible: boolean
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          linked_project_slug?: string | null
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          linked_project_slug?: string | null
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
+      live_status: "Live" | "Beta" | "Coming Soon"
+      news_status: "draft" | "published"
+      project_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +578,11 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+      live_status: ["Live", "Beta", "Coming Soon"],
+      news_status: ["draft", "published"],
+      project_status: ["pending", "approved", "rejected"],
+    },
   },
 } as const
