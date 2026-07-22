@@ -118,6 +118,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
 
       <div className="flex flex-1">
         {/* Sidebar */}
+        {!hideSidebar && (
         <aside className={`${collapsed ? "w-14" : "w-60"} ${mobileNav ? "block" : "hidden"} shrink-0 border-r bg-sidebar text-sidebar-foreground transition-all md:block`}>
           <nav className="sticky top-16 flex h-[calc(100vh-4rem)] flex-col">
             <div className="flex justify-end p-2">
