@@ -10,13 +10,15 @@ import { useViewport } from "@/components/browser-viewport";
 
 
 export function PublicShell({ children }: { children: ReactNode }) {
-  const { theme, toggleTheme, user, logout, connectWallet, disconnectWallet, projects, xrpPrice, ledgerIndex, tickers, siteSettings, sidebarItems } = useApp();
+  const { theme, toggleTheme, user, logout, connectWallet, disconnectWallet, projects, xrpPrice, ledgerIndex, tickers, siteSettings, sidebarItems, isAdmin } = useApp();
   const path = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
   const [walletOpen, setWalletOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [mobileNav, setMobileNav] = useState(false);
   const isRetro = theme === "dark";
   const viewport = useViewport();
+  const hideSidebar = path.startsWith("/panel") || path.startsWith("/admin");
   const featured = projects.filter((p) => p.featured && p.status === "approved").slice(0, 5);
   const nav = [...sidebarItems]
     .filter((s) => s.visible && (!s.requiresAuth || user))
