@@ -118,6 +118,18 @@ interface AppState {
   ledgerIndex: number;
 
   refresh: () => Promise<void>;
+
+  // ---- Legacy compatibility (existing UI code) ----
+  users: { id: string; name: string; email: string; avatar: string; role: "user" | "admin"; status: "active" | "suspended"; joinDate: string; submissionsCount: number }[];
+  updateUser: (id: string, patch: Partial<{ name: string; email: string; avatar: string; role: "user" | "admin"; status: "active" | "suspended" }>) => Promise<void>;
+  deleteUser: (id: string) => Promise<void>;
+  login: (email: string) => void;
+  adminLogin: () => void;
+  adminLogout: () => Promise<void>;
+  autoApprove: boolean;
+  setAutoApprove: (v: boolean) => void;
+  setCategories: (c: Category[]) => void;
+  setTickers: (t: Ticker[]) => void;
 }
 
 const AppCtx = createContext<AppState | null>(null);
