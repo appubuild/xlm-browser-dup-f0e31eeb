@@ -1,8 +1,9 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { type ReactNode } from "react";
 import { useApp } from "@/lib/app-store";
-import { Bell, LogOut } from "lucide-react";
+import { Bell, LogOut, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
+
 
 const ADMIN_NAV = [
   { to: "/admin", label: "Dashboard", icon: "📊" },
@@ -66,8 +67,12 @@ export function AdminShell({ children }: { children: ReactNode }) {
         <header className="flex items-center gap-3 border-b border-slate-800 bg-slate-900 px-4 py-2.5">
           <div className="text-sm font-medium text-slate-300">Admin</div>
           <div className="ml-auto flex items-center gap-3">
+            <Link to="/" className="inline-flex items-center gap-1 rounded-md border border-slate-700 px-2 py-1.5 text-xs text-slate-300 hover:bg-slate-800">
+              <ExternalLink className="h-3.5 w-3.5" /> Back to site
+            </Link>
             <button className="relative rounded-md p-2 text-slate-300 hover:bg-slate-800">
               <Bell className="h-4 w-4" />
+
               {notifications.filter((n) => !n.read).length > 0 && (
                 <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-rose-500" />
               )}

@@ -31,8 +31,8 @@ export function PanelShell({ children }: { children: ReactNode }) {
   }
   return (
     <PublicShell>
-      <div className="flex">
-        <aside className="hidden w-56 shrink-0 border-r bg-muted/30 p-3 md:block">
+      <div className="flex h-[calc(100vh-4rem)]">
+        <aside className="hidden w-56 shrink-0 overflow-y-auto border-r bg-muted/30 p-3 md:block">
           <div className="mb-4 rounded-md border bg-card p-3">
             <div className="text-xs text-muted-foreground">Signed in as</div>
             <div className="mt-0.5 font-medium">{user.name}</div>
@@ -49,8 +49,9 @@ export function PanelShell({ children }: { children: ReactNode }) {
             })}
           </nav>
         </aside>
-        <div className="min-w-0 flex-1">{children}</div>
+        <div className="min-w-0 flex-1 overflow-y-auto">{children}</div>
       </div>
     </PublicShell>
   );
 }
+
