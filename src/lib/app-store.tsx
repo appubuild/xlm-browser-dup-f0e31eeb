@@ -577,8 +577,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     walletConfig, updateWalletConfig,
     xrpPrice, ledgerIndex,
     refresh,
+    users: usersList, updateUser, deleteUser,
+    login: legacyLogin, adminLogin, adminLogout,
+    autoApprove: siteSettings.autoApprove,
+    setAutoApprove: (v: boolean) => { void updateSiteSettings({ autoApprove: v }); },
+    setCategories: setCategoriesLegacy, setTickers: setTickersLegacy,
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [loading, theme, session, user, isAdmin, projects, news, tickers, categories, sidebarItems, landingSections, bookmarks, history, notifications, siteSettings, walletConfig, xrpPrice, ledgerIndex]);
+  }), [loading, theme, session, user, isAdmin, projects, news, tickers, categories, sidebarItems, landingSections, bookmarks, history, notifications, siteSettings, walletConfig, xrpPrice, ledgerIndex, usersList]);
 
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;
 }
