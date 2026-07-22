@@ -1,6 +1,6 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { Sun, Moon, Wallet, Rocket, Menu, User as UserIcon, Bell, Search, ChevronLeft } from "lucide-react";
+import { Sun, Moon, Wallet, Rocket, Menu, User as UserIcon, Bell, Search, ChevronLeft, Shield } from "lucide-react";
 import { useApp } from "@/lib/app-store";
 import { WALLETS } from "@/lib/mock-data";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
