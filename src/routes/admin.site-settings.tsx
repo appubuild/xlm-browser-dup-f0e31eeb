@@ -35,6 +35,19 @@ function SiteSettings() {
           <F label="Company"><input value={siteSettings.contactCompany} onChange={(e) => updateSiteSettings({ contactCompany: e.target.value })} className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" /></F>
           <F label="Location"><input value={siteSettings.contactLocation} onChange={(e) => updateSiteSettings({ contactLocation: e.target.value })} className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" /></F>
         </Card>
+        <Card title="Listing Fee (XRP payment)">
+          <F label="Listing fee in XRP (set 0 for free)">
+            <input type="number" min={0} step="0.1" value={siteSettings.listingFeeXrp}
+              onChange={(e) => updateSiteSettings({ listingFeeXrp: parseFloat(e.target.value) || 0 })}
+              className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" />
+          </F>
+          <F label="Receiving XRPL address (r…)">
+            <input value={siteSettings.listingPaymentAddress} placeholder="rXXXXXXXXXXXXXXXXXXXXXXXX"
+              onChange={(e) => updateSiteSettings({ listingPaymentAddress: e.target.value })}
+              className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm font-mono" />
+          </F>
+          <div className="text-xs text-slate-400">When the fee is 0, approved projects publish automatically. Otherwise the submitter pays to publish.</div>
+        </Card>
         <Card title="API Settings">
           <F label="Rate limit (req/min)"><input defaultValue={60} type="number" className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" /></F>
           <div className="text-xs text-slate-400">Issued keys</div>
