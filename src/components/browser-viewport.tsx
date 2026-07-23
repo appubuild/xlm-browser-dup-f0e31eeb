@@ -220,7 +220,7 @@ function IframeView({ url, onLoad, onError }: { url: string; onLoad: () => void;
 
 function NewTabPage({ projects, onPick, onGo }: { projects: Project[]; onPick: (p: Project) => void; onGo: (url: string) => void }) {
   const [q, setQ] = useState("");
-  const featured = projects.filter((p) => p.status === "approved").slice(0, 12);
+  const featured = projects.filter((p) => p.status === "approved" && p.isPublic).slice(0, 12);
   return (
     <div className="mx-auto max-w-3xl p-8">
       <h2 className="text-center text-2xl font-bold">New Tab</h2>

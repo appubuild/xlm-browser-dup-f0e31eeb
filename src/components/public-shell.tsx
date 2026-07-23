@@ -20,7 +20,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
   const isRetro = theme === "dark";
   const viewport = useViewport();
   const hideSidebar = path.startsWith("/panel") || path.startsWith("/admin");
-  const featured = projects.filter((p) => p.featured && p.status === "approved").slice(0, 5);
+  const featured = projects.filter((p) => p.featured && p.status === "approved" && p.isPublic).slice(0, 5);
   const nav = [...sidebarItems]
     .filter((s) => s.visible && (!s.requiresAuth || user))
     .sort((a, b) => a.sortOrder - b.sortOrder);

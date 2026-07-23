@@ -16,7 +16,7 @@ function Directory() {
   const [sort, setSort] = useState<"az" | "newest" | "trending">("trending");
 
   const cat = categories.find((c) => c.id === category);
-  let items = projects.filter((p) => p.status === "approved" && p.category === (category as ProjectCategory));
+  let items = projects.filter((p) => p.status === "approved" && p.isPublic && p.category === (category as ProjectCategory));
   if (verifiedOnly) items = items.filter((p) => p.verified);
   if (sort === "az") items = [...items].sort((a, b) => a.name.localeCompare(b.name));
   if (sort === "newest") items = [...items].sort((a, b) => b.dateAdded.localeCompare(a.dateAdded));

@@ -6,7 +6,7 @@ export const Route = createFileRoute("/ecosystem")({ component: Ecosystem });
 
 function Ecosystem() {
   const { projects, categories } = useApp();
-  const approved = projects.filter((p) => p.status === "approved");
+  const approved = projects.filter((p) => p.status === "approved" && p.isPublic);
   const stats = [
     { label: "Total Projects", value: approved.length },
     { label: "Categories", value: categories.length },
