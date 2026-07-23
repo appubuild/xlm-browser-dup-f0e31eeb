@@ -242,6 +242,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         enableIframe: ss.data.enable_iframe, maintenanceMode: ss.data.maintenance_mode,
         contactEmail: ss.data.contact_email ?? "", contactCompany: ss.data.contact_company ?? "",
         contactLocation: ss.data.contact_location ?? "", autoApprove: ss.data.auto_approve,
+        listingFeeXrp: Number((ss.data as { listing_fee_xrp?: number | string | null }).listing_fee_xrp ?? 0),
+        listingPaymentAddress: (ss.data as { listing_payment_address?: string | null }).listing_payment_address ?? "",
       });
     }
   }, []);
