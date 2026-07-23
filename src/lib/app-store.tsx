@@ -26,6 +26,11 @@ export interface Project {
   submitterName?: string;
   submitterEmail?: string;
   submitterId?: string | null;
+  aiDoc?: string;
+  supportEmail?: string;
+  isPublic: boolean;
+  paymentTx?: string | null;
+  paymentAmount?: number | null;
 }
 
 export interface Category { id: string; slug: string; name: string; icon: string; description: string; visible: boolean; sortOrder: number; }
@@ -49,6 +54,8 @@ interface SiteSettings {
   contactCompany: string;
   contactLocation: string;
   autoApprove: boolean;
+  listingFeeXrp: number;
+  listingPaymentAddress: string;
 }
 
 interface AppState {
@@ -69,9 +76,10 @@ interface AppState {
   isAdmin: boolean;
 
   projects: Project[];
-  addProject: (p: Partial<Project> & { name: string; url: string; category: string; tagline: string; description: string }) => Promise<Project | null>;
+  addProject: (p: Partial<Project> & { name: string; url: string; category: string; tagline: string; description: string; supportEmail: string; aiDoc?: string }) => Promise<Project | null>;
   updateProject: (id: string, patch: Partial<Project>) => Promise<void>;
   deleteProject: (id: string) => Promise<void>;
+  markProjectPaid: (id: string, tx: string, amount: number) => Promise<void>;
 
   news: NewsArticle[];
   addNews: (a: Omit<NewsArticle, "id" | "views">) => Promise<void>;
@@ -138,6 +146,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   siteName: "XRPBrowser", metaDescription: "The search engine and browser for the XRP Ledger.",
   defaultTheme: "light", allowUserOverride: true, enableSubmissions: true, enableIframe: true, maintenanceMode: false,
   contactEmail: "partner@skipads.ai", contactCompany: "SkipAds AI LLC", contactLocation: "Detroit, MI · USA", autoApprove: false,
+  listingFeeXrp: 0, listingPaymentAddress: "",
 };
 
 type ProjectRow = {
@@ -145,6 +154,8 @@ type ProjectRow = {
   description: string | null; url: string; screenshots: string[] | null; socials: unknown;
   verified: boolean; status: ProjectStatus; featured: boolean; date_added: string; visits: number;
   live_status: LiveStatusVal; submitter_name: string | null; submitter_email: string | null; submitter_id: string | null;
+  ai_doc?: string | null; support_email?: string | null; is_public?: boolean;
+  payment_tx?: string | null; payment_amount?: number | null;
 };
 
 function mapProject(r: ProjectRow): Project {
@@ -155,6 +166,8 @@ function mapProject(r: ProjectRow): Project {
     verified: r.verified, status: r.status, featured: r.featured, dateAdded: r.date_added,
     visits: r.visits, liveStatus: r.live_status,
     submitterName: r.submitter_name ?? undefined, submitterEmail: r.submitter_email ?? undefined, submitterId: r.submitter_id,
+    aiDoc: r.ai_doc ?? "", supportEmail: r.support_email ?? undefined,
+    isPublic: !!r.is_public, paymentTx: r.payment_tx ?? null, paymentAmount: r.payment_amount ?? null,
   };
 }
 
