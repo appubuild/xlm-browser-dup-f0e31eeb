@@ -38,16 +38,16 @@ export function BrowserViewport({ open, onClose, initialProject }: Props) {
   const [addressInput, setAddressInput] = useState("");
 
   useEffect(() => {
-    if (open && initialProject) {
-      setTabs((ts) => {
-        const exists = ts.find((t) => t.project?.slug === initialProject.slug);
-        if (exists) { setActiveId(exists.id); return ts; }
-        const t = newTab(initialProject);
-        setActiveId(t.id);
-        pushHistory(initialProject.slug);
-        return [...ts, t];
-      });
+    if (!open || !initialProject) return;
+    const exists = tabs.find((t) => t.project?.slug === initialProject.slug);
+    if (exists) {
+      setActiveId(exists.id);
+      return;
     }
+    const t = newTab(initialProject);
+    setTabs((ts) => [...ts, t]);
+    setActiveId(t.id);
+    pushHistory(initialProject.slug);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, initialProject]);
 
