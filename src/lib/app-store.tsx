@@ -599,7 +599,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     loading, theme, setTheme, toggleTheme,
     session, user, signInEmail, signUpEmail, signInGoogle, logout, connectWallet, disconnectWallet,
     isAdmin,
-    projects, addProject, updateProject, deleteProject,
+    projects, addProject, updateProject, deleteProject, markProjectPaid,
     news, addNews, updateNews, deleteNews,
     tickers, addTicker, updateTicker, deleteTicker,
     categories, addCategory, updateCategory, deleteCategory,
