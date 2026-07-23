@@ -38,16 +38,16 @@ export function BrowserViewport({ open, onClose, initialProject }: Props) {
   const [addressInput, setAddressInput] = useState("");
 
   useEffect(() => {
-    if (open && initialProject) {
-      setTabs((ts) => {
-        const exists = ts.find((t) => t.project?.slug === initialProject.slug);
-        if (exists) { setActiveId(exists.id); return ts; }
-        const t = newTab(initialProject);
-        setActiveId(t.id);
-        pushHistory(initialProject.slug);
-        return [...ts, t];
-      });
+    if (!open || !initialProject) return;
+    const exists = tabs.find((t) => t.project?.slug === initialProject.slug);
+    if (exists) {
+      setActiveId(exists.id);
+      return;
     }
+    const t = newTab(initialProject);
+    setTabs((ts) => [...ts, t]);
+    setActiveId(t.id);
+    pushHistory(initialProject.slug);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, initialProject]);
 
@@ -91,14 +91,26 @@ export function BrowserViewport({ open, onClose, initialProject }: Props) {
     pushHistory(project.slug);
   };
 
-  const navigateTo = (tabId: string, rawUrl: string) => {
-    if (!rawUrl.trim()) return;
-    let url = rawUrl.trim();
-    if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+  const navigateTo = (tabId: string, rawInput: string) => {
+    if (!rawInput.trim()) return;
+    const input = rawInput.trim();
+    // Detect URL vs search query (Google-style omnibox)
+    const looksLikeUrl =
+      /^https?:\/\//i.test(input) ||
+      /^[a-z0-9][a-z0-9-]*(\.[a-z0-9-]+)+(:\d+)?(\/.*)?$/i.test(input);
+    let url: string;
+    let displayName: string;
+    if (looksLikeUrl) {
+      url = /^https?:\/\//i.test(input) ? input : "https://" + input;
+      try { displayName = new URL(url).hostname; } catch { displayName = url; }
+    } else {
+      url = `https://www.google.com/search?igu=1&q=${encodeURIComponent(input)}`;
+      displayName = `Google: ${input}`;
+    }
     setTabs((ts) => ts.map((t) => {
       if (t.id !== tabId) return t;
       const nextHistory = [...t.history.slice(0, t.cursor + 1), url];
-      const proj: Project = t.project ?? { ...(projects[0] ?? {} as Project), url, name: new URL(url).hostname, logo: "🌐", slug: url };
+      const proj: Project = t.project ?? { ...(projects[0] ?? {} as Project), url, name: displayName, logo: looksLikeUrl ? "🌐" : "🔎", slug: url };
       return { ...t, project: proj, history: nextHistory, cursor: nextHistory.length - 1, loading: true, blocked: false, key: t.key + 1 };
     }));
   };

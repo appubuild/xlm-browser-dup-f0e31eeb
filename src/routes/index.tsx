@@ -4,11 +4,12 @@ import { Search, ArrowRight, ShieldCheck, Globe, Lock, Rocket } from "lucide-rea
 import { PublicShell } from "@/components/public-shell";
 import { useApp } from "@/lib/app-store";
 import { useViewport } from "@/components/browser-viewport";
+import { ProjectTicker } from "@/components/crypto-ticker";
 
 export const Route = createFileRoute("/")({ component: Home });
 
 function Home() {
-  const { projects, theme } = useApp();
+  const { projects, theme, tickers } = useApp();
   const nav = useNavigate();
   const viewport = useViewport();
   const [q, setQ] = useState("");
@@ -52,6 +53,11 @@ function Home() {
           </div>
         </div>
       </section>
+
+      {/* Project ticker — moved from header */}
+      <ProjectTicker tickers={tickers} />
+
+
 
       {/* Featured */}
       <section className="mx-auto max-w-6xl px-6 py-10">

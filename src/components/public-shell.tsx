@@ -7,10 +7,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { useViewport } from "@/components/browser-viewport";
+import { CryptoTicker } from "@/components/crypto-ticker";
 
 
 export function PublicShell({ children }: { children: ReactNode }) {
-  const { theme, toggleTheme, user, logout, connectWallet, disconnectWallet, projects, xrpPrice, ledgerIndex, tickers, siteSettings, sidebarItems, isAdmin } = useApp();
+  const { theme, toggleTheme, user, logout, connectWallet, disconnectWallet, projects, xrpPrice, ledgerIndex, siteSettings, sidebarItems, isAdmin } = useApp();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const [walletOpen, setWalletOpen] = useState(false);
@@ -47,22 +48,8 @@ export function PublicShell({ children }: { children: ReactNode }) {
             <span className="text-lg font-bold tracking-tight">{siteSettings.siteName}</span>
           </Link>
 
-          {/* Ticker strip */}
-          <div className={isRetro ? "ml-4 hidden flex-1 overflow-hidden border border-primary bg-background md:block" : "ml-4 hidden flex-1 overflow-hidden rounded-full border bg-muted/50 md:block"}>
-            <div className="ticker-marquee py-1 text-xs">
-              {tickers.map((t) => (
-                <span key={t.id} className="mx-6">
-                  {t.linkedProjectSlug ? (
-                    <Link to="/project/$slug" params={{ slug: t.linkedProjectSlug }} className="hover:underline">
-                      {isRetro ? `>> ${t.label} <<` : `● ${t.label}`}
-                    </Link>
-                  ) : (
-                    <span>{isRetro ? `>> ${t.label} <<` : `● ${t.label}`}</span>
-                  )}
-                </span>
-              ))}
-            </div>
-          </div>
+          {/* Live crypto price ticker */}
+          <CryptoTicker />
 
           <button onClick={toggleTheme} className={isRetro ? "retro-btn" : "rounded-md border p-2 hover:bg-muted"} title="Toggle theme">
             {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
