@@ -543,6 +543,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.contactCompany !== undefined) dbPatch.contact_company = patch.contactCompany;
     if (patch.contactLocation !== undefined) dbPatch.contact_location = patch.contactLocation;
     if (patch.autoApprove !== undefined) dbPatch.auto_approve = patch.autoApprove;
+    if (patch.listingFeeXrp !== undefined) dbPatch.listing_fee_xrp = patch.listingFeeXrp;
+    if (patch.listingPaymentAddress !== undefined) dbPatch.listing_payment_address = patch.listingPaymentAddress;
     await supabase.from("site_settings").update(dbPatch as never).eq("id", 1);
     setSiteSettings((s) => ({ ...s, ...patch }));
   };
