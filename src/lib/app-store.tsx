@@ -318,19 +318,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const addProject: AppState["addProject"] = async (p) => {
     if (!user) { return null; }
     const slug = (p.slug || p.name.toLowerCase().replace(/\s+/g, "-")).replace(/[^a-z0-9-]/g, "");
+    const feeIsZero = !siteSettings.listingFeeXrp || siteSettings.listingFeeXrp <= 0;
     const { data, error } = await supabase.from("projects").insert({
       slug, name: p.name, logo: p.logo ?? "🔗", category: p.category, tagline: p.tagline,
       description: p.description, url: p.url, screenshots: p.screenshots ?? [],
       socials: p.socials ?? {}, live_status: p.liveStatus ?? "Live",
       submitter_id: user.id, submitter_name: user.name, submitter_email: user.email, status: "pending",
-    }).select().single();
+      ai_doc: p.aiDoc ?? "", support_email: p.supportEmail, is_public: false,
+    } as never).select().single();
     if (error || !data) return null;
     const proj = mapProject(data as ProjectRow);
     setProjects((ps) => [proj, ...ps]);
     if (siteSettings.autoApprove) {
       setTimeout(async () => {
-        await supabase.from("projects").update({ status: "approved" }).eq("id", proj.id);
-        setProjects((ps) => ps.map((x) => (x.id === proj.id ? { ...x, status: "approved" } : x)));
+        const upd: Record<string, unknown> = { status: "approved" };
+        if (feeIsZero) upd.is_public = true;
+        await supabase.from("projects").update(upd as never).eq("id", proj.id);
+        setProjects((ps) => ps.map((x) => (x.id === proj.id ? { ...x, status: "approved", isPublic: feeIsZero ? true : x.isPublic } : x)));
       }, 3000);
     }
     return proj;
@@ -351,8 +355,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.featured !== undefined) dbPatch.featured = patch.featured;
     if (patch.liveStatus !== undefined) dbPatch.live_status = patch.liveStatus;
     if (patch.visits !== undefined) dbPatch.visits = patch.visits;
+    if (patch.aiDoc !== undefined) dbPatch.ai_doc = patch.aiDoc;
+    if (patch.supportEmail !== undefined) dbPatch.support_email = patch.supportEmail;
+    if (patch.isPublic !== undefined) dbPatch.is_public = patch.isPublic;
+
+    // Auto-publish on approval when listing fee is zero (free listings).
+    const feeIsZero = !siteSettings.listingFeeXrp || siteSettings.listingFeeXrp <= 0;
+    const autoPub = patch.status === "approved" && feeIsZero && patch.isPublic === undefined;
+    if (autoPub) dbPatch.is_public = true;
+
     const { error } = await supabase.from("projects").update(dbPatch as never).eq("id", id);
-    if (!error) setProjects((ps) => ps.map((p) => (p.id === id ? { ...p, ...patch } : p)));
+    if (!error) setProjects((ps) => ps.map((p) => (p.id === id ? { ...p, ...patch, ...(autoPub ? { isPublic: true } : {}) } : p)));
+  };
+  const markProjectPaid = async (id: string, tx: string, amount: number) => {
+    const dbPatch = { payment_tx: tx, payment_amount: amount, payment_at: new Date().toISOString(), is_public: true };
+    const { error } = await supabase.from("projects").update(dbPatch as never).eq("id", id);
+    if (!error) setProjects((ps) => ps.map((p) => (p.id === id ? { ...p, paymentTx: tx, paymentAmount: amount, isPublic: true } : p)));
   };
   const deleteProject = async (id: string) => {
     await supabase.from("projects").delete().eq("id", id);
