@@ -43,8 +43,8 @@ export function CryptoTicker() {
 
   return (
     <>
-      <div className="hidden flex-1 overflow-hidden rounded-full border bg-muted/50 md:block">
-        <div className="ticker-marquee py-1 text-xs">
+      <div className="w-full overflow-hidden border-b bg-muted/50">
+        <div className="ticker-marquee py-1.5 text-xs">
           {items.map((c, i) => {
             const change = c.price_change_percentage_24h_in_currency ?? c.price_change_percentage_24h;
             const up = (change ?? 0) >= 0;
