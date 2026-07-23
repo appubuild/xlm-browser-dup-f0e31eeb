@@ -40,7 +40,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
       {/* Top Nav */}
       <header className={isRetro ? "sticky top-0 z-40 border-b-2 border-primary bg-background" : "sticky top-0 z-40 border-b bg-background/80 backdrop-blur"}>
         <div className="flex items-center gap-3 px-4 py-2.5">
-          <button onClick={() => setMobileNav((v) => !v)} className="rounded p-1.5 hover:bg-muted md:hidden">
+          <button onClick={() => setMobileNav((v) => !v)} className="rounded p-1.5 hover:bg-muted md:hidden" aria-label="Menu">
             <Menu className="h-5 w-5" />
           </button>
           <Link to="/" className="flex items-center gap-2">
@@ -48,69 +48,88 @@ export function PublicShell({ children }: { children: ReactNode }) {
             <span className="text-lg font-bold tracking-tight">{siteSettings.siteName}</span>
           </Link>
 
-
-
-          <button onClick={toggleTheme} className={isRetro ? "retro-btn" : "rounded-md border p-2 hover:bg-muted"} title="Toggle theme">
-            {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-          </button>
-          <button onClick={() => setWalletOpen(true)} className={isRetro ? "retro-btn" : "hidden items-center gap-1.5 rounded-md border px-3 py-2 text-sm hover:bg-muted sm:inline-flex"}>
-            <Wallet className="h-4 w-4" /> {user?.walletAddress ? `${user.walletAddress.slice(0, 6)}…` : "Connect Wallet"}
-          </button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className={isRetro ? "retro-btn" : "inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"}>
-                <Rocket className="h-4 w-4" /> Launch dApp
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {featured.map((p) => (
-                <DropdownMenuItem key={p.id} onClick={() => viewport.open(p)}>
-                  <span className="mr-2">{p.logo}</span> {p.name}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          {user ? (
+          {/* Right-aligned actions */}
+          <div className="ml-auto flex items-center gap-2">
+            {/* Desktop actions */}
+            <button onClick={toggleTheme} className={`hidden sm:inline-flex ${isRetro ? "retro-btn" : "rounded-md border p-2 hover:bg-muted"}`} title="Toggle theme">
+              {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+            </button>
+            <button onClick={() => setWalletOpen(true)} className={`hidden sm:inline-flex ${isRetro ? "retro-btn" : "items-center gap-1.5 rounded-md border px-3 py-2 text-sm hover:bg-muted"}`}>
+              <Wallet className="h-4 w-4" /> {user?.walletAddress ? `${user.walletAddress.slice(0, 6)}…` : "Connect Wallet"}
+            </button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className={isRetro ? "retro-btn" : "grid h-9 w-9 place-items-center rounded-full bg-muted hover:bg-accent hover:text-accent-foreground"}>
-                  <span>{user.avatar}</span>
+                <button className={`hidden sm:inline-flex ${isRetro ? "retro-btn" : "items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"}`}>
+                  <Rocket className="h-4 w-4" /> Launch dApp
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                {isAdmin && (
-                  <>
-                    <DropdownMenuItem onClick={() => navigate({ to: "/admin" })}>
-                      <Shield className="mr-2 h-4 w-4" /> Admin Panel
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                  </>
-                )}
-                <DropdownMenuItem asChild><Link to="/panel">My Panel</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link to="/panel/bookmarks">Bookmarks</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link to="/panel/submissions">Submitted Projects</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link to="/panel/settings">Settings</Link></DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => { logout(); toast("Logged out"); }}>Log out</DropdownMenuItem>
+                {featured.map((p) => (
+                  <DropdownMenuItem key={p.id} onClick={() => viewport.open(p)}>
+                    <span className="mr-2">{p.logo}</span> {p.name}
+                  </DropdownMenuItem>
+                ))}
               </DropdownMenuContent>
             </DropdownMenu>
-          ) : (
-            <Link to="/login" className={isRetro ? "retro-btn" : "inline-flex items-center gap-1.5 rounded-md border px-3 py-2 text-sm hover:bg-muted"}>
-              <UserIcon className="h-4 w-4" /> Sign in
-            </Link>
-          )}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className={isRetro ? "retro-btn" : "grid h-9 w-9 place-items-center rounded-full bg-muted hover:bg-accent hover:text-accent-foreground"}>
+                    <span>{user.avatar}</span>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <div className="px-2 py-1.5 text-xs text-muted-foreground sm:hidden">{user.name}</div>
+                  {isAdmin && (
+                    <>
+                      <DropdownMenuItem onClick={() => navigate({ to: "/admin" })}>
+                        <Shield className="mr-2 h-4 w-4" /> Admin Panel
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
+                  <DropdownMenuItem asChild><Link to="/panel">My Panel</Link></DropdownMenuItem>
+                  <DropdownMenuItem asChild><Link to="/panel/submit">Submit project</Link></DropdownMenuItem>
+                  <DropdownMenuItem asChild><Link to="/panel/submissions">My submissions</Link></DropdownMenuItem>
+                  <DropdownMenuItem asChild><Link to="/panel/bookmarks">Bookmarks</Link></DropdownMenuItem>
+                  <DropdownMenuItem asChild><Link to="/panel/settings">Settings</Link></DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="sm:hidden" onClick={() => setWalletOpen(true)}>
+                    <Wallet className="mr-2 h-4 w-4" /> {user?.walletAddress ? "Wallet" : "Connect wallet"}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="sm:hidden" onClick={toggleTheme}>
+                    {theme === "light" ? <Moon className="mr-2 h-4 w-4" /> : <Sun className="mr-2 h-4 w-4" />} Toggle theme
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => { logout(); toast("Logged out"); }}>Log out</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link to="/login" className={isRetro ? "retro-btn" : "inline-flex items-center gap-1.5 rounded-md border px-3 py-2 text-sm hover:bg-muted"}>
+                <UserIcon className="h-4 w-4" /> Sign in
+              </Link>
+            )}
+          </div>
         </div>
       </header>
 
-      <div className="flex flex-1">
+      <div className="relative flex flex-1">
+        {/* Mobile overlay backdrop */}
+        {!hideSidebar && mobileNav && (
+          <button
+            aria-label="Close menu"
+            onClick={() => setMobileNav(false)}
+            className="fixed inset-0 top-14 z-30 bg-black/40 md:hidden"
+          />
+        )}
+
         {/* Sidebar */}
         {!hideSidebar && (
-        <aside className={`${collapsed ? "w-14" : "w-60"} ${mobileNav ? "block" : "hidden"} shrink-0 border-r bg-sidebar text-sidebar-foreground transition-all md:block`}>
+        <aside className={`${collapsed ? "md:w-14" : "md:w-60"} ${mobileNav ? "fixed inset-y-0 left-0 top-14 z-40 w-64 shadow-xl" : "hidden"} shrink-0 border-r bg-sidebar text-sidebar-foreground transition-all md:static md:z-auto md:block md:shadow-none`}>
           <nav className="sticky top-16 flex h-[calc(100vh-4rem)] flex-col">
-            <div className="flex justify-end p-2">
+            <div className="hidden justify-end p-2 md:flex">
               <button onClick={() => setCollapsed((v) => !v)} className="rounded p-1 hover:bg-sidebar-accent" title="Collapse"><ChevronLeft className={`h-4 w-4 transition ${collapsed ? "rotate-180" : ""}`} /></button>
             </div>
-            <div className="flex-1 space-y-0.5 overflow-y-auto px-2 pb-4">
+            <div className="flex-1 space-y-0.5 overflow-y-auto px-2 pb-4 pt-2 md:pt-0">
               {nav.map((n) => {
                 const active = path === n.path || (n.path !== "/" && path.startsWith(n.path));
                 return (
@@ -144,6 +163,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
           {children}
         </main>
       </div>
+
 
       <Footer />
 
