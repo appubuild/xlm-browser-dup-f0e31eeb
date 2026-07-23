@@ -9,7 +9,7 @@ import { ProjectTicker } from "@/components/crypto-ticker";
 export const Route = createFileRoute("/")({ component: Home });
 
 function Home() {
-  const { projects, theme } = useApp();
+  const { projects, theme, tickers } = useApp();
   const nav = useNavigate();
   const viewport = useViewport();
   const [q, setQ] = useState("");
