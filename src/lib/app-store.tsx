@@ -26,6 +26,11 @@ export interface Project {
   submitterName?: string;
   submitterEmail?: string;
   submitterId?: string | null;
+  aiDoc?: string;
+  supportEmail?: string;
+  isPublic: boolean;
+  paymentTx?: string | null;
+  paymentAmount?: number | null;
 }
 
 export interface Category { id: string; slug: string; name: string; icon: string; description: string; visible: boolean; sortOrder: number; }
@@ -49,6 +54,8 @@ interface SiteSettings {
   contactCompany: string;
   contactLocation: string;
   autoApprove: boolean;
+  listingFeeXrp: number;
+  listingPaymentAddress: string;
 }
 
 interface AppState {
@@ -69,9 +76,10 @@ interface AppState {
   isAdmin: boolean;
 
   projects: Project[];
-  addProject: (p: Partial<Project> & { name: string; url: string; category: string; tagline: string; description: string }) => Promise<Project | null>;
+  addProject: (p: Partial<Project> & { name: string; url: string; category: string; tagline: string; description: string; supportEmail: string; aiDoc?: string }) => Promise<Project | null>;
   updateProject: (id: string, patch: Partial<Project>) => Promise<void>;
   deleteProject: (id: string) => Promise<void>;
+  markProjectPaid: (id: string, tx: string, amount: number) => Promise<void>;
 
   news: NewsArticle[];
   addNews: (a: Omit<NewsArticle, "id" | "views">) => Promise<void>;
@@ -138,6 +146,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   siteName: "XRPBrowser", metaDescription: "The search engine and browser for the XRP Ledger.",
   defaultTheme: "light", allowUserOverride: true, enableSubmissions: true, enableIframe: true, maintenanceMode: false,
   contactEmail: "partner@skipads.ai", contactCompany: "SkipAds AI LLC", contactLocation: "Detroit, MI · USA", autoApprove: false,
+  listingFeeXrp: 0, listingPaymentAddress: "",
 };
 
 type ProjectRow = {
@@ -145,6 +154,8 @@ type ProjectRow = {
   description: string | null; url: string; screenshots: string[] | null; socials: unknown;
   verified: boolean; status: ProjectStatus; featured: boolean; date_added: string; visits: number;
   live_status: LiveStatusVal; submitter_name: string | null; submitter_email: string | null; submitter_id: string | null;
+  ai_doc?: string | null; support_email?: string | null; is_public?: boolean;
+  payment_tx?: string | null; payment_amount?: number | null;
 };
 
 function mapProject(r: ProjectRow): Project {
@@ -155,6 +166,8 @@ function mapProject(r: ProjectRow): Project {
     verified: r.verified, status: r.status, featured: r.featured, dateAdded: r.date_added,
     visits: r.visits, liveStatus: r.live_status,
     submitterName: r.submitter_name ?? undefined, submitterEmail: r.submitter_email ?? undefined, submitterId: r.submitter_id,
+    aiDoc: r.ai_doc ?? "", supportEmail: r.support_email ?? undefined,
+    isPublic: !!r.is_public, paymentTx: r.payment_tx ?? null, paymentAmount: r.payment_amount ?? null,
   };
 }
 
@@ -229,6 +242,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         enableIframe: ss.data.enable_iframe, maintenanceMode: ss.data.maintenance_mode,
         contactEmail: ss.data.contact_email ?? "", contactCompany: ss.data.contact_company ?? "",
         contactLocation: ss.data.contact_location ?? "", autoApprove: ss.data.auto_approve,
+        listingFeeXrp: Number((ss.data as { listing_fee_xrp?: number | string | null }).listing_fee_xrp ?? 0),
+        listingPaymentAddress: (ss.data as { listing_payment_address?: string | null }).listing_payment_address ?? "",
       });
     }
   }, []);
@@ -303,19 +318,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const addProject: AppState["addProject"] = async (p) => {
     if (!user) { return null; }
     const slug = (p.slug || p.name.toLowerCase().replace(/\s+/g, "-")).replace(/[^a-z0-9-]/g, "");
+    const feeIsZero = !siteSettings.listingFeeXrp || siteSettings.listingFeeXrp <= 0;
     const { data, error } = await supabase.from("projects").insert({
       slug, name: p.name, logo: p.logo ?? "🔗", category: p.category, tagline: p.tagline,
       description: p.description, url: p.url, screenshots: p.screenshots ?? [],
       socials: p.socials ?? {}, live_status: p.liveStatus ?? "Live",
       submitter_id: user.id, submitter_name: user.name, submitter_email: user.email, status: "pending",
-    }).select().single();
+      ai_doc: p.aiDoc ?? "", support_email: p.supportEmail, is_public: false,
+    } as never).select().single();
     if (error || !data) return null;
     const proj = mapProject(data as ProjectRow);
     setProjects((ps) => [proj, ...ps]);
     if (siteSettings.autoApprove) {
       setTimeout(async () => {
-        await supabase.from("projects").update({ status: "approved" }).eq("id", proj.id);
-        setProjects((ps) => ps.map((x) => (x.id === proj.id ? { ...x, status: "approved" } : x)));
+        const upd: Record<string, unknown> = { status: "approved" };
+        if (feeIsZero) upd.is_public = true;
+        await supabase.from("projects").update(upd as never).eq("id", proj.id);
+        setProjects((ps) => ps.map((x) => (x.id === proj.id ? { ...x, status: "approved", isPublic: feeIsZero ? true : x.isPublic } : x)));
       }, 3000);
     }
     return proj;
@@ -336,8 +355,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.featured !== undefined) dbPatch.featured = patch.featured;
     if (patch.liveStatus !== undefined) dbPatch.live_status = patch.liveStatus;
     if (patch.visits !== undefined) dbPatch.visits = patch.visits;
+    if (patch.aiDoc !== undefined) dbPatch.ai_doc = patch.aiDoc;
+    if (patch.supportEmail !== undefined) dbPatch.support_email = patch.supportEmail;
+    if (patch.isPublic !== undefined) dbPatch.is_public = patch.isPublic;
+
+    // Auto-publish on approval when listing fee is zero (free listings).
+    const feeIsZero = !siteSettings.listingFeeXrp || siteSettings.listingFeeXrp <= 0;
+    const autoPub = patch.status === "approved" && feeIsZero && patch.isPublic === undefined;
+    if (autoPub) dbPatch.is_public = true;
+
     const { error } = await supabase.from("projects").update(dbPatch as never).eq("id", id);
-    if (!error) setProjects((ps) => ps.map((p) => (p.id === id ? { ...p, ...patch } : p)));
+    if (!error) setProjects((ps) => ps.map((p) => (p.id === id ? { ...p, ...patch, ...(autoPub ? { isPublic: true } : {}) } : p)));
+  };
+  const markProjectPaid = async (id: string, tx: string, amount: number) => {
+    const dbPatch = { payment_tx: tx, payment_amount: amount, payment_at: new Date().toISOString(), is_public: true };
+    const { error } = await supabase.from("projects").update(dbPatch as never).eq("id", id);
+    if (!error) setProjects((ps) => ps.map((p) => (p.id === id ? { ...p, paymentTx: tx, paymentAmount: amount, isPublic: true } : p)));
   };
   const deleteProject = async (id: string) => {
     await supabase.from("projects").delete().eq("id", id);
@@ -510,6 +543,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.contactCompany !== undefined) dbPatch.contact_company = patch.contactCompany;
     if (patch.contactLocation !== undefined) dbPatch.contact_location = patch.contactLocation;
     if (patch.autoApprove !== undefined) dbPatch.auto_approve = patch.autoApprove;
+    if (patch.listingFeeXrp !== undefined) dbPatch.listing_fee_xrp = patch.listingFeeXrp;
+    if (patch.listingPaymentAddress !== undefined) dbPatch.listing_payment_address = patch.listingPaymentAddress;
     await supabase.from("site_settings").update(dbPatch as never).eq("id", 1);
     setSiteSettings((s) => ({ ...s, ...patch }));
   };
@@ -564,7 +599,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     loading, theme, setTheme, toggleTheme,
     session, user, signInEmail, signUpEmail, signInGoogle, logout, connectWallet, disconnectWallet,
     isAdmin,
-    projects, addProject, updateProject, deleteProject,
+    projects, addProject, updateProject, deleteProject, markProjectPaid,
     news, addNews, updateNews, deleteNews,
     tickers, addTicker, updateTicker, deleteTicker,
     categories, addCategory, updateCategory, deleteCategory,

@@ -15,7 +15,7 @@ function Home() {
   const [q, setQ] = useState("");
   const isRetro = theme === "dark";
 
-  const approved = useMemo(() => projects.filter((p) => p.status === "approved"), [projects]);
+  const approved = useMemo(() => projects.filter((p) => p.status === "approved" && p.isPublic), [projects]);
   const sectionsByKey = useMemo(() => {
     const m: Record<string, LandingSection> = {};
     for (const s of landingSections) m[s.sectionKey] = s;

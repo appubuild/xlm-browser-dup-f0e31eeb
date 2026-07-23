@@ -229,15 +229,20 @@ export type Database = {
       }
       projects: {
         Row: {
+          ai_doc: string | null
           category: string
           created_at: string
           date_added: string
           description: string | null
           featured: boolean
           id: string
+          is_public: boolean
           live_status: Database["public"]["Enums"]["live_status"]
           logo: string | null
           name: string
+          payment_amount: number | null
+          payment_at: string | null
+          payment_tx: string | null
           screenshots: string[]
           slug: string
           socials: Json
@@ -245,6 +250,7 @@ export type Database = {
           submitter_email: string | null
           submitter_id: string | null
           submitter_name: string | null
+          support_email: string | null
           tagline: string | null
           updated_at: string
           url: string
@@ -252,15 +258,20 @@ export type Database = {
           visits: number
         }
         Insert: {
+          ai_doc?: string | null
           category: string
           created_at?: string
           date_added?: string
           description?: string | null
           featured?: boolean
           id?: string
+          is_public?: boolean
           live_status?: Database["public"]["Enums"]["live_status"]
           logo?: string | null
           name: string
+          payment_amount?: number | null
+          payment_at?: string | null
+          payment_tx?: string | null
           screenshots?: string[]
           slug: string
           socials?: Json
@@ -268,6 +279,7 @@ export type Database = {
           submitter_email?: string | null
           submitter_id?: string | null
           submitter_name?: string | null
+          support_email?: string | null
           tagline?: string | null
           updated_at?: string
           url: string
@@ -275,15 +287,20 @@ export type Database = {
           visits?: number
         }
         Update: {
+          ai_doc?: string | null
           category?: string
           created_at?: string
           date_added?: string
           description?: string | null
           featured?: boolean
           id?: string
+          is_public?: boolean
           live_status?: Database["public"]["Enums"]["live_status"]
           logo?: string | null
           name?: string
+          payment_amount?: number | null
+          payment_at?: string | null
+          payment_tx?: string | null
           screenshots?: string[]
           slug?: string
           socials?: Json
@@ -291,6 +308,7 @@ export type Database = {
           submitter_email?: string | null
           submitter_id?: string | null
           submitter_name?: string | null
+          support_email?: string | null
           tagline?: string | null
           updated_at?: string
           url?: string
@@ -346,6 +364,8 @@ export type Database = {
           enable_iframe: boolean
           enable_submissions: boolean
           id: number
+          listing_fee_xrp: number
+          listing_payment_address: string | null
           maintenance_mode: boolean
           meta_description: string
           site_name: string
@@ -361,6 +381,8 @@ export type Database = {
           enable_iframe?: boolean
           enable_submissions?: boolean
           id?: number
+          listing_fee_xrp?: number
+          listing_payment_address?: string | null
           maintenance_mode?: boolean
           meta_description?: string
           site_name?: string
@@ -376,6 +398,8 @@ export type Database = {
           enable_iframe?: boolean
           enable_submissions?: boolean
           id?: number
+          listing_fee_xrp?: number
+          listing_payment_address?: string | null
           maintenance_mode?: boolean
           meta_description?: string
           site_name?: string

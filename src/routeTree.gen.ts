@@ -24,6 +24,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as PanelIndexRouteImport } from './routes/panel.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProjectSlugRouteImport } from './routes/project.$slug'
+import { Route as PanelSubmitRouteImport } from './routes/panel.submit'
 import { Route as PanelSubmissionsRouteImport } from './routes/panel.submissions'
 import { Route as PanelSettingsRouteImport } from './routes/panel.settings'
 import { Route as PanelNotificationsRouteImport } from './routes/panel.notifications'
@@ -119,6 +120,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const ProjectSlugRoute = ProjectSlugRouteImport.update({
   id: '/project/$slug',
   path: '/project/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PanelSubmitRoute = PanelSubmitRouteImport.update({
+  id: '/panel/submit',
+  path: '/panel/submit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PanelSubmissionsRoute = PanelSubmissionsRouteImport.update({
@@ -261,6 +267,7 @@ export interface FileRoutesByFullPath {
   '/panel/notifications': typeof PanelNotificationsRoute
   '/panel/settings': typeof PanelSettingsRoute
   '/panel/submissions': typeof PanelSubmissionsRoute
+  '/panel/submit': typeof PanelSubmitRoute
   '/project/$slug': typeof ProjectSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/panel/': typeof PanelIndexRoute
@@ -299,6 +306,7 @@ export interface FileRoutesByTo {
   '/panel/notifications': typeof PanelNotificationsRoute
   '/panel/settings': typeof PanelSettingsRoute
   '/panel/submissions': typeof PanelSubmissionsRoute
+  '/panel/submit': typeof PanelSubmitRoute
   '/project/$slug': typeof ProjectSlugRoute
   '/admin': typeof AdminIndexRoute
   '/panel': typeof PanelIndexRoute
@@ -338,6 +346,7 @@ export interface FileRoutesById {
   '/panel/notifications': typeof PanelNotificationsRoute
   '/panel/settings': typeof PanelSettingsRoute
   '/panel/submissions': typeof PanelSubmissionsRoute
+  '/panel/submit': typeof PanelSubmitRoute
   '/project/$slug': typeof ProjectSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/panel/': typeof PanelIndexRoute
@@ -378,6 +387,7 @@ export interface FileRouteTypes {
     | '/panel/notifications'
     | '/panel/settings'
     | '/panel/submissions'
+    | '/panel/submit'
     | '/project/$slug'
     | '/admin/'
     | '/panel/'
@@ -416,6 +426,7 @@ export interface FileRouteTypes {
     | '/panel/notifications'
     | '/panel/settings'
     | '/panel/submissions'
+    | '/panel/submit'
     | '/project/$slug'
     | '/admin'
     | '/panel'
@@ -454,6 +465,7 @@ export interface FileRouteTypes {
     | '/panel/notifications'
     | '/panel/settings'
     | '/panel/submissions'
+    | '/panel/submit'
     | '/project/$slug'
     | '/admin/'
     | '/panel/'
@@ -491,6 +503,7 @@ export interface RootRouteChildren {
   PanelNotificationsRoute: typeof PanelNotificationsRoute
   PanelSettingsRoute: typeof PanelSettingsRoute
   PanelSubmissionsRoute: typeof PanelSubmissionsRoute
+  PanelSubmitRoute: typeof PanelSubmitRoute
   ProjectSlugRoute: typeof ProjectSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   PanelIndexRoute: typeof PanelIndexRoute
@@ -601,6 +614,13 @@ declare module '@tanstack/react-router' {
       path: '/project/$slug'
       fullPath: '/project/$slug'
       preLoaderRoute: typeof ProjectSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/submit': {
+      id: '/panel/submit'
+      path: '/panel/submit'
+      fullPath: '/panel/submit'
+      preLoaderRoute: typeof PanelSubmitRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/panel/submissions': {
@@ -818,6 +838,7 @@ const rootRouteChildren: RootRouteChildren = {
   PanelNotificationsRoute: PanelNotificationsRoute,
   PanelSettingsRoute: PanelSettingsRoute,
   PanelSubmissionsRoute: PanelSubmissionsRoute,
+  PanelSubmitRoute: PanelSubmitRoute,
   ProjectSlugRoute: ProjectSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   PanelIndexRoute: PanelIndexRoute,

@@ -27,7 +27,7 @@ function SearchPage() {
 
   const results = useMemo(() => {
     const term = query.toLowerCase().trim();
-    let r = projects.filter((p) => p.status === "approved");
+    let r = projects.filter((p) => p.status === "approved" && p.isPublic);
     if (term) r = r.filter((p) => (p.name + p.tagline + p.description + p.category).toLowerCase().includes(term));
     if (tab !== "all") r = r.filter((p) => p.category === tab);
     if (verifiedOnly) r = r.filter((p) => p.verified);

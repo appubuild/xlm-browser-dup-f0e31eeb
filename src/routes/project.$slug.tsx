@@ -1,9 +1,10 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { PublicShell } from "@/components/public-shell";
 import { useApp } from "@/lib/app-store";
 import { useViewport } from "@/components/browser-viewport";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { ProjectAiChat, ProjectFaq } from "@/components/project-ai";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/project/$slug")({ component: ProjectPage });
@@ -12,13 +13,14 @@ function ProjectPage() {
   const { slug } = Route.useParams();
   const { projects, bookmarks, toggleBookmark } = useApp();
   const viewport = useViewport();
-  const nav = useNavigate();
-  const [tab, setTab] = useState<"overview" | "details" | "reviews" | "links">("overview");
+  const [tab, setTab] = useState<"overview" | "ai" | "faq" | "details" | "links">("overview");
   const [reportOpen, setReportOpen] = useState(false);
   const project = projects.find((p) => p.slug === slug);
   if (!project) return <PublicShell><div className="p-10 text-center">Project not found. <Link to="/ecosystem" className="text-primary underline">Browse ecosystem</Link></div></PublicShell>;
-  const related = projects.filter((p) => p.category === project.category && p.slug !== slug && p.status === "approved").slice(0, 4);
+  const related = projects.filter((p) => p.category === project.category && p.slug !== slug && p.status === "approved" && p.isPublic).slice(0, 4);
   const bookmarked = bookmarks.includes(slug);
+  const descHtml = project.description || "";
+  const looksLikeHtml = /<\w+[\s>]/.test(descHtml);
 
   return (
     <PublicShell>
@@ -48,38 +50,45 @@ function ProjectPage() {
           </div>
         </header>
 
-        <div className="mt-8 grid gap-6 md:grid-cols-[1fr_260px]">
+        <div className="mt-8 grid gap-6 md:grid-cols-[1fr_280px]">
           <div>
-            <div className="flex gap-1 border-b">
-              {(["overview", "details", "reviews", "links"] as const).map((t) => (
-                <button key={t} onClick={() => setTab(t)} className={`px-4 py-2 text-sm capitalize ${tab === t ? "border-b-2 border-primary font-medium" : "text-muted-foreground"}`}>{t}</button>
+            <div className="flex flex-wrap gap-1 border-b">
+              {(["overview", "ai", "faq", "details", "links"] as const).map((t) => (
+                <button key={t} onClick={() => setTab(t)} className={`px-4 py-2 text-sm capitalize ${tab === t ? "border-b-2 border-primary font-medium" : "text-muted-foreground"}`}>
+                  {t === "ai" ? "Ask AI" : t}
+                </button>
               ))}
             </div>
             <div className="mt-4 space-y-4">
               {tab === "overview" && (
                 <>
-                  <p>{project.description}</p>
+                  {looksLikeHtml
+                    ? <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: descHtml }} />
+                    : <p>{descHtml}</p>
+                  }
                   <div className="soft-card grid h-56 place-items-center text-6xl">{project.logo}</div>
                   <div className="text-sm text-muted-foreground">Launch date: {project.dateAdded} · Website: <a href={project.url} className="text-primary hover:underline">{project.url}</a></div>
                 </>
               )}
+              {tab === "ai" && <ProjectAiChat project={project} />}
+              {tab === "faq" && <ProjectFaq project={project} />}
               {tab === "details" && (
                 <div className="soft-card p-4 text-sm">
                   <div><b>Category:</b> {project.category}</div>
                   <div><b>Live status:</b> {project.liveStatus}</div>
                   <div><b>Verified:</b> {project.verified ? "Yes" : "No"}</div>
                   <div><b>Featured:</b> {project.featured ? "Yes" : "No"}</div>
+                  {project.supportEmail && <div><b>Support:</b> <a className="text-primary hover:underline" href={`mailto:${project.supportEmail}`}>{project.supportEmail}</a></div>}
                 </div>
-              )}
-              {tab === "reviews" && (
-                <div className="soft-card p-6 text-sm text-muted-foreground">Community reviews coming soon. Be the first to review this project.</div>
               )}
               {tab === "links" && (
                 <ul className="space-y-2 text-sm">
                   <li>Website: <a href={project.url} className="text-primary hover:underline">{project.url}</a></li>
                   {project.socials.twitter && <li>Twitter: <a href={project.socials.twitter} className="text-primary hover:underline">{project.socials.twitter}</a></li>}
                   {project.socials.discord && <li>Discord: <a href={project.socials.discord} className="text-primary hover:underline">{project.socials.discord}</a></li>}
+                  {project.socials.telegram && <li>Telegram: <a href={project.socials.telegram} className="text-primary hover:underline">{project.socials.telegram}</a></li>}
                   {project.socials.github && <li>GitHub: <a href={project.socials.github} className="text-primary hover:underline">{project.socials.github}</a></li>}
+                  {project.supportEmail && <li>Support email: <a className="text-primary hover:underline" href={`mailto:${project.supportEmail}`}>{project.supportEmail}</a></li>}
                 </ul>
               )}
             </div>
@@ -98,19 +107,17 @@ function ProjectPage() {
               </div>
             )}
           </div>
-          <aside className="soft-card h-fit p-4 text-sm">
-            <div className="mb-2 font-semibold">Stats</div>
-            <div className="space-y-1">
-              <div className="flex justify-between"><span className="text-muted-foreground">Total visits</span><b>{project.visits.toLocaleString()}</b></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Category</span><span className="capitalize">{project.category}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Date added</span><span>{project.dateAdded}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Status</span><span>{project.liveStatus}</span></div>
+          <aside className="space-y-4">
+            <div className="soft-card p-4 text-sm">
+              <div className="mb-2 font-semibold">Stats</div>
+              <div className="space-y-1">
+                <div className="flex justify-between"><span className="text-muted-foreground">Total visits</span><b>{project.visits.toLocaleString()}</b></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Category</span><span className="capitalize">{project.category}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Date added</span><span>{project.dateAdded}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Status</span><span>{project.liveStatus}</span></div>
+              </div>
             </div>
-            <div className="mt-4 flex gap-1 text-sm">
-              {project.socials.twitter && <a href="#" className="rounded border px-2 py-1">𝕏</a>}
-              <a href="#" className="rounded border px-2 py-1">💬</a>
-              <a href="#" className="rounded border px-2 py-1">🐙</a>
-            </div>
+            {tab !== "ai" && <ProjectAiChat project={project} />}
           </aside>
         </div>
       </div>
