@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { useViewport } from "@/components/browser-viewport";
+import { CryptoTicker } from "@/components/crypto-ticker";
 
 
 export function PublicShell({ children }: { children: ReactNode }) {
