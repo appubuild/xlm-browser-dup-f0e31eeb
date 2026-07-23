@@ -48,22 +48,8 @@ export function PublicShell({ children }: { children: ReactNode }) {
             <span className="text-lg font-bold tracking-tight">{siteSettings.siteName}</span>
           </Link>
 
-          {/* Ticker strip */}
-          <div className={isRetro ? "ml-4 hidden flex-1 overflow-hidden border border-primary bg-background md:block" : "ml-4 hidden flex-1 overflow-hidden rounded-full border bg-muted/50 md:block"}>
-            <div className="ticker-marquee py-1 text-xs">
-              {tickers.map((t) => (
-                <span key={t.id} className="mx-6">
-                  {t.linkedProjectSlug ? (
-                    <Link to="/project/$slug" params={{ slug: t.linkedProjectSlug }} className="hover:underline">
-                      {isRetro ? `>> ${t.label} <<` : `● ${t.label}`}
-                    </Link>
-                  ) : (
-                    <span>{isRetro ? `>> ${t.label} <<` : `● ${t.label}`}</span>
-                  )}
-                </span>
-              ))}
-            </div>
-          </div>
+          {/* Live crypto price ticker */}
+          <CryptoTicker />
 
           <button onClick={toggleTheme} className={isRetro ? "retro-btn" : "rounded-md border p-2 hover:bg-muted"} title="Toggle theme">
             {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
