@@ -43,8 +43,8 @@ export function CryptoTicker() {
 
   return (
     <>
-      <div className="hidden flex-1 overflow-hidden rounded-full border bg-muted/50 md:block">
-        <div className="ticker-marquee py-1 text-xs">
+      <div className="w-full overflow-hidden border-b bg-muted/50">
+        <div className="ticker-marquee py-1.5 text-xs">
           {items.map((c, i) => {
             const change = c.price_change_percentage_24h_in_currency ?? c.price_change_percentage_24h;
             const up = (change ?? 0) >= 0;
@@ -176,7 +176,7 @@ export function ProjectTicker({ tickers }: { tickers: { id: string; label: strin
   if (items.length === 0) return null;
   const doubled = [...items, ...items];
   return (
-    <div className="border-y bg-muted/30">
+    <div className="w-full overflow-hidden border-y bg-muted/30">
       <div className="ticker-marquee py-2 text-xs">
         {doubled.map((t, i) => (
           <span key={`${t.id}-${i}`} className="mx-6 inline-flex items-center gap-1.5">
@@ -190,5 +190,40 @@ export function ProjectTicker({ tickers }: { tickers: { id: string; label: strin
         ))}
       </div>
     </div>
+  );
+}
+
+/** Live crypto prices grid (CoinGecko). */
+export function LivePricesGrid() {
+  const { coins, loading } = useCoinPrices();
+  const [selected, setSelected] = useState<CoinMarket | null>(null);
+  if (loading && coins.length === 0) return <div className="text-sm text-muted-foreground">Loading live prices…</div>;
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        {coins.slice(0, 6).map((c) => {
+          const change = c.price_change_percentage_24h_in_currency ?? c.price_change_percentage_24h ?? 0;
+          const up = change >= 0;
+          return (
+            <button key={c.id} onClick={() => setSelected(c)} className="soft-card p-3 text-left transition hover:shadow-md">
+              <div className="flex items-center gap-2">
+                <img src={c.image} alt={c.symbol} className="h-6 w-6 rounded-full" />
+                <div className="min-w-0">
+                  <div className="truncate text-sm font-semibold">{c.name}</div>
+                  <div className="text-[10px] uppercase text-muted-foreground">{c.symbol}</div>
+                </div>
+              </div>
+              <div className="mt-2 flex items-baseline justify-between gap-2">
+                <span className="font-mono text-base font-bold">{price(c.current_price)}</span>
+                <span className={`font-mono text-xs ${up ? "text-success" : "text-destructive"}`}>
+                  {up ? "▲" : "▼"} {change.toFixed(2)}%
+                </span>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+      <CoinDetailsDialog coin={selected} onClose={() => setSelected(null)} />
+    </>
   );
 }

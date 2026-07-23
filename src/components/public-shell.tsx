@@ -48,8 +48,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
             <span className="text-lg font-bold tracking-tight">{siteSettings.siteName}</span>
           </Link>
 
-          {/* Live crypto price ticker */}
-          <CryptoTicker />
+
 
           <button onClick={toggleTheme} className={isRetro ? "retro-btn" : "rounded-md border p-2 hover:bg-muted"} title="Toggle theme">
             {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
@@ -140,7 +139,10 @@ export function PublicShell({ children }: { children: ReactNode }) {
         </aside>
         )}
 
-        <main className="min-w-0 flex-1">{children}</main>
+        <main className="min-w-0 flex-1">
+          {!hideSidebar && <CryptoTicker />}
+          {children}
+        </main>
       </div>
 
       <Footer />
