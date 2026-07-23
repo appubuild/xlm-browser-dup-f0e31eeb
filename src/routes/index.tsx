@@ -54,6 +54,11 @@ function Home() {
         </div>
       </section>
 
+      {/* Project ticker — moved from header */}
+      <ProjectTicker tickers={tickers} />
+
+
+
       {/* Featured */}
       <section className="mx-auto max-w-6xl px-6 py-10">
         <div className="mb-4 flex items-end justify-between">
