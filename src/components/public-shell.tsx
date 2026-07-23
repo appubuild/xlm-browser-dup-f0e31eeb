@@ -139,7 +139,10 @@ export function PublicShell({ children }: { children: ReactNode }) {
         </aside>
         )}
 
-        <main className="min-w-0 flex-1">{children}</main>
+        <main className="min-w-0 flex-1">
+          {!hideSidebar && <CryptoTicker />}
+          {children}
+        </main>
       </div>
 
       <Footer />
