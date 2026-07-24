@@ -48,6 +48,19 @@ function SiteSettings() {
           </F>
           <div className="text-xs text-slate-400">When the fee is 0, approved projects publish automatically. Otherwise the submitter pays to publish.</div>
         </Card>
+        <Card title="Cloudinary (Image Uploads)">
+          <F label="Cloud Name">
+            <input value={siteSettings.cloudinaryCloudName} placeholder="your-cloud-name"
+              onChange={(e) => updateSiteSettings({ cloudinaryCloudName: e.target.value })}
+              className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" />
+          </F>
+          <F label="Upload Preset (Unsigned)">
+            <input value={siteSettings.cloudinaryUploadPreset} placeholder="unsigned_preset"
+              onChange={(e) => updateSiteSettings({ cloudinaryUploadPreset: e.target.value })}
+              className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" />
+          </F>
+          <div className="text-xs text-slate-400">Create an unsigned upload preset in your Cloudinary dashboard: Settings → Upload → Add upload preset → Signing Mode: Unsigned.</div>
+        </Card>
         <Card title="API Settings">
           <F label="Rate limit (req/min)"><input defaultValue={60} type="number" className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" /></F>
           <div className="text-xs text-slate-400">Issued keys</div>
