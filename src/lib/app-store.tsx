@@ -70,7 +70,7 @@ interface AppState {
   signUpEmail: (email: string, password: string, name?: string) => Promise<{ error?: string }>;
   signInGoogle: () => Promise<void>;
   logout: () => Promise<void>;
-  connectWallet: (name: string) => void;
+  connectWallet: (name: string, address?: string) => Promise<void> | void;
   disconnectWallet: () => void;
 
   isAdmin: boolean;
