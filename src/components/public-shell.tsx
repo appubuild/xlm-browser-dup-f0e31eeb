@@ -167,26 +167,16 @@ export function PublicShell({ children }: { children: ReactNode }) {
 
       <Footer />
 
-      {/* Wallet modal */}
+      {/* Wallet modal — Xaman only */}
       <Dialog open={walletOpen} onOpenChange={setWalletOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{user?.walletAddress ? "Wallet connected" : "Connect a wallet"}</DialogTitle>
+            <DialogTitle>{user?.walletAddress ? "Xaman wallet connected" : "Connect with Xaman"}</DialogTitle>
           </DialogHeader>
           {user?.walletAddress ? (
-            <div className="space-y-3">
-              <p className="text-sm">Address: <span className="font-mono">{user.walletAddress}</span></p>
-              <button onClick={() => { disconnectWallet(); setWalletOpen(false); toast("Wallet disconnected"); }} className="w-full rounded-md border px-3 py-2 text-sm hover:bg-muted">Disconnect</button>
-            </div>
+            <XamanConnected onClose={() => setWalletOpen(false)} />
           ) : (
-            <div className="grid gap-2">
-              {WALLETS.map((w) => (
-                <button key={w} onClick={() => { connectWallet(w); setWalletOpen(false); toast.success(`Connected via ${w} ✅`); }} className="flex items-center justify-between rounded-md border px-3 py-2.5 text-left text-sm hover:bg-muted">
-                  <span>{w}</span>
-                  <span className="text-xs text-muted-foreground">Connect</span>
-                </button>
-              ))}
-            </div>
+            <XamanConnect onDone={() => { setWalletOpen(false); toast.success("Connected via Xaman ✅"); }} />
           )}
         </DialogContent>
       </Dialog>
