@@ -189,8 +189,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(DEFAULT_SETTINGS);
   const [walletConfig, setWalletConfig] = useState<AppState["walletConfig"]>({
-    enabled: ["Xaman (Xumm)", "GateHub", "Trust Wallet", "Ledger", "Crossmark"],
     network: "Mainnet", rpcUrl: "wss://s1.ripple.com",
+    xamanApiKey: "", xamanApiSecret: "", treasuryAddress: "",
   });
   const [xrpPrice, setXrpPrice] = useState({ price: 0.52, change: 3.12 });
   const [ledgerIndex, setLedgerIndex] = useState(89234501);
