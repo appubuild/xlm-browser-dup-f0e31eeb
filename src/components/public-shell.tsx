@@ -2,7 +2,7 @@ import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { Sun, Moon, Wallet, Rocket, Menu, User as UserIcon, Bell, Search, ChevronLeft, Shield } from "lucide-react";
 import { useApp } from "@/lib/app-store";
-import { WALLETS } from "@/lib/mock-data";
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
@@ -167,26 +167,16 @@ export function PublicShell({ children }: { children: ReactNode }) {
 
       <Footer />
 
-      {/* Wallet modal */}
+      {/* Wallet modal — Xaman only */}
       <Dialog open={walletOpen} onOpenChange={setWalletOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{user?.walletAddress ? "Wallet connected" : "Connect a wallet"}</DialogTitle>
+            <DialogTitle>{user?.walletAddress ? "Xaman wallet connected" : "Connect with Xaman"}</DialogTitle>
           </DialogHeader>
           {user?.walletAddress ? (
-            <div className="space-y-3">
-              <p className="text-sm">Address: <span className="font-mono">{user.walletAddress}</span></p>
-              <button onClick={() => { disconnectWallet(); setWalletOpen(false); toast("Wallet disconnected"); }} className="w-full rounded-md border px-3 py-2 text-sm hover:bg-muted">Disconnect</button>
-            </div>
+            <XamanConnected onClose={() => setWalletOpen(false)} />
           ) : (
-            <div className="grid gap-2">
-              {WALLETS.map((w) => (
-                <button key={w} onClick={() => { connectWallet(w); setWalletOpen(false); toast.success(`Connected via ${w} ✅`); }} className="flex items-center justify-between rounded-md border px-3 py-2.5 text-left text-sm hover:bg-muted">
-                  <span>{w}</span>
-                  <span className="text-xs text-muted-foreground">Connect</span>
-                </button>
-              ))}
-            </div>
+            <XamanConnect onDone={() => { setWalletOpen(false); toast.success("Connected via Xaman ✅"); }} />
           )}
         </DialogContent>
       </Dialog>
@@ -274,5 +264,86 @@ function Footer() {
       )}
       {!isRetro && <div className="mx-auto mt-6 max-w-6xl border-t pt-4 text-center text-xs text-muted-foreground">© {new Date().getFullYear()} {siteSettings.siteName} · Powered by {siteSettings.contactCompany}</div>}
     </footer>
+  );
+}
+
+function XamanConnect({ onDone }: { onDone: () => void }) {
+  const { connectWallet, walletConfig } = useApp();
+  const [step, setStep] = useState<"scan" | "connecting">("scan");
+  // Mock payload uuid — a real integration would call Xaman /payload with the admin API key/secret.
+  const payloadId = useState(() => crypto.randomUUID())[0];
+  const deeplink = `xaman://xapp/sign/${payloadId}`;
+  const qrTarget = `https://xaman.app/sign/${payloadId}`;
+  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrTarget)}`;
+  const ready = !!walletConfig.xamanApiKey;
+
+  const simulate = async () => {
+    setStep("connecting");
+    await new Promise((r) => setTimeout(r, 1200));
+    // mock address returned by Xaman after user approves
+    const addr = "r" + Math.random().toString(36).slice(2, 12).toUpperCase() + "XRP";
+    await connectWallet("Xaman (Xumm)", addr);
+    onDone();
+  };
+
+  return (
+    <div className="space-y-3">
+      {!ready && (
+        <div className="rounded-md border border-warning/40 bg-warning/10 p-2 text-xs text-warning">
+          Admin hasn't configured Xaman API credentials yet — using demo mode.
+        </div>
+      )}
+      <div className="grid gap-3 sm:grid-cols-[220px_1fr] sm:items-center">
+        <div className="mx-auto rounded-lg border bg-white p-2">
+          <img src={qrSrc} alt="Xaman sign-in QR" className="h-[220px] w-[220px]" />
+        </div>
+        <div className="space-y-2 text-sm">
+          <div className="font-medium">Scan with Xaman</div>
+          <ol className="ml-4 list-decimal space-y-1 text-xs text-muted-foreground">
+            <li>Open the Xaman app on your phone</li>
+            <li>Tap the scan icon</li>
+            <li>Point at the QR code</li>
+            <li>Approve the sign-in request</li>
+          </ol>
+          <a
+            href={deeplink}
+            className="mt-1 inline-flex w-full items-center justify-center rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground hover:opacity-90"
+          >
+            Open Xaman app
+          </a>
+          <button onClick={simulate} disabled={step === "connecting"} className="w-full rounded-md border px-3 py-2 text-xs hover:bg-muted disabled:opacity-50">
+            {step === "connecting" ? "Waiting for approval…" : "I've approved — continue"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function XamanConnected({ onClose }: { onClose: () => void }) {
+  const { user, disconnectWallet, walletConfig, xrpPrice } = useApp();
+  const [balance] = useState(() => +(Math.random() * 500 + 25).toFixed(2));
+  const usd = (balance * xrpPrice.price).toFixed(2);
+  return (
+    <div className="space-y-3 text-sm">
+      <div className="rounded-md border bg-muted/40 p-3">
+        <div className="text-xs text-muted-foreground">Address</div>
+        <div className="mt-0.5 break-all font-mono text-xs">{user?.walletAddress}</div>
+        <div className="mt-3 flex items-center justify-between">
+          <div>
+            <div className="text-xs text-muted-foreground">Balance</div>
+            <div className="text-lg font-semibold">{balance} XRP</div>
+            <div className="text-xs text-muted-foreground">≈ ${usd}</div>
+          </div>
+          <div className="text-right text-[11px] text-muted-foreground">
+            <div>Network</div>
+            <div className="font-medium text-foreground">{walletConfig.network}</div>
+          </div>
+        </div>
+      </div>
+      <button onClick={() => { disconnectWallet(); onClose(); toast("Xaman disconnected"); }} className="w-full rounded-md border px-3 py-2 hover:bg-muted">
+        Disconnect
+      </button>
+    </div>
   );
 }

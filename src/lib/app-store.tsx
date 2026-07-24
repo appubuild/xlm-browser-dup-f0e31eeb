@@ -70,7 +70,7 @@ interface AppState {
   signUpEmail: (email: string, password: string, name?: string) => Promise<{ error?: string }>;
   signInGoogle: () => Promise<void>;
   logout: () => Promise<void>;
-  connectWallet: (name: string) => void;
+  connectWallet: (name: string, address?: string) => Promise<void> | void;
   disconnectWallet: () => void;
 
   isAdmin: boolean;
@@ -119,7 +119,7 @@ interface AppState {
   siteSettings: SiteSettings;
   updateSiteSettings: (patch: Partial<SiteSettings>) => Promise<void>;
 
-  walletConfig: { enabled: string[]; network: "Mainnet" | "Testnet"; rpcUrl: string };
+  walletConfig: { network: "Mainnet" | "Testnet"; rpcUrl: string; xamanApiKey: string; xamanApiSecret: string; treasuryAddress: string };
   updateWalletConfig: (patch: Partial<AppState["walletConfig"]>) => void;
 
   xrpPrice: { price: number; change: number };
@@ -189,8 +189,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(DEFAULT_SETTINGS);
   const [walletConfig, setWalletConfig] = useState<AppState["walletConfig"]>({
-    enabled: ["Xaman (Xumm)", "GateHub", "Trust Wallet", "Ledger", "Crossmark"],
     network: "Mainnet", rpcUrl: "wss://s1.ripple.com",
+    xamanApiKey: "", xamanApiSecret: "", treasuryAddress: "",
   });
   const [xrpPrice, setXrpPrice] = useState({ price: 0.52, change: 3.12 });
   const [ledgerIndex, setLedgerIndex] = useState(89234501);
@@ -304,10 +304,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
   const logout = async () => { await supabase.auth.signOut(); };
 
-  const connectWallet = (name: string) => {
-    const addr = `r${name.slice(0, 3).toUpperCase()}${Math.random().toString(36).slice(2, 10)}`;
+  const connectWallet = async (name: string, address?: string) => {
+    const addr = address ?? `r${name.slice(0, 3).toUpperCase()}${Math.random().toString(36).slice(2, 10)}`;
     setUser((u) => (u ? { ...u, walletAddress: addr } : u));
-    if (user?.id) supabase.from("profiles").update({ wallet_address: addr }).eq("id", user.id).then(() => {});
+    if (user?.id) await supabase.from("profiles").update({ wallet_address: addr }).eq("id", user.id);
   };
   const disconnectWallet = () => {
     setUser((u) => (u ? { ...u, walletAddress: undefined } : u));
