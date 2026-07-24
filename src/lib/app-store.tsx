@@ -119,7 +119,7 @@ interface AppState {
   siteSettings: SiteSettings;
   updateSiteSettings: (patch: Partial<SiteSettings>) => Promise<void>;
 
-  walletConfig: { enabled: string[]; network: "Mainnet" | "Testnet"; rpcUrl: string };
+  walletConfig: { network: "Mainnet" | "Testnet"; rpcUrl: string; xamanApiKey: string; xamanApiSecret: string; treasuryAddress: string };
   updateWalletConfig: (patch: Partial<AppState["walletConfig"]>) => void;
 
   xrpPrice: { price: number; change: number };
