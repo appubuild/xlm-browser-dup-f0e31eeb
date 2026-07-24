@@ -247,6 +247,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         contactLocation: ss.data.contact_location ?? "", autoApprove: ss.data.auto_approve,
         listingFeeXrp: Number((ss.data as { listing_fee_xrp?: number | string | null }).listing_fee_xrp ?? 0),
         listingPaymentAddress: (ss.data as { listing_payment_address?: string | null }).listing_payment_address ?? "",
+        cloudinaryCloudName: (ss.data as { cloudinary_cloud_name?: string | null }).cloudinary_cloud_name ?? "",
+        cloudinaryUploadPreset: (ss.data as { cloudinary_upload_preset?: string | null }).cloudinary_upload_preset ?? "",
       });
     }
   }, []);
@@ -548,6 +550,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.autoApprove !== undefined) dbPatch.auto_approve = patch.autoApprove;
     if (patch.listingFeeXrp !== undefined) dbPatch.listing_fee_xrp = patch.listingFeeXrp;
     if (patch.listingPaymentAddress !== undefined) dbPatch.listing_payment_address = patch.listingPaymentAddress;
+    if (patch.cloudinaryCloudName !== undefined) dbPatch.cloudinary_cloud_name = patch.cloudinaryCloudName;
+    if (patch.cloudinaryUploadPreset !== undefined) dbPatch.cloudinary_upload_preset = patch.cloudinaryUploadPreset;
     await supabase.from("site_settings").update(dbPatch as never).eq("id", 1);
     setSiteSettings((s) => ({ ...s, ...patch }));
   };
