@@ -357,6 +357,8 @@ export type Database = {
         Row: {
           allow_user_override: boolean
           auto_approve: boolean
+          cloudinary_cloud_name: string
+          cloudinary_upload_preset: string
           contact_company: string | null
           contact_email: string | null
           contact_location: string | null
@@ -374,6 +376,8 @@ export type Database = {
         Insert: {
           allow_user_override?: boolean
           auto_approve?: boolean
+          cloudinary_cloud_name?: string
+          cloudinary_upload_preset?: string
           contact_company?: string | null
           contact_email?: string | null
           contact_location?: string | null
@@ -391,6 +395,8 @@ export type Database = {
         Update: {
           allow_user_override?: boolean
           auto_approve?: boolean
+          cloudinary_cloud_name?: string
+          cloudinary_upload_preset?: string
           contact_company?: string | null
           contact_email?: string | null
           contact_location?: string | null
