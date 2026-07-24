@@ -16,7 +16,7 @@ export interface Project {
   description: string;
   url: string;
   screenshots: string[];
-  socials: { twitter?: string; discord?: string; telegram?: string; github?: string };
+  socials: Record<string, string>;
   verified: boolean;
   status: ProjectStatus;
   featured: boolean;
@@ -56,6 +56,8 @@ interface SiteSettings {
   autoApprove: boolean;
   listingFeeXrp: number;
   listingPaymentAddress: string;
+  cloudinaryCloudName: string;
+  cloudinaryUploadPreset: string;
 }
 
 interface AppState {
@@ -147,6 +149,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   defaultTheme: "light", allowUserOverride: true, enableSubmissions: true, enableIframe: true, maintenanceMode: false,
   contactEmail: "partner@skipads.ai", contactCompany: "SkipAds AI LLC", contactLocation: "Detroit, MI · USA", autoApprove: false,
   listingFeeXrp: 0, listingPaymentAddress: "",
+  cloudinaryCloudName: "", cloudinaryUploadPreset: "",
 };
 
 type ProjectRow = {
