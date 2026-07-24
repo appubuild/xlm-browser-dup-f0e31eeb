@@ -304,10 +304,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
   const logout = async () => { await supabase.auth.signOut(); };
 
-  const connectWallet = (name: string) => {
-    const addr = `r${name.slice(0, 3).toUpperCase()}${Math.random().toString(36).slice(2, 10)}`;
+  const connectWallet = async (name: string, address?: string) => {
+    const addr = address ?? `r${name.slice(0, 3).toUpperCase()}${Math.random().toString(36).slice(2, 10)}`;
     setUser((u) => (u ? { ...u, walletAddress: addr } : u));
-    if (user?.id) supabase.from("profiles").update({ wallet_address: addr }).eq("id", user.id).then(() => {});
+    if (user?.id) await supabase.from("profiles").update({ wallet_address: addr }).eq("id", user.id);
   };
   const disconnectWallet = () => {
     setUser((u) => (u ? { ...u, walletAddress: undefined } : u));
