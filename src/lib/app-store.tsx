@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { supabase } from "@/integrations/supabase/client";
 import type { Session } from "@supabase/supabase-js";
 
-export type Theme = "light" | "dark";
+export type Theme = "light" | "dark" | "retro";
 export type ProjectStatus = "pending" | "approved" | "rejected";
 export type LiveStatusVal = "Live" | "Beta" | "Coming Soon";
 
@@ -229,14 +229,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // --- Theme persistence
   useEffect(() => {
     const saved = typeof window !== "undefined" ? localStorage.getItem("xrpb-theme") : null;
-    if (saved === "light" || saved === "dark") setThemeState(saved);
+    if (saved === "light" || saved === "dark" || saved === "retro") setThemeState(saved);
     setHydrated(true);
   }, []);
   useEffect(() => {
     if (!hydrated) return;
     localStorage.setItem("xrpb-theme", theme);
     document.documentElement.classList.toggle("dark", theme === "dark");
-    document.documentElement.classList.toggle("retro", theme === "dark");
+    document.documentElement.classList.toggle("retro", theme === "retro");
   }, [theme, hydrated]);
 
   // --- Simulated live price/ledger
@@ -647,7 +647,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const updateWalletConfig = (patch: Partial<AppState["walletConfig"]>) => setWalletConfig((s) => ({ ...s, ...patch }));
 
   const setTheme = (t: Theme) => setThemeState(t);
-  const toggleTheme = () => setThemeState((t) => (t === "light" ? "dark" : "light"));
+  const toggleTheme = () => setThemeState((t) => (t === "light" ? "dark" : t === "dark" ? "retro" : "light"));
 
   const refresh = useCallback(async () => {
     await loadPublicData();
