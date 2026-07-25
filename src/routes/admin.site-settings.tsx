@@ -70,10 +70,11 @@ function AiProvidersCard() {
             </select>
           </F>
           <F label={`Model (${cfg.provider})`}>
-            <input list={`models-${cfg.provider}`} value={cfg.model} onChange={(e) => setCfg((c) => ({ ...c, model: e.target.value }))} className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" />
-            <datalist id={`models-${cfg.provider}`}>
-              {MODEL_SUGGESTIONS[cfg.provider].map((m) => <option key={m} value={m} />)}
-            </datalist>
+            <select value={cfg.model} onChange={(e) => setCfg((c) => ({ ...c, model: e.target.value }))} className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm">
+              {MODEL_SUGGESTIONS[cfg.provider].map((m) => <option key={m} value={m}>{m}</option>)}
+              {!MODEL_SUGGESTIONS[cfg.provider].includes(cfg.model) && <option value={cfg.model}>{cfg.model} (custom)</option>}
+            </select>
+            <input value={cfg.model} onChange={(e) => setCfg((c) => ({ ...c, model: e.target.value }))} placeholder="Or enter a custom model id" className="mt-1 w-full rounded border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs font-mono" />
           </F>
           <label className="flex items-center gap-2 text-xs text-slate-400">
             <input type="checkbox" checked={reveal} onChange={(e) => setReveal(e.target.checked)} /> Show keys

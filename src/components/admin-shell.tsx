@@ -19,6 +19,7 @@ const ADMIN_NAV = [
   { to: "/admin/analytics", label: "Analytics", icon: "📈" },
   { to: "/admin/notifications", label: "Notifications", icon: "🔔" },
   { to: "/admin/wallet-connect-config", label: "Wallet Config", icon: "👛" },
+  { to: "/admin/footer", label: "Footer", icon: "🔗" },
 ] as const;
 
 type AdminTheme = "light" | "dark";

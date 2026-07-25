@@ -41,6 +41,8 @@ export interface Ticker { id: string; label: string; linkedProjectSlug?: string 
 export interface SidebarItem { id: string; label: string; icon: string; path: string; sortOrder: number; visible: boolean; requiresAuth: boolean; }
 export interface LandingSection { id: string; sectionKey: string; title: string; subtitle: string; visible: boolean; sortOrder: number; config: Record<string, unknown>; }
 export interface AppNotification { id: string; message: string; ts: number; read: boolean; userId?: string | null; }
+export interface FooterGroup { id: string; label: string; sortOrder: number; visible: boolean; }
+export interface FooterLink { id: string; groupId: string; label: string; href: string; external: boolean; sortOrder: number; visible: boolean; }
 
 interface AuthUser { id: string; name: string; email: string; avatar: string; walletAddress?: string }
 
@@ -119,6 +121,15 @@ interface AppState {
 
   landingSections: LandingSection[];
   updateLandingSection: (id: string, patch: Partial<LandingSection>) => Promise<void>;
+
+  footerGroups: FooterGroup[];
+  footerLinks: FooterLink[];
+  addFooterGroup: (label: string) => Promise<void>;
+  updateFooterGroup: (id: string, patch: Partial<FooterGroup>) => Promise<void>;
+  deleteFooterGroup: (id: string) => Promise<void>;
+  addFooterLink: (groupId: string, patch: Partial<FooterLink> & { label: string; href: string }) => Promise<void>;
+  updateFooterLink: (id: string, patch: Partial<FooterLink>) => Promise<void>;
+  deleteFooterLink: (id: string) => Promise<void>;
 
   bookmarks: string[];
   toggleBookmark: (slug: string) => Promise<void>;
@@ -217,6 +228,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [bookmarks, setBookmarks] = useState<string[]>([]);
   const [history, setHistory] = useState<{ slug: string; ts: number }[]>([]);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
+  const [footerGroups, setFooterGroups] = useState<FooterGroup[]>([]);
+  const [footerLinks, setFooterLinks] = useState<FooterLink[]>([]);
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(DEFAULT_SETTINGS);
   const [walletConfig, setWalletConfig] = useState<AppState["walletConfig"]>({
     network: "Mainnet", rpcUrl: "wss://s1.ripple.com",
@@ -249,7 +262,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loadPublicData = useCallback(async () => {
-    const [pj, nw, tk, ct, sb, ls, ss, bc, mg] = await Promise.all([
+    const [pj, nw, tk, ct, sb, ls, ss, bc, mg, fg, fl] = await Promise.all([
       supabase.from("projects").select("*").order("date_added", { ascending: false }),
       supabase.from("news").select("*").order("publish_date", { ascending: false }),
       supabase.from("tickers").select("*").order("sort_order"),
@@ -259,6 +272,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       supabase.from("site_settings").select("*").eq("id", 1).maybeSingle(),
       supabase.from("blog_categories" as never).select("*").order("sort_order"),
       supabase.from("media_gallery" as never).select("*").order("created_at", { ascending: false }).limit(300),
+      supabase.from("footer_groups" as never).select("*").order("sort_order"),
+      supabase.from("footer_links" as never).select("*").order("sort_order"),
     ]);
     if (pj.data) setProjects(pj.data.map((r) => mapProject(r as ProjectRow)));
     if (nw.data) setNews((nw.data as never[]).map((r) => mapNews(r)));
@@ -268,6 +283,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (ls.data) setLandingSections(ls.data.map((r) => ({ id: r.id, sectionKey: r.section_key, title: r.title, subtitle: r.subtitle ?? "", visible: r.visible, sortOrder: r.sort_order, config: (r.config as Record<string, unknown>) ?? {} })));
     if (bc.data) setBlogCategories((bc.data as never[]).map((r: any) => ({ id: r.id, slug: r.slug, name: r.name, description: r.description ?? "", sortOrder: r.sort_order, visible: r.visible })));
     if (mg.data) setMediaGallery((mg.data as never[]).map((r: any) => ({ id: r.id, url: r.url, filename: r.filename, tags: r.tags ?? [], createdAt: r.created_at, uploadedBy: r.uploaded_by })));
+    if (fg.data) setFooterGroups((fg.data as never[]).map((r: any) => ({ id: r.id, label: r.label, sortOrder: r.sort_order, visible: r.visible })));
+    if (fl.data) setFooterLinks((fl.data as never[]).map((r: any) => ({ id: r.id, groupId: r.group_id, label: r.label, href: r.href, external: r.external, sortOrder: r.sort_order, visible: r.visible })));
     if (ss.data) {
       const s = ss.data as Record<string, unknown>;
       setSiteSettings({
@@ -583,7 +600,47 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setLandingSections((xs) => xs.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   };
 
-  // ---- Bookmarks
+  // ---- Footer
+  const addFooterGroup = async (label: string) => {
+    const sortOrder = (footerGroups.at(-1)?.sortOrder ?? 0) + 1;
+    const { data } = await supabase.from("footer_groups" as never).insert({ label, sort_order: sortOrder } as never).select().single();
+    if (data) { const r = data as any; setFooterGroups((xs) => [...xs, { id: r.id, label: r.label, sortOrder: r.sort_order, visible: r.visible }]); }
+  };
+  const updateFooterGroup = async (id: string, patch: Partial<FooterGroup>) => {
+    const dbPatch: Record<string, unknown> = {};
+    if (patch.label !== undefined) dbPatch.label = patch.label;
+    if (patch.sortOrder !== undefined) dbPatch.sort_order = patch.sortOrder;
+    if (patch.visible !== undefined) dbPatch.visible = patch.visible;
+    await supabase.from("footer_groups" as never).update(dbPatch as never).eq("id", id);
+    setFooterGroups((xs) => xs.map((x) => (x.id === id ? { ...x, ...patch } : x)));
+  };
+  const deleteFooterGroup = async (id: string) => {
+    await supabase.from("footer_groups" as never).delete().eq("id", id);
+    setFooterGroups((xs) => xs.filter((x) => x.id !== id));
+    setFooterLinks((xs) => xs.filter((x) => x.groupId !== id));
+  };
+  const addFooterLink: AppState["addFooterLink"] = async (groupId, patch) => {
+    const sortOrder = (footerLinks.filter((l) => l.groupId === groupId).at(-1)?.sortOrder ?? 0) + 1;
+    const { data } = await supabase.from("footer_links" as never).insert({
+      group_id: groupId, label: patch.label, href: patch.href, external: patch.external ?? false, sort_order: sortOrder, visible: patch.visible ?? true,
+    } as never).select().single();
+    if (data) { const r = data as any; setFooterLinks((xs) => [...xs, { id: r.id, groupId: r.group_id, label: r.label, href: r.href, external: r.external, sortOrder: r.sort_order, visible: r.visible }]); }
+  };
+  const updateFooterLink = async (id: string, patch: Partial<FooterLink>) => {
+    const dbPatch: Record<string, unknown> = {};
+    if (patch.label !== undefined) dbPatch.label = patch.label;
+    if (patch.href !== undefined) dbPatch.href = patch.href;
+    if (patch.external !== undefined) dbPatch.external = patch.external;
+    if (patch.sortOrder !== undefined) dbPatch.sort_order = patch.sortOrder;
+    if (patch.visible !== undefined) dbPatch.visible = patch.visible;
+    await supabase.from("footer_links" as never).update(dbPatch as never).eq("id", id);
+    setFooterLinks((xs) => xs.map((x) => (x.id === id ? { ...x, ...patch } : x)));
+  };
+  const deleteFooterLink = async (id: string) => {
+    await supabase.from("footer_links" as never).delete().eq("id", id);
+    setFooterLinks((xs) => xs.filter((x) => x.id !== id));
+  };
+
   const toggleBookmark = async (slug: string) => {
     if (!user) return;
     if (bookmarks.includes(slug)) {
@@ -702,6 +759,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     categories, addCategory, updateCategory, deleteCategory,
     sidebarItems, addSidebarItem, updateSidebarItem, deleteSidebarItem, reorderSidebar,
     landingSections, updateLandingSection,
+    footerGroups, footerLinks, addFooterGroup, updateFooterGroup, deleteFooterGroup, addFooterLink, updateFooterLink, deleteFooterLink,
     bookmarks, toggleBookmark,
     history, pushHistory, clearHistory,
     notifications, pushNotification, markAllRead,

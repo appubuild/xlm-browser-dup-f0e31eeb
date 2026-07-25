@@ -217,47 +217,37 @@ function RetroChrome({ path, loading }: { path: string; loading: boolean }) {
 }
 
 function Footer() {
-  const { theme, siteSettings } = useApp();
+  const { theme, siteSettings, footerGroups, footerLinks } = useApp();
   const isRetro = theme === "retro";
+  const groups = [...footerGroups].filter((g) => g.visible).sort((a, b) => a.sortOrder - b.sortOrder);
   return (
     <footer className={isRetro ? "border-t-2 border-primary bg-background px-4 py-6 font-mono text-sm" : "border-t bg-card px-6 py-10"}>
       {isRetro && <div className="mb-3 text-center font-mono">========================================================</div>}
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 md:grid-cols-4">
-        <div>
-          <div className="mb-2 font-semibold">Company</div>
-          <ul className="space-y-1 text-sm">
-            <li><Link to="/about" className="hover:underline">About</Link></li>
-            <li><Link to="/help" className="hover:underline">Contact</Link></li>
-          </ul>
-        </div>
-        <div>
-          <div className="mb-2 font-semibold">Legal</div>
-          <ul className="space-y-1 text-sm">
-            <li><Link to="/privacy" className="hover:underline">Privacy Policy</Link></li>
-            <li><Link to="/terms" className="hover:underline">Terms of Service</Link></li>
-          </ul>
-        </div>
-        <div>
-          <div className="mb-2 font-semibold">Developers</div>
-          <ul className="space-y-1 text-sm">
-            <li><Link to="/developers" className="hover:underline">Developer Hub</Link></li>
-            <li><Link to="/developers/api" className="hover:underline">Developer API</Link></li>
-          </ul>
-        </div>
-        <div>
-          <div className="mb-2 font-semibold">Contact</div>
-          <div className="text-sm">
-            <div>{siteSettings.contactEmail}</div>
-            <div>{siteSettings.contactCompany}</div>
-            <div>{siteSettings.contactLocation}</div>
+        {groups.map((g) => {
+          const links = footerLinks.filter((l) => l.groupId === g.id && l.visible).sort((a, b) => a.sortOrder - b.sortOrder);
+          return (
+            <div key={g.id}>
+              <div className="mb-2 font-semibold">{g.label}</div>
+              <ul className="space-y-1 text-sm">
+                {links.map((l) => (
+                  <li key={l.id}>
+                    {l.external ? (
+                      <a href={l.href} target="_blank" rel="noreferrer" className="hover:underline">{l.label}</a>
+                    ) : (
+                      <a href={l.href} className="hover:underline">{l.label}</a>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+        {groups.length === 0 && (
+          <div className="col-span-full text-center text-sm text-muted-foreground">
+            Footer is empty. Admin → Footer to add link groups.
           </div>
-          <div className="mt-2 flex gap-3 text-sm">
-            <a href="#" className="hover:underline">Twitter</a>
-            <a href="#" className="hover:underline">Discord</a>
-            <a href="#" className="hover:underline">Telegram</a>
-            <a href="#" className="hover:underline">GitHub</a>
-          </div>
-        </div>
+        )}
       </div>
       {isRetro && (
         <div className="mx-auto mt-6 max-w-6xl border border-primary p-2 text-center text-xs">

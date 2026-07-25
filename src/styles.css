@@ -151,9 +151,47 @@
   --sidebar-ring: oklch(0.88 0.24 145);
 }
 
-/* ==== ADMIN LIGHT MODE OVERRIDES ==== */
-/* Admin routes hardcode slate-* utilities. When the AdminShell selects light mode,
-   .admin-light is applied on <html> so overrides also reach portal-rendered dialogs. */
+/* ==== ADMIN THEME OVERRIDES ==== */
+/* AdminShell toggles .admin-light / .admin-dark on <html>. These win over any
+   frontend .dark / .retro theme applied to the same element. */
+.admin-light {
+  --background: oklch(0.99 0.005 240);
+  --foreground: oklch(0.18 0.03 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.03 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.03 260);
+  --primary: oklch(0.5 0.18 250);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.96 0.01 240);
+  --secondary-foreground: oklch(0.2 0.03 260);
+  --muted: oklch(0.96 0.008 240);
+  --muted-foreground: oklch(0.5 0.02 260);
+  --accent: oklch(0.94 0.02 240);
+  --accent-foreground: oklch(0.2 0.03 260);
+  --border: oklch(0.92 0.01 240);
+  --input: oklch(0.94 0.01 240);
+  --ring: oklch(0.6 0.16 240);
+}
+.admin-dark {
+  --background: oklch(0.16 0.02 260);
+  --foreground: oklch(0.95 0.01 240);
+  --card: oklch(0.20 0.02 260);
+  --card-foreground: oklch(0.95 0.01 240);
+  --popover: oklch(0.20 0.02 260);
+  --popover-foreground: oklch(0.95 0.01 240);
+  --primary: oklch(0.72 0.16 250);
+  --primary-foreground: oklch(0.14 0.02 260);
+  --secondary: oklch(0.24 0.02 260);
+  --muted: oklch(0.24 0.02 260);
+  --muted-foreground: oklch(0.72 0.02 260);
+  --accent: oklch(0.28 0.02 260);
+  --accent-foreground: oklch(0.95 0.01 240);
+  --border: oklch(0.30 0.02 260);
+  --input: oklch(0.24 0.02 260);
+}
+
+/* Light-mode overrides for hardcoded slate-* utilities used across admin pages. */
 .admin-light .bg-slate-950 { background-color: #f8fafc !important; }
 .admin-light .bg-slate-900 { background-color: #ffffff !important; }
 .admin-light .bg-slate-900\/60 { background-color: rgba(241,245,249,0.6) !important; }
@@ -162,8 +200,8 @@
 .admin-light .bg-slate-800\/50 { background-color: rgba(241,245,249,0.6) !important; }
 .admin-light .hover\:bg-slate-800:hover { background-color: #f1f5f9 !important; }
 .admin-light .hover\:bg-slate-900:hover { background-color: #f8fafc !important; }
-.admin-light .border-slate-950 { border-color: #e2e8f0 !important; }
-.admin-light .border-slate-900 { border-color: #e2e8f0 !important; }
+.admin-light .border-slate-950,
+.admin-light .border-slate-900,
 .admin-light .border-slate-800 { border-color: #e2e8f0 !important; }
 .admin-light .border-slate-700 { border-color: #cbd5e1 !important; }
 .admin-light .text-slate-100 { color: #0f172a !important; }
@@ -240,10 +278,31 @@
     linear-gradient(180deg, oklch(0.99 0.005 240), oklch(0.97 0.01 240));
 }
 
+.dark .gradient-hero {
+  background:
+    radial-gradient(1200px 500px at 10% -10%, oklch(0.72 0.15 220 / 0.35), transparent 60%),
+    radial-gradient(900px 400px at 90% 10%, oklch(0.5 0.18 250 / 0.45), transparent 60%),
+    linear-gradient(180deg, oklch(0.14 0.03 260), oklch(0.18 0.03 260));
+}
+
 .retro .gradient-hero {
   background:
     linear-gradient(180deg, oklch(0.08 0 0), oklch(0.06 0 0));
 }
+
+/* Galaxy / ecosystem background animations */
+@keyframes xrpb-orbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes xrpb-orbit-r { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+@keyframes xrpb-twinkle { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+@keyframes xrpb-float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
+@keyframes xrpb-pulse-ring { 0% { transform: scale(0.8); opacity:0.7 } 100% { transform: scale(1.6); opacity:0 } }
+
+.xrpb-galaxy-orbit { animation: xrpb-orbit 40s linear infinite; transform-origin: center; }
+.xrpb-galaxy-orbit-slow { animation: xrpb-orbit 90s linear infinite; }
+.xrpb-galaxy-orbit-r { animation: xrpb-orbit-r 60s linear infinite; }
+.xrpb-star { animation: xrpb-twinkle 3s ease-in-out infinite; }
+.xrpb-float { animation: xrpb-float 6s ease-in-out infinite; }
+.xrpb-pulse-ring { animation: xrpb-pulse-ring 3s ease-out infinite; }
 
 @utility soft-card {
   background: var(--card);

@@ -5,6 +5,7 @@ import { PublicShell } from "@/components/public-shell";
 import { useApp, type Project, type LandingSection } from "@/lib/app-store";
 import { useViewport } from "@/components/browser-viewport";
 import { ProjectTicker, LivePricesGrid } from "@/components/crypto-ticker";
+import { GalaxyBg } from "@/components/galaxy-bg";
 
 export const Route = createFileRoute("/")({ component: Home });
 
@@ -43,7 +44,8 @@ function Home() {
   return (
     <PublicShell>
       <section className="gradient-hero relative overflow-hidden px-6 py-16 md:py-24">
-        <div className="mx-auto max-w-4xl text-center">
+        {!isRetro && <GalaxyBg />}
+        <div className="relative z-10 mx-auto max-w-4xl text-center">
           <h1 className={isRetro ? "font-mono text-4xl md:text-5xl" : "text-4xl font-extrabold tracking-tight md:text-6xl"}>
             {isRetro ? ">> SEARCH THE " : "Search the "}
             <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">XRP Ledger</span>
