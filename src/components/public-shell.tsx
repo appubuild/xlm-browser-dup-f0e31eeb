@@ -218,7 +218,7 @@ function RetroChrome({ path, loading }: { path: string; loading: boolean }) {
 
 function Footer() {
   const { theme, siteSettings } = useApp();
-  const isRetro = theme === "dark";
+  const isRetro = theme === "retro";
   return (
     <footer className={isRetro ? "border-t-2 border-primary bg-background px-4 py-6 font-mono text-sm" : "border-t bg-card px-6 py-10"}>
       {isRetro && <div className="mb-3 text-center font-mono">========================================================</div>}
