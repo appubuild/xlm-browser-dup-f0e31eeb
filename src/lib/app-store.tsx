@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { trackProjectEvent } from "@/lib/analytics";
 import type { Session } from "@supabase/supabase-js";
 
 export type Theme = "light" | "dark" | "retro";
@@ -646,15 +647,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (bookmarks.includes(slug)) {
       await supabase.from("bookmarks").delete().eq("user_id", user.id).eq("project_slug", slug);
       setBookmarks((b) => b.filter((s) => s !== slug));
+      void trackProjectEvent(slug, "unbookmark", user.id);
     } else {
       await supabase.from("bookmarks").insert({ user_id: user.id, project_slug: slug });
       setBookmarks((b) => [...b, slug]);
+      void trackProjectEvent(slug, "bookmark", user.id);
     }
   };
 
   // ---- History
   const pushHistory = async (slug: string) => {
     setHistory((h) => [{ slug, ts: Date.now() }, ...h.filter((x) => x.slug !== slug)].slice(0, 100));
+    void trackProjectEvent(slug, "visit", user?.id ?? null);
     if (user) await supabase.from("history").insert({ user_id: user.id, project_slug: slug });
   };
   const clearHistory = async () => {
