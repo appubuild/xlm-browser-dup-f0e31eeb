@@ -235,7 +235,7 @@ function Footer() {
                     {l.external ? (
                       <a href={l.href} target="_blank" rel="noreferrer" className="hover:underline">{l.label}</a>
                     ) : (
-                      <Link to={l.href} className="hover:underline">{l.label}</Link>
+                      <a href={l.href} className="hover:underline">{l.label}</a>
                     )}
                   </li>
                 ))}
