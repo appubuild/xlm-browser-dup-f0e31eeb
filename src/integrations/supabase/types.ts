@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_config: {
+        Row: {
+          anthropic_key: string | null
+          google_key: string | null
+          id: number
+          model: string
+          openai_key: string | null
+          provider: string
+          updated_at: string
+        }
+        Insert: {
+          anthropic_key?: string | null
+          google_key?: string | null
+          id?: number
+          model?: string
+          openai_key?: string | null
+          provider?: string
+          updated_at?: string
+        }
+        Update: {
+          anthropic_key?: string | null
+          google_key?: string | null
+          id?: number
+          model?: string
+          openai_key?: string | null
+          provider?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       blog_categories: {
         Row: {
           created_at: string
