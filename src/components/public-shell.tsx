@@ -223,7 +223,7 @@ function Footer() {
   return (
     <footer className={isRetro ? "border-t-2 border-primary bg-background px-4 py-6 font-mono text-sm" : "border-t bg-card px-6 py-10"}>
       {isRetro && <div className="mb-3 text-center font-mono">========================================================</div>}
-      <div className={`mx-auto grid max-w-6xl gap-6 grid-cols-2 md:grid-cols-${Math.min(Math.max(groups.length, 1), 6)}`}>
+      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 md:grid-cols-4" style={groups.length ? { gridTemplateColumns: `repeat(2, minmax(0,1fr))` } : undefined}>
         {groups.map((g) => {
           const links = footerLinks.filter((l) => l.groupId === g.id && l.visible).sort((a, b) => a.sortOrder - b.sortOrder);
           return (
