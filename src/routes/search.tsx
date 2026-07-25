@@ -1,5 +1,5 @@
 import { createFileRoute, useSearch } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 import { Search } from "lucide-react";
 import { PublicShell } from "@/components/public-shell";
@@ -7,6 +7,7 @@ import { useApp } from "@/lib/app-store";
 import { useViewport } from "@/components/browser-viewport";
 import { CATEGORIES } from "@/lib/mock-data";
 import { Link } from "@tanstack/react-router";
+import { trackSearchImpressions, trackSearchClick } from "@/lib/analytics";
 
 const searchSchema = z.object({ q: z.string().optional().default("") });
 
@@ -17,7 +18,7 @@ export const Route = createFileRoute("/search")({
 
 function SearchPage() {
   const { q } = useSearch({ from: "/search" });
-  const { projects } = useApp();
+  const { projects, user } = useApp();
   const viewport = useViewport();
   const [query, setQuery] = useState(q);
   const [tab, setTab] = useState<"all" | string>("all");
@@ -36,6 +37,19 @@ function SearchPage() {
     if (sort === "visits") r = [...r].sort((a, b) => b.visits - a.visits);
     return r;
   }, [projects, query, tab, verifiedOnly, cats, sort]);
+
+  const logged = useRef<string>("");
+  useEffect(() => {
+    const term = query.trim();
+    if (term.length < 2) return;
+    const t = setTimeout(() => {
+      const key = `${term.toLowerCase()}|${results.map((r) => r.slug).join(",")}`;
+      if (logged.current === key) return;
+      logged.current = key;
+      void trackSearchImpressions(term, results.map((r) => r.slug), user?.id ?? null);
+    }, 900);
+    return () => clearTimeout(t);
+  }, [query, results, user?.id]);
 
   return (
     <PublicShell>
@@ -90,12 +104,12 @@ function SearchPage() {
                     <div className="flex items-start gap-3">
                       <div className="text-2xl">{p.logo}</div>
                       <div className="min-w-0 flex-1">
-                        <button onClick={() => viewport.open(p)} className="text-left text-base font-semibold hover:underline">
+                        <button onClick={() => { void trackSearchClick(query, p.slug, results.indexOf(p) + 1, user?.id ?? null); viewport.open(p); }} className="text-left text-base font-semibold hover:underline">
                           {p.name} {p.verified && <span className="ml-1 text-xs text-primary">✓</span>}
                         </button>
                         <div className="text-xs text-muted-foreground">{p.url} · {p.category}</div>
                         <p className="mt-1 text-sm">{p.description}</p>
-                        <Link to="/project/$slug" params={{ slug: p.slug }} className="text-xs text-primary hover:underline">View profile →</Link>
+                        <Link to="/project/$slug" params={{ slug: p.slug }} onClick={() => void trackSearchClick(query, p.slug, results.indexOf(p) + 1, user?.id ?? null)} className="text-xs text-primary hover:underline">View profile →</Link>
                       </div>
                     </div>
                   </li>
