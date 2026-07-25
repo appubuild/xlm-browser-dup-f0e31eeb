@@ -759,6 +759,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     categories, addCategory, updateCategory, deleteCategory,
     sidebarItems, addSidebarItem, updateSidebarItem, deleteSidebarItem, reorderSidebar,
     landingSections, updateLandingSection,
+    footerGroups, footerLinks, addFooterGroup, updateFooterGroup, deleteFooterGroup, addFooterLink, updateFooterLink, deleteFooterLink,
     bookmarks, toggleBookmark,
     history, pushHistory, clearHistory,
     notifications, pushNotification, markAllRead,
