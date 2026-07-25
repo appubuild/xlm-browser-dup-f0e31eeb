@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { fetchAnalytics, type AnalyticsBundle, type ProjectStats } from "@/lib/analytics";
 import type { Project } from "@/lib/app-store";
 
@@ -97,8 +97,8 @@ export function PerformanceTable({ rows }: { rows: Row[] }) {
           </thead>
           <tbody>
             {items.map((r) => (
-              <>
-                <tr key={r.slug} className="border-b border-current/10">
+              <Fragment key={r.slug}>
+                <tr className="border-b border-current/10">
                   <td className="p-2 font-medium">{r.logo} {r.name}</td>
                   <td className="p-2 text-right">{r.views}</td>
                   <td className="p-2 text-right">{r.visits}</td>
@@ -115,7 +115,7 @@ export function PerformanceTable({ rows }: { rows: Row[] }) {
                   </td>
                 </tr>
                 {open === r.slug && (
-                  <tr key={`${r.slug}-kw`} className="border-b border-current/10">
+                  <tr className="border-b border-current/10">
                     <td colSpan={10} className="p-3">
                       {r.keywords.length === 0 ? (
                         <div className="text-xs opacity-60">No search data yet for this project.</div>
@@ -132,7 +132,7 @@ export function PerformanceTable({ rows }: { rows: Row[] }) {
                     </td>
                   </tr>
                 )}
-              </>
+              </Fragment>
             ))}
           </tbody>
         </table>
