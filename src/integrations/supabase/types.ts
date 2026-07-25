@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      blog_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+          visible: boolean
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Relationships: []
+      }
       bookmarks: {
         Row: {
           created_at: string
@@ -125,18 +158,59 @@ export type Database = {
         }
         Relationships: []
       }
+      media_gallery: {
+        Row: {
+          bytes: number | null
+          created_at: string
+          filename: string | null
+          height: number | null
+          id: string
+          tags: string[] | null
+          uploaded_by: string | null
+          url: string
+          width: number | null
+        }
+        Insert: {
+          bytes?: number | null
+          created_at?: string
+          filename?: string | null
+          height?: number | null
+          id?: string
+          tags?: string[] | null
+          uploaded_by?: string | null
+          url: string
+          width?: number | null
+        }
+        Update: {
+          bytes?: number | null
+          created_at?: string
+          filename?: string | null
+          height?: number | null
+          id?: string
+          tags?: string[] | null
+          uploaded_by?: string | null
+          url?: string
+          width?: number | null
+        }
+        Relationships: []
+      }
       news: {
         Row: {
           author: string
           body: string | null
           category: string
           cover_image: string | null
+          cover_image_url: string | null
           created_at: string
           excerpt: string | null
+          gallery: string[] | null
           id: string
+          meta_description: string | null
           publish_date: string
+          seo_keywords: string | null
           slug: string
           status: Database["public"]["Enums"]["news_status"]
+          tags: string[] | null
           title: string
           updated_at: string
           views: number
@@ -146,12 +220,17 @@ export type Database = {
           body?: string | null
           category?: string
           cover_image?: string | null
+          cover_image_url?: string | null
           created_at?: string
           excerpt?: string | null
+          gallery?: string[] | null
           id?: string
+          meta_description?: string | null
           publish_date?: string
+          seo_keywords?: string | null
           slug: string
           status?: Database["public"]["Enums"]["news_status"]
+          tags?: string[] | null
           title: string
           updated_at?: string
           views?: number
@@ -161,12 +240,17 @@ export type Database = {
           body?: string | null
           category?: string
           cover_image?: string | null
+          cover_image_url?: string | null
           created_at?: string
           excerpt?: string | null
+          gallery?: string[] | null
           id?: string
+          meta_description?: string | null
           publish_date?: string
+          seo_keywords?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["news_status"]
+          tags?: string[] | null
           title?: string
           updated_at?: string
           views?: number
@@ -355,6 +439,7 @@ export type Database = {
       }
       site_settings: {
         Row: {
+          ai_default_instruction: string | null
           allow_user_override: boolean
           auto_approve: boolean
           cloudinary_cloud_name: string
@@ -374,6 +459,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          ai_default_instruction?: string | null
           allow_user_override?: boolean
           auto_approve?: boolean
           cloudinary_cloud_name?: string
@@ -393,6 +479,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          ai_default_instruction?: string | null
           allow_user_override?: boolean
           auto_approve?: boolean
           cloudinary_cloud_name?: string
