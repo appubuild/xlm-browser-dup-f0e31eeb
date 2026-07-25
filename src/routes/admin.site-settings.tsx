@@ -61,6 +61,17 @@ function SiteSettings() {
           </F>
           <div className="text-xs text-slate-400">Create an unsigned upload preset in your Cloudinary dashboard: Settings → Upload → Add upload preset → Signing Mode: Unsigned.</div>
         </Card>
+        <Card title="AI Writer">
+          <F label="Default AI instruction (system prompt for blog writer)">
+            <textarea
+              value={siteSettings.aiDefaultInstruction ?? ""}
+              onChange={(e) => updateSiteSettings({ aiDefaultInstruction: e.target.value })}
+              placeholder="e.g. Write in a friendly, informative tone for the XRPL community. Prefer short paragraphs and concrete examples."
+              className="min-h-24 w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm"
+            />
+          </F>
+          <div className="text-xs text-slate-400">Used as the base system prompt whenever an admin clicks “AI: Write post”.</div>
+        </Card>
         <Card title="API Settings">
           <F label="Rate limit (req/min)"><input defaultValue={60} type="number" className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" /></F>
           <div className="text-xs text-slate-400">Issued keys</div>

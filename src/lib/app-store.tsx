@@ -34,7 +34,9 @@ export interface Project {
 }
 
 export interface Category { id: string; slug: string; name: string; icon: string; description: string; visible: boolean; sortOrder: number; }
-export interface NewsArticle { id: string; slug: string; title: string; category: string; author: string; coverImage: string; excerpt: string; body: string; publishDate: string; status: "draft" | "published"; views: number; }
+export interface NewsArticle { id: string; slug: string; title: string; category: string; author: string; coverImage: string; coverImageUrl?: string; excerpt: string; body: string; publishDate: string; status: "draft" | "published"; views: number; metaDescription?: string; seoKeywords?: string; tags?: string[]; gallery?: string[]; }
+export interface BlogCategory { id: string; slug: string; name: string; description: string; sortOrder: number; visible: boolean; }
+export interface MediaAsset { id: string; url: string; filename?: string | null; tags?: string[]; createdAt: string; uploadedBy?: string | null; }
 export interface Ticker { id: string; label: string; linkedProjectSlug?: string | null; sortOrder: number; visible: boolean; }
 export interface SidebarItem { id: string; label: string; icon: string; path: string; sortOrder: number; visible: boolean; requiresAuth: boolean; }
 export interface LandingSection { id: string; sectionKey: string; title: string; subtitle: string; visible: boolean; sortOrder: number; config: Record<string, unknown>; }
@@ -58,6 +60,7 @@ interface SiteSettings {
   listingPaymentAddress: string;
   cloudinaryCloudName: string;
   cloudinaryUploadPreset: string;
+  aiDefaultInstruction: string;
 }
 
 interface AppState {
@@ -87,6 +90,16 @@ interface AppState {
   addNews: (a: Omit<NewsArticle, "id" | "views">) => Promise<void>;
   updateNews: (id: string, patch: Partial<NewsArticle>) => Promise<void>;
   deleteNews: (id: string) => Promise<void>;
+
+  blogCategories: BlogCategory[];
+  addBlogCategory: (c: Partial<BlogCategory> & { name: string; slug: string }) => Promise<void>;
+  updateBlogCategory: (id: string, patch: Partial<BlogCategory>) => Promise<void>;
+  deleteBlogCategory: (id: string) => Promise<void>;
+
+  mediaGallery: MediaAsset[];
+  addMedia: (m: { url: string; filename?: string; tags?: string[] }) => Promise<MediaAsset | null>;
+  deleteMedia: (id: string) => Promise<void>;
+  refreshMedia: () => Promise<void>;
 
   tickers: Ticker[];
   addTicker: (t: Partial<Ticker> & { label: string }) => Promise<void>;
@@ -150,6 +163,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   contactEmail: "partner@skipads.ai", contactCompany: "SkipAds AI LLC", contactLocation: "Detroit, MI · USA", autoApprove: false,
   listingFeeXrp: 0, listingPaymentAddress: "",
   cloudinaryCloudName: "", cloudinaryUploadPreset: "",
+  aiDefaultInstruction: "You are a helpful writer for XRPBrowser, an XRP Ledger discovery portal. Write clear, accurate, upbeat posts.",
 };
 
 type ProjectRow = {
@@ -174,6 +188,17 @@ function mapProject(r: ProjectRow): Project {
   };
 }
 
+function mapNews(r: any): NewsArticle {
+  return {
+    id: r.id, slug: r.slug, title: r.title, category: r.category, author: r.author,
+    coverImage: r.cover_image ?? "📰", coverImageUrl: r.cover_image_url ?? undefined,
+    excerpt: r.excerpt ?? "", body: r.body ?? "", publishDate: r.publish_date,
+    status: r.status, views: r.views,
+    metaDescription: r.meta_description ?? "", seoKeywords: r.seo_keywords ?? "",
+    tags: (r.tags as string[]) ?? [], gallery: (r.gallery as string[]) ?? [],
+  };
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("light");
   const [hydrated, setHydrated] = useState(false);
@@ -183,6 +208,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [news, setNews] = useState<NewsArticle[]>([]);
+  const [blogCategories, setBlogCategories] = useState<BlogCategory[]>([]);
+  const [mediaGallery, setMediaGallery] = useState<MediaAsset[]>([]);
   const [tickers, setTickers] = useState<Ticker[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [sidebarItems, setSidebarItems] = useState<SidebarItem[]>([]);
@@ -222,7 +249,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loadPublicData = useCallback(async () => {
-    const [pj, nw, tk, ct, sb, ls, ss] = await Promise.all([
+    const [pj, nw, tk, ct, sb, ls, ss, bc, mg] = await Promise.all([
       supabase.from("projects").select("*").order("date_added", { ascending: false }),
       supabase.from("news").select("*").order("publish_date", { ascending: false }),
       supabase.from("tickers").select("*").order("sort_order"),
@@ -230,14 +257,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
       supabase.from("sidebar_menu").select("*").order("sort_order"),
       supabase.from("landing_sections").select("*").order("sort_order"),
       supabase.from("site_settings").select("*").eq("id", 1).maybeSingle(),
+      supabase.from("blog_categories" as never).select("*").order("sort_order"),
+      supabase.from("media_gallery" as never).select("*").order("created_at", { ascending: false }).limit(300),
     ]);
     if (pj.data) setProjects(pj.data.map((r) => mapProject(r as ProjectRow)));
-    if (nw.data) setNews(nw.data.map((r) => ({ id: r.id, slug: r.slug, title: r.title, category: r.category, author: r.author, coverImage: r.cover_image ?? "📰", excerpt: r.excerpt ?? "", body: r.body ?? "", publishDate: r.publish_date, status: r.status, views: r.views })));
+    if (nw.data) setNews((nw.data as never[]).map((r) => mapNews(r)));
     if (tk.data) setTickers(tk.data.map((r) => ({ id: r.id, label: r.label, linkedProjectSlug: r.linked_project_slug, sortOrder: r.sort_order, visible: r.visible })));
     if (ct.data) setCategories(ct.data.map((r) => ({ id: r.id, slug: r.slug, name: r.name, icon: r.icon, description: r.description ?? "", visible: r.visible, sortOrder: r.sort_order })));
     if (sb.data) setSidebarItems(sb.data.map((r) => ({ id: r.id, label: r.label, icon: r.icon ?? "📄", path: r.path, sortOrder: r.sort_order, visible: r.visible, requiresAuth: r.requires_auth })));
     if (ls.data) setLandingSections(ls.data.map((r) => ({ id: r.id, sectionKey: r.section_key, title: r.title, subtitle: r.subtitle ?? "", visible: r.visible, sortOrder: r.sort_order, config: (r.config as Record<string, unknown>) ?? {} })));
+    if (bc.data) setBlogCategories((bc.data as never[]).map((r: any) => ({ id: r.id, slug: r.slug, name: r.name, description: r.description ?? "", sortOrder: r.sort_order, visible: r.visible })));
+    if (mg.data) setMediaGallery((mg.data as never[]).map((r: any) => ({ id: r.id, url: r.url, filename: r.filename, tags: r.tags ?? [], createdAt: r.created_at, uploadedBy: r.uploaded_by })));
     if (ss.data) {
+      const s = ss.data as Record<string, unknown>;
       setSiteSettings({
         siteName: ss.data.site_name, metaDescription: ss.data.meta_description,
         defaultTheme: (ss.data.default_theme as Theme) ?? "light",
@@ -245,10 +277,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
         enableIframe: ss.data.enable_iframe, maintenanceMode: ss.data.maintenance_mode,
         contactEmail: ss.data.contact_email ?? "", contactCompany: ss.data.contact_company ?? "",
         contactLocation: ss.data.contact_location ?? "", autoApprove: ss.data.auto_approve,
-        listingFeeXrp: Number((ss.data as { listing_fee_xrp?: number | string | null }).listing_fee_xrp ?? 0),
-        listingPaymentAddress: (ss.data as { listing_payment_address?: string | null }).listing_payment_address ?? "",
-        cloudinaryCloudName: (ss.data as { cloudinary_cloud_name?: string | null }).cloudinary_cloud_name ?? "",
-        cloudinaryUploadPreset: (ss.data as { cloudinary_upload_preset?: string | null }).cloudinary_upload_preset ?? "",
+        listingFeeXrp: Number((s.listing_fee_xrp as number | string | null) ?? 0),
+        listingPaymentAddress: (s.listing_payment_address as string | null) ?? "",
+        cloudinaryCloudName: (s.cloudinary_cloud_name as string | null) ?? "",
+        cloudinaryUploadPreset: (s.cloudinary_upload_preset as string | null) ?? "",
+        aiDefaultInstruction: (s.ai_default_instruction as string | null) ?? DEFAULT_SETTINGS.aiDefaultInstruction,
       });
     }
   }, []);
@@ -387,8 +420,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const { data } = await supabase.from("news").insert({
       slug: a.slug, title: a.title, category: a.category, author: a.author, cover_image: a.coverImage,
       excerpt: a.excerpt, body: a.body, publish_date: a.publishDate, status: a.status,
-    }).select().single();
-    if (data) setNews((n) => [{ id: data.id, slug: data.slug, title: data.title, category: data.category, author: data.author, coverImage: data.cover_image ?? "📰", excerpt: data.excerpt ?? "", body: data.body ?? "", publishDate: data.publish_date, status: data.status, views: data.views }, ...n]);
+      cover_image_url: a.coverImageUrl ?? null, meta_description: a.metaDescription ?? null,
+      seo_keywords: a.seoKeywords ?? null, tags: a.tags ?? [], gallery: a.gallery ?? [],
+    } as never).select().single();
+    if (data) setNews((n) => [mapNews(data), ...n]);
   };
   const updateNews = async (id: string, patch: Partial<NewsArticle>) => {
     const dbPatch: Record<string, unknown> = {};
@@ -397,16 +432,68 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.category !== undefined) dbPatch.category = patch.category;
     if (patch.author !== undefined) dbPatch.author = patch.author;
     if (patch.coverImage !== undefined) dbPatch.cover_image = patch.coverImage;
+    if (patch.coverImageUrl !== undefined) dbPatch.cover_image_url = patch.coverImageUrl;
     if (patch.excerpt !== undefined) dbPatch.excerpt = patch.excerpt;
     if (patch.body !== undefined) dbPatch.body = patch.body;
     if (patch.publishDate !== undefined) dbPatch.publish_date = patch.publishDate;
     if (patch.status !== undefined) dbPatch.status = patch.status;
+    if (patch.metaDescription !== undefined) dbPatch.meta_description = patch.metaDescription;
+    if (patch.seoKeywords !== undefined) dbPatch.seo_keywords = patch.seoKeywords;
+    if (patch.tags !== undefined) dbPatch.tags = patch.tags;
+    if (patch.gallery !== undefined) dbPatch.gallery = patch.gallery;
     await supabase.from("news").update(dbPatch as never).eq("id", id);
     setNews((n) => n.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   };
   const deleteNews = async (id: string) => {
     await supabase.from("news").delete().eq("id", id);
     setNews((n) => n.filter((x) => x.id !== id));
+  };
+
+  // ---- Blog categories
+  const addBlogCategory: AppState["addBlogCategory"] = async (c) => {
+    const { data } = await supabase.from("blog_categories" as never).insert({
+      name: c.name, slug: c.slug, description: c.description ?? "",
+      sort_order: c.sortOrder ?? (blogCategories.length + 1), visible: c.visible ?? true,
+    } as never).select().single();
+    if (data) {
+      const r = data as any;
+      setBlogCategories((xs) => [...xs, { id: r.id, name: r.name, slug: r.slug, description: r.description ?? "", sortOrder: r.sort_order, visible: r.visible }]);
+    }
+  };
+  const updateBlogCategory: AppState["updateBlogCategory"] = async (id, patch) => {
+    const dbPatch: Record<string, unknown> = {};
+    if (patch.name !== undefined) dbPatch.name = patch.name;
+    if (patch.slug !== undefined) dbPatch.slug = patch.slug;
+    if (patch.description !== undefined) dbPatch.description = patch.description;
+    if (patch.sortOrder !== undefined) dbPatch.sort_order = patch.sortOrder;
+    if (patch.visible !== undefined) dbPatch.visible = patch.visible;
+    await supabase.from("blog_categories" as never).update(dbPatch as never).eq("id", id);
+    setBlogCategories((xs) => xs.map((x) => (x.id === id ? { ...x, ...patch } : x)));
+  };
+  const deleteBlogCategory: AppState["deleteBlogCategory"] = async (id) => {
+    await supabase.from("blog_categories" as never).delete().eq("id", id);
+    setBlogCategories((xs) => xs.filter((x) => x.id !== id));
+  };
+
+  // ---- Media Gallery
+  const addMedia: AppState["addMedia"] = async (m) => {
+    const { data } = await supabase.from("media_gallery" as never).insert({
+      url: m.url, filename: m.filename ?? null, tags: m.tags ?? [],
+      uploaded_by: user?.id ?? null,
+    } as never).select().single();
+    if (!data) return null;
+    const r = data as any;
+    const asset: MediaAsset = { id: r.id, url: r.url, filename: r.filename, tags: r.tags ?? [], createdAt: r.created_at, uploadedBy: r.uploaded_by };
+    setMediaGallery((xs) => [asset, ...xs]);
+    return asset;
+  };
+  const deleteMedia: AppState["deleteMedia"] = async (id) => {
+    await supabase.from("media_gallery" as never).delete().eq("id", id);
+    setMediaGallery((xs) => xs.filter((x) => x.id !== id));
+  };
+  const refreshMedia: AppState["refreshMedia"] = async () => {
+    const { data } = await supabase.from("media_gallery" as never).select("*").order("created_at", { ascending: false }).limit(300);
+    if (data) setMediaGallery((data as any[]).map((r) => ({ id: r.id, url: r.url, filename: r.filename, tags: r.tags ?? [], createdAt: r.created_at, uploadedBy: r.uploaded_by })));
   };
 
   // ---- Tickers
@@ -552,6 +639,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.listingPaymentAddress !== undefined) dbPatch.listing_payment_address = patch.listingPaymentAddress;
     if (patch.cloudinaryCloudName !== undefined) dbPatch.cloudinary_cloud_name = patch.cloudinaryCloudName;
     if (patch.cloudinaryUploadPreset !== undefined) dbPatch.cloudinary_upload_preset = patch.cloudinaryUploadPreset;
+    if (patch.aiDefaultInstruction !== undefined) (dbPatch as any).ai_default_instruction = patch.aiDefaultInstruction;
     await supabase.from("site_settings").update(dbPatch as never).eq("id", 1);
     setSiteSettings((s) => ({ ...s, ...patch }));
   };
@@ -608,6 +696,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     isAdmin,
     projects, addProject, updateProject, deleteProject, markProjectPaid,
     news, addNews, updateNews, deleteNews,
+    blogCategories, addBlogCategory, updateBlogCategory, deleteBlogCategory,
+    mediaGallery, addMedia, deleteMedia, refreshMedia,
     tickers, addTicker, updateTicker, deleteTicker,
     categories, addCategory, updateCategory, deleteCategory,
     sidebarItems, addSidebarItem, updateSidebarItem, deleteSidebarItem, reorderSidebar,
@@ -625,7 +715,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setAutoApprove: (v: boolean) => { void updateSiteSettings({ autoApprove: v }); },
     setCategories: setCategoriesLegacy, setTickers: setTickersLegacy,
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [loading, theme, session, user, isAdmin, projects, news, tickers, categories, sidebarItems, landingSections, bookmarks, history, notifications, siteSettings, walletConfig, xrpPrice, ledgerIndex, usersList]);
+  }), [loading, theme, session, user, isAdmin, projects, news, blogCategories, mediaGallery, tickers, categories, sidebarItems, landingSections, bookmarks, history, notifications, siteSettings, walletConfig, xrpPrice, ledgerIndex, usersList]);
 
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;
 }

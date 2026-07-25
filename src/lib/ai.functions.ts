@@ -80,3 +80,67 @@ export const generateProjectFaq = createServerFn({ method: "POST" })
       return { faq: [] as { q: string; a: string }[] };
     }
   });
+
+const BlogPostInput = z.object({
+  category: z.string().default(""),
+  angle: z.string().default(""),
+  instruction: z.string().default(""),
+});
+export const generateBlogPost = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => BlogPostInput.parse(input))
+  .handler(async ({ data }) => {
+    const system = `${data.instruction || "You are a helpful blog writer for XRPBrowser."}
+Write an engaging blog article in clean HTML (use <h2>, <h3>, <p>, <ul>, <li>, <strong>, <a>). Do NOT wrap in <html> or <body>.
+Return ONLY strict JSON: {"title":"...","excerpt":"...","body":"<html>","tags":["..."]}. Keep excerpt under 200 chars.`;
+    const user = `Category: ${data.category || "General"}\nAngle/Topic: ${data.angle || "(pick a compelling XRPL angle)"}`;
+    const reply = await callGateway({
+      model: MODEL,
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: user },
+      ],
+      temperature: 0.7,
+      response_format: { type: "json_object" },
+    });
+    try {
+      const parsed = JSON.parse(reply);
+      return {
+        title: String(parsed.title ?? ""),
+        excerpt: String(parsed.excerpt ?? ""),
+        body: String(parsed.body ?? ""),
+        tags: Array.isArray(parsed.tags) ? parsed.tags.slice(0, 10).map(String) : [],
+      };
+    } catch {
+      return { title: "", excerpt: "", body: reply, tags: [] as string[] };
+    }
+  });
+
+const SeoInput = z.object({
+  title: z.string(),
+  body: z.string(),
+});
+export const generateBlogSeo = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => SeoInput.parse(input))
+  .handler(async ({ data }) => {
+    const system = `Generate SEO metadata for a blog post. Return ONLY JSON: {"metaDescription":"...","keywords":["..."],"slug":"kebab-case-slug"}. metaDescription <=155 chars.`;
+    const user = `Title: ${data.title}\n\nBody (HTML, may be trimmed):\n${data.body.slice(0, 6000)}`;
+    const reply = await callGateway({
+      model: MODEL,
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: user },
+      ],
+      temperature: 0.3,
+      response_format: { type: "json_object" },
+    });
+    try {
+      const parsed = JSON.parse(reply);
+      return {
+        metaDescription: String(parsed.metaDescription ?? "").slice(0, 200),
+        keywords: Array.isArray(parsed.keywords) ? parsed.keywords.slice(0, 20).map(String) : [],
+        slug: String(parsed.slug ?? "").toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-|-$/g, ""),
+      };
+    } catch {
+      return { metaDescription: "", keywords: [] as string[], slug: "" };
+    }
+  });
