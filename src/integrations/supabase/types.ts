@@ -412,6 +412,36 @@ export type Database = {
         }
         Relationships: []
       }
+      project_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          project_slug: string
+          referrer: string | null
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          project_slug: string
+          referrer?: string | null
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          project_slug?: string
+          referrer?: string | null
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
           ai_doc: string | null
@@ -499,6 +529,39 @@ export type Database = {
           url?: string
           verified?: boolean
           visits?: number
+        }
+        Relationships: []
+      }
+      search_events: {
+        Row: {
+          clicked: boolean
+          created_at: string
+          id: string
+          position: number | null
+          project_slug: string | null
+          query: string
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          clicked?: boolean
+          created_at?: string
+          id?: string
+          position?: number | null
+          project_slug?: string | null
+          query: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          clicked?: boolean
+          created_at?: string
+          id?: string
+          position?: number | null
+          project_slug?: string | null
+          query?: string
+          session_id?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
