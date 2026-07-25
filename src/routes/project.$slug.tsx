@@ -1,20 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PublicShell } from "@/components/public-shell";
 import { useApp } from "@/lib/app-store";
 import { useViewport } from "@/components/browser-viewport";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ProjectAiChat, ProjectFaq } from "@/components/project-ai";
 import { toast } from "sonner";
+import { trackProjectEvent } from "@/lib/analytics";
 
 export const Route = createFileRoute("/project/$slug")({ component: ProjectPage });
 
 function ProjectPage() {
   const { slug } = Route.useParams();
-  const { projects, bookmarks, toggleBookmark } = useApp();
+  const { projects, bookmarks, toggleBookmark, user } = useApp();
   const viewport = useViewport();
   const [tab, setTab] = useState<"overview" | "ai" | "faq" | "details" | "links">("overview");
   const [reportOpen, setReportOpen] = useState(false);
+  useEffect(() => { void trackProjectEvent(slug, "view", user?.id ?? null); }, [slug, user?.id]);
   const project = projects.find((p) => p.slug === slug);
   if (!project) return <PublicShell><div className="p-10 text-center">Project not found. <Link to="/ecosystem" className="text-primary underline">Browse ecosystem</Link></div></PublicShell>;
   const related = projects.filter((p) => p.category === project.category && p.slug !== slug && p.status === "approved" && p.isPublic).slice(0, 4);

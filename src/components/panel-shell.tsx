@@ -5,6 +5,7 @@ import { PublicShell } from "./public-shell";
 
 const PANEL_NAV = [
   { to: "/panel", label: "Dashboard", icon: "📊" },
+  { to: "/panel/analytics", label: "Analytics", icon: "📈" },
   { to: "/panel/bookmarks", label: "Bookmarks", icon: "🔖" },
   { to: "/panel/history", label: "History", icon: "🕐" },
   { to: "/panel/submissions", label: "Submissions", icon: "📤" },
