@@ -124,10 +124,15 @@ export function aggregate(events: RawProjectEvent[], searches: RawSearchEvent[],
   // keyword aggregation
   const kw: Record<string, Record<string, { impressions: number; clicks: number; posSum: number; posCount: number }>> = {};
   const globalKw: Record<string, { searches: number; clicks: number; posSum: number; posCount: number }> = {};
+  const seenGlobal = new Set<string>();
   for (const s of searches) {
     const q = s.query.trim().toLowerCase();
     const g = (globalKw[q] ??= { searches: 0, clicks: 0, posSum: 0, posCount: 0 });
-    if (s.clicked) g.clicks++; else g.searches++;
+    if (s.clicked) g.clicks++;
+    else {
+      const k = `${q}|${s.created_at}`;
+      if (!seenGlobal.has(k)) { seenGlobal.add(k); g.searches++; }
+    }
     if (s.position) { g.posSum += s.position; g.posCount++; }
     if (!s.project_slug) continue;
     const p = ensure(s.project_slug);
