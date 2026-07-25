@@ -696,6 +696,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     isAdmin,
     projects, addProject, updateProject, deleteProject, markProjectPaid,
     news, addNews, updateNews, deleteNews,
+    blogCategories, addBlogCategory, updateBlogCategory, deleteBlogCategory,
+    mediaGallery, addMedia, deleteMedia, refreshMedia,
     tickers, addTicker, updateTicker, deleteTicker,
     categories, addCategory, updateCategory, deleteCategory,
     sidebarItems, addSidebarItem, updateSidebarItem, deleteSidebarItem, reorderSidebar,
