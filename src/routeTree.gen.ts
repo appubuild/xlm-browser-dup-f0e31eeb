@@ -43,8 +43,8 @@ import { Route as AdminNotificationsRouteImport } from './routes/admin.notificat
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminLandingRouteImport } from './routes/admin.landing'
 import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
-import { Route as AdminBlogRouteImport } from './routes/admin.blog'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
+import { Route as AdminBlogIndexRouteImport } from './routes/admin.blog.index'
 import { Route as AdminProjectsPendingRouteImport } from './routes/admin.projects.pending'
 import { Route as AdminBlogNewRouteImport } from './routes/admin.blog.new'
 import { Route as AdminBlogIdRouteImport } from './routes/admin.blog.$id'
@@ -220,14 +220,14 @@ const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   path: '/admin/categories',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminBlogRoute = AdminBlogRouteImport.update({
-  id: '/admin/blog',
-  path: '/admin/blog',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
   id: '/admin/analytics',
   path: '/admin/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminBlogIndexRoute = AdminBlogIndexRouteImport.update({
+  id: '/admin/blog/',
+  path: '/admin/blog/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminProjectsPendingRoute = AdminProjectsPendingRouteImport.update({
@@ -236,14 +236,14 @@ const AdminProjectsPendingRoute = AdminProjectsPendingRouteImport.update({
   getParentRoute: () => AdminProjectsRoute,
 } as any)
 const AdminBlogNewRoute = AdminBlogNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => AdminBlogRoute,
+  id: '/admin/blog/new',
+  path: '/admin/blog/new',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminBlogIdRoute = AdminBlogIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AdminBlogRoute,
+  id: '/admin/blog/$id',
+  path: '/admin/blog/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -260,7 +260,6 @@ export interface FileRoutesByFullPath {
   '/submit': typeof SubmitRoute
   '/terms': typeof TermsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
-  '/admin/blog': typeof AdminBlogRouteWithChildren
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
@@ -286,6 +285,7 @@ export interface FileRoutesByFullPath {
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
   '/admin/projects/pending': typeof AdminProjectsPendingRoute
+  '/admin/blog/': typeof AdminBlogIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -301,7 +301,6 @@ export interface FileRoutesByTo {
   '/submit': typeof SubmitRoute
   '/terms': typeof TermsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
-  '/admin/blog': typeof AdminBlogRouteWithChildren
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
@@ -327,6 +326,7 @@ export interface FileRoutesByTo {
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
   '/admin/projects/pending': typeof AdminProjectsPendingRoute
+  '/admin/blog': typeof AdminBlogIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -343,7 +343,6 @@ export interface FileRoutesById {
   '/submit': typeof SubmitRoute
   '/terms': typeof TermsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
-  '/admin/blog': typeof AdminBlogRouteWithChildren
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
@@ -369,6 +368,7 @@ export interface FileRoutesById {
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
   '/admin/projects/pending': typeof AdminProjectsPendingRoute
+  '/admin/blog/': typeof AdminBlogIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -386,7 +386,6 @@ export interface FileRouteTypes {
     | '/submit'
     | '/terms'
     | '/admin/analytics'
-    | '/admin/blog'
     | '/admin/categories'
     | '/admin/landing'
     | '/admin/login'
@@ -412,6 +411,7 @@ export interface FileRouteTypes {
     | '/admin/blog/$id'
     | '/admin/blog/new'
     | '/admin/projects/pending'
+    | '/admin/blog/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -427,7 +427,6 @@ export interface FileRouteTypes {
     | '/submit'
     | '/terms'
     | '/admin/analytics'
-    | '/admin/blog'
     | '/admin/categories'
     | '/admin/landing'
     | '/admin/login'
@@ -453,6 +452,7 @@ export interface FileRouteTypes {
     | '/admin/blog/$id'
     | '/admin/blog/new'
     | '/admin/projects/pending'
+    | '/admin/blog'
   id:
     | '__root__'
     | '/'
@@ -468,7 +468,6 @@ export interface FileRouteTypes {
     | '/submit'
     | '/terms'
     | '/admin/analytics'
-    | '/admin/blog'
     | '/admin/categories'
     | '/admin/landing'
     | '/admin/login'
@@ -494,6 +493,7 @@ export interface FileRouteTypes {
     | '/admin/blog/$id'
     | '/admin/blog/new'
     | '/admin/projects/pending'
+    | '/admin/blog/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -510,7 +510,6 @@ export interface RootRouteChildren {
   SubmitRoute: typeof SubmitRoute
   TermsRoute: typeof TermsRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
-  AdminBlogRoute: typeof AdminBlogRouteWithChildren
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminLandingRoute: typeof AdminLandingRoute
   AdminLoginRoute: typeof AdminLoginRoute
@@ -531,6 +530,9 @@ export interface RootRouteChildren {
   ProjectSlugRoute: typeof ProjectSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   PanelIndexRoute: typeof PanelIndexRoute
+  AdminBlogIdRoute: typeof AdminBlogIdRoute
+  AdminBlogNewRoute: typeof AdminBlogNewRoute
+  AdminBlogIndexRoute: typeof AdminBlogIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -773,18 +775,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/blog': {
-      id: '/admin/blog'
-      path: '/admin/blog'
-      fullPath: '/admin/blog'
-      preLoaderRoute: typeof AdminBlogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin/analytics': {
       id: '/admin/analytics'
       path: '/admin/analytics'
       fullPath: '/admin/analytics'
       preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/blog/': {
+      id: '/admin/blog/'
+      path: '/admin/blog'
+      fullPath: '/admin/blog/'
+      preLoaderRoute: typeof AdminBlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/projects/pending': {
@@ -796,17 +798,17 @@ declare module '@tanstack/react-router' {
     }
     '/admin/blog/new': {
       id: '/admin/blog/new'
-      path: '/new'
+      path: '/admin/blog/new'
       fullPath: '/admin/blog/new'
       preLoaderRoute: typeof AdminBlogNewRouteImport
-      parentRoute: typeof AdminBlogRoute
+      parentRoute: typeof rootRouteImport
     }
     '/admin/blog/$id': {
       id: '/admin/blog/$id'
-      path: '/$id'
+      path: '/admin/blog/$id'
       fullPath: '/admin/blog/$id'
       preLoaderRoute: typeof AdminBlogIdRouteImport
-      parentRoute: typeof AdminBlogRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -832,20 +834,6 @@ const NewsRouteChildren: NewsRouteChildren = {
 }
 
 const NewsRouteWithChildren = NewsRoute._addFileChildren(NewsRouteChildren)
-
-interface AdminBlogRouteChildren {
-  AdminBlogIdRoute: typeof AdminBlogIdRoute
-  AdminBlogNewRoute: typeof AdminBlogNewRoute
-}
-
-const AdminBlogRouteChildren: AdminBlogRouteChildren = {
-  AdminBlogIdRoute: AdminBlogIdRoute,
-  AdminBlogNewRoute: AdminBlogNewRoute,
-}
-
-const AdminBlogRouteWithChildren = AdminBlogRoute._addFileChildren(
-  AdminBlogRouteChildren,
-)
 
 interface AdminProjectsRouteChildren {
   AdminProjectsPendingRoute: typeof AdminProjectsPendingRoute
@@ -873,7 +861,6 @@ const rootRouteChildren: RootRouteChildren = {
   SubmitRoute: SubmitRoute,
   TermsRoute: TermsRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
-  AdminBlogRoute: AdminBlogRouteWithChildren,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminLandingRoute: AdminLandingRoute,
   AdminLoginRoute: AdminLoginRoute,
@@ -894,17 +881,10 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectSlugRoute: ProjectSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   PanelIndexRoute: PanelIndexRoute,
+  AdminBlogIdRoute: AdminBlogIdRoute,
+  AdminBlogNewRoute: AdminBlogNewRoute,
+  AdminBlogIndexRoute: AdminBlogIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
