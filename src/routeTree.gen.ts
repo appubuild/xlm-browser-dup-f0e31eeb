@@ -14,7 +14,6 @@ import { Route as SubmitRouteImport } from './routes/submit'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as NewsRouteImport } from './routes/news'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as EcosystemRouteImport } from './routes/ecosystem'
@@ -22,6 +21,7 @@ import { Route as DevelopersRouteImport } from './routes/developers'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PanelIndexRouteImport } from './routes/panel.index'
+import { Route as NewsIndexRouteImport } from './routes/news.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProjectSlugRouteImport } from './routes/project.$slug'
 import { Route as PanelSubmitRouteImport } from './routes/panel.submit'
@@ -74,11 +74,6 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NewsRoute = NewsRouteImport.update({
-  id: '/news',
-  path: '/news',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -112,6 +107,11 @@ const IndexRoute = IndexRouteImport.update({
 const PanelIndexRoute = PanelIndexRouteImport.update({
   id: '/panel/',
   path: '/panel/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsIndexRoute = NewsIndexRouteImport.update({
+  id: '/news/',
+  path: '/news/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -155,9 +155,9 @@ const PanelBookmarksRoute = PanelBookmarksRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const NewsSlugRoute = NewsSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => NewsRoute,
+  id: '/news/$slug',
+  path: '/news/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const DirectoryCategoryRoute = DirectoryCategoryRouteImport.update({
   id: '/directory/$category',
@@ -253,7 +253,6 @@ export interface FileRoutesByFullPath {
   '/ecosystem': typeof EcosystemRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
-  '/news': typeof NewsRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
   '/signup': typeof SignupRoute
@@ -281,6 +280,7 @@ export interface FileRoutesByFullPath {
   '/panel/submit': typeof PanelSubmitRoute
   '/project/$slug': typeof ProjectSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/news/': typeof NewsIndexRoute
   '/panel/': typeof PanelIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
@@ -294,7 +294,6 @@ export interface FileRoutesByTo {
   '/ecosystem': typeof EcosystemRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
-  '/news': typeof NewsRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
   '/signup': typeof SignupRoute
@@ -322,6 +321,7 @@ export interface FileRoutesByTo {
   '/panel/submit': typeof PanelSubmitRoute
   '/project/$slug': typeof ProjectSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/news': typeof NewsIndexRoute
   '/panel': typeof PanelIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
@@ -336,7 +336,6 @@ export interface FileRoutesById {
   '/ecosystem': typeof EcosystemRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
-  '/news': typeof NewsRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
   '/signup': typeof SignupRoute
@@ -364,6 +363,7 @@ export interface FileRoutesById {
   '/panel/submit': typeof PanelSubmitRoute
   '/project/$slug': typeof ProjectSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/news/': typeof NewsIndexRoute
   '/panel/': typeof PanelIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
@@ -379,7 +379,6 @@ export interface FileRouteTypes {
     | '/ecosystem'
     | '/help'
     | '/login'
-    | '/news'
     | '/privacy'
     | '/search'
     | '/signup'
@@ -407,6 +406,7 @@ export interface FileRouteTypes {
     | '/panel/submit'
     | '/project/$slug'
     | '/admin/'
+    | '/news/'
     | '/panel/'
     | '/admin/blog/$id'
     | '/admin/blog/new'
@@ -420,7 +420,6 @@ export interface FileRouteTypes {
     | '/ecosystem'
     | '/help'
     | '/login'
-    | '/news'
     | '/privacy'
     | '/search'
     | '/signup'
@@ -448,6 +447,7 @@ export interface FileRouteTypes {
     | '/panel/submit'
     | '/project/$slug'
     | '/admin'
+    | '/news'
     | '/panel'
     | '/admin/blog/$id'
     | '/admin/blog/new'
@@ -461,7 +461,6 @@ export interface FileRouteTypes {
     | '/ecosystem'
     | '/help'
     | '/login'
-    | '/news'
     | '/privacy'
     | '/search'
     | '/signup'
@@ -489,6 +488,7 @@ export interface FileRouteTypes {
     | '/panel/submit'
     | '/project/$slug'
     | '/admin/'
+    | '/news/'
     | '/panel/'
     | '/admin/blog/$id'
     | '/admin/blog/new'
@@ -503,7 +503,6 @@ export interface RootRouteChildren {
   EcosystemRoute: typeof EcosystemRoute
   HelpRoute: typeof HelpRoute
   LoginRoute: typeof LoginRoute
-  NewsRoute: typeof NewsRouteWithChildren
   PrivacyRoute: typeof PrivacyRoute
   SearchRoute: typeof SearchRoute
   SignupRoute: typeof SignupRoute
@@ -521,6 +520,7 @@ export interface RootRouteChildren {
   AdminUsersRoute: typeof AdminUsersRoute
   AdminWalletConnectConfigRoute: typeof AdminWalletConnectConfigRoute
   DirectoryCategoryRoute: typeof DirectoryCategoryRoute
+  NewsSlugRoute: typeof NewsSlugRoute
   PanelBookmarksRoute: typeof PanelBookmarksRoute
   PanelHistoryRoute: typeof PanelHistoryRoute
   PanelNotificationsRoute: typeof PanelNotificationsRoute
@@ -529,6 +529,7 @@ export interface RootRouteChildren {
   PanelSubmitRoute: typeof PanelSubmitRoute
   ProjectSlugRoute: typeof ProjectSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  NewsIndexRoute: typeof NewsIndexRoute
   PanelIndexRoute: typeof PanelIndexRoute
   AdminBlogIdRoute: typeof AdminBlogIdRoute
   AdminBlogNewRoute: typeof AdminBlogNewRoute
@@ -570,13 +571,6 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/news': {
-      id: '/news'
-      path: '/news'
-      fullPath: '/news'
-      preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -626,6 +620,13 @@ declare module '@tanstack/react-router' {
       path: '/panel'
       fullPath: '/panel/'
       preLoaderRoute: typeof PanelIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news/': {
+      id: '/news/'
+      path: '/news'
+      fullPath: '/news/'
+      preLoaderRoute: typeof NewsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -686,10 +687,10 @@ declare module '@tanstack/react-router' {
     }
     '/news/$slug': {
       id: '/news/$slug'
-      path: '/$slug'
+      path: '/news/$slug'
       fullPath: '/news/$slug'
       preLoaderRoute: typeof NewsSlugRouteImport
-      parentRoute: typeof NewsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/directory/$category': {
       id: '/directory/$category'
@@ -825,16 +826,6 @@ const DevelopersRouteWithChildren = DevelopersRoute._addFileChildren(
   DevelopersRouteChildren,
 )
 
-interface NewsRouteChildren {
-  NewsSlugRoute: typeof NewsSlugRoute
-}
-
-const NewsRouteChildren: NewsRouteChildren = {
-  NewsSlugRoute: NewsSlugRoute,
-}
-
-const NewsRouteWithChildren = NewsRoute._addFileChildren(NewsRouteChildren)
-
 interface AdminProjectsRouteChildren {
   AdminProjectsPendingRoute: typeof AdminProjectsPendingRoute
 }
@@ -854,7 +845,6 @@ const rootRouteChildren: RootRouteChildren = {
   EcosystemRoute: EcosystemRoute,
   HelpRoute: HelpRoute,
   LoginRoute: LoginRoute,
-  NewsRoute: NewsRouteWithChildren,
   PrivacyRoute: PrivacyRoute,
   SearchRoute: SearchRoute,
   SignupRoute: SignupRoute,
@@ -872,6 +862,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminUsersRoute: AdminUsersRoute,
   AdminWalletConnectConfigRoute: AdminWalletConnectConfigRoute,
   DirectoryCategoryRoute: DirectoryCategoryRoute,
+  NewsSlugRoute: NewsSlugRoute,
   PanelBookmarksRoute: PanelBookmarksRoute,
   PanelHistoryRoute: PanelHistoryRoute,
   PanelNotificationsRoute: PanelNotificationsRoute,
@@ -880,6 +871,7 @@ const rootRouteChildren: RootRouteChildren = {
   PanelSubmitRoute: PanelSubmitRoute,
   ProjectSlugRoute: ProjectSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
+  NewsIndexRoute: NewsIndexRoute,
   PanelIndexRoute: PanelIndexRoute,
   AdminBlogIdRoute: AdminBlogIdRoute,
   AdminBlogNewRoute: AdminBlogNewRoute,

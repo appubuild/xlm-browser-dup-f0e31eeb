@@ -1,9 +1,101 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AdminShell } from "@/components/admin-shell";
 import { useApp } from "@/lib/app-store";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/site-settings")({ component: SiteSettings });
+
+type AiProvider = "openai" | "anthropic" | "google";
+interface AiConfigRow {
+  provider: AiProvider;
+  model: string;
+  openai_key: string;
+  anthropic_key: string;
+  google_key: string;
+}
+
+const MODEL_SUGGESTIONS: Record<AiProvider, string[]> = {
+  openai: ["gpt-4o-mini", "gpt-4o", "gpt-4.1-mini", "gpt-4.1"],
+  anthropic: ["claude-3-5-sonnet-latest", "claude-3-5-haiku-latest", "claude-3-opus-latest"],
+  google: ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.5-pro"],
+};
+
+function AiProvidersCard() {
+  const [cfg, setCfg] = useState<AiConfigRow>({ provider: "openai", model: "gpt-4o-mini", openai_key: "", anthropic_key: "", google_key: "" });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [reveal, setReveal] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const { data, error } = await supabase.from("ai_config" as never).select("*").eq("id", 1).maybeSingle();
+      if (error) toast.error(`Load AI config: ${error.message}`);
+      else if (data) {
+        const r = data as unknown as AiConfigRow;
+        setCfg({
+          provider: (r.provider as AiProvider) ?? "openai",
+          model: r.model ?? "gpt-4o-mini",
+          openai_key: r.openai_key ?? "",
+          anthropic_key: r.anthropic_key ?? "",
+          google_key: r.google_key ?? "",
+        });
+      }
+      setLoading(false);
+    })();
+  }, []);
+
+  const save = async () => {
+    setSaving(true);
+    const { error } = await supabase.from("ai_config" as never).update(cfg as never).eq("id", 1);
+    setSaving(false);
+    if (error) toast.error(error.message);
+    else toast.success("AI provider saved");
+  };
+
+  const keyType = reveal ? "text" : "password";
+  return (
+    <Card title="AI Providers (Bring your own keys)">
+      {loading ? <div className="text-xs text-slate-400">Loading…</div> : (
+        <>
+          <F label="Active provider">
+            <select value={cfg.provider} onChange={(e) => {
+              const p = e.target.value as AiProvider;
+              setCfg((c) => ({ ...c, provider: p, model: MODEL_SUGGESTIONS[p][0] }));
+            }} className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm">
+              <option value="openai">OpenAI (ChatGPT)</option>
+              <option value="anthropic">Anthropic (Claude)</option>
+              <option value="google">Google (Gemini)</option>
+            </select>
+          </F>
+          <F label={`Model (${cfg.provider})`}>
+            <input list={`models-${cfg.provider}`} value={cfg.model} onChange={(e) => setCfg((c) => ({ ...c, model: e.target.value }))} className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" />
+            <datalist id={`models-${cfg.provider}`}>
+              {MODEL_SUGGESTIONS[cfg.provider].map((m) => <option key={m} value={m} />)}
+            </datalist>
+          </F>
+          <label className="flex items-center gap-2 text-xs text-slate-400">
+            <input type="checkbox" checked={reveal} onChange={(e) => setReveal(e.target.checked)} /> Show keys
+          </label>
+          <F label="OpenAI API key (sk-…)">
+            <input type={keyType} value={cfg.openai_key} onChange={(e) => setCfg((c) => ({ ...c, openai_key: e.target.value }))} placeholder="sk-..." className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm font-mono" />
+          </F>
+          <F label="Anthropic API key (sk-ant-…)">
+            <input type={keyType} value={cfg.anthropic_key} onChange={(e) => setCfg((c) => ({ ...c, anthropic_key: e.target.value }))} placeholder="sk-ant-..." className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm font-mono" />
+          </F>
+          <F label="Google Gemini API key (AIza…)">
+            <input type={keyType} value={cfg.google_key} onChange={(e) => setCfg((c) => ({ ...c, google_key: e.target.value }))} placeholder="AIza..." className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm font-mono" />
+          </F>
+          <div className="text-xs text-slate-400">Keys are stored in an admin-only table (RLS). The active provider powers all AI features: project Ask AI, FAQ, blog writer, and SEO.</div>
+          <div className="flex justify-end">
+            <button onClick={save} disabled={saving} className="rounded bg-sky-500 px-3 py-1.5 text-sm text-white disabled:opacity-50">{saving ? "Saving…" : "Save AI settings"}</button>
+          </div>
+        </>
+      )}
+    </Card>
+  );
+}
 
 function SiteSettings() {
   const { siteSettings, updateSiteSettings } = useApp();
@@ -72,6 +164,7 @@ function SiteSettings() {
           </F>
           <div className="text-xs text-slate-400">Used as the base system prompt whenever an admin clicks “AI: Write post”.</div>
         </Card>
+        <AiProvidersCard />
         <Card title="API Settings">
           <F label="Rate limit (req/min)"><input defaultValue={60} type="number" className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" /></F>
           <div className="text-xs text-slate-400">Issued keys</div>

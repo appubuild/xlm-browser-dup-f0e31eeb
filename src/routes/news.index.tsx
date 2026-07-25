@@ -3,7 +3,7 @@ import { useState, useMemo } from "react";
 import { PublicShell } from "@/components/public-shell";
 import { useApp } from "@/lib/app-store";
 
-export const Route = createFileRoute("/news")({ component: NewsPage });
+export const Route = createFileRoute("/news/")({ component: NewsPage });
 
 function NewsPage() {
   const { news, blogCategories } = useApp();
