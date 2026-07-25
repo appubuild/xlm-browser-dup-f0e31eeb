@@ -30,6 +30,7 @@ import { Route as PanelSettingsRouteImport } from './routes/panel.settings'
 import { Route as PanelNotificationsRouteImport } from './routes/panel.notifications'
 import { Route as PanelHistoryRouteImport } from './routes/panel.history'
 import { Route as PanelBookmarksRouteImport } from './routes/panel.bookmarks'
+import { Route as PanelAnalyticsRouteImport } from './routes/panel.analytics'
 import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 import { Route as DirectoryCategoryRouteImport } from './routes/directory.$category'
 import { Route as DevelopersApiRouteImport } from './routes/developers.api'
@@ -153,6 +154,11 @@ const PanelHistoryRoute = PanelHistoryRouteImport.update({
 const PanelBookmarksRoute = PanelBookmarksRouteImport.update({
   id: '/panel/bookmarks',
   path: '/panel/bookmarks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PanelAnalyticsRoute = PanelAnalyticsRouteImport.update({
+  id: '/panel/analytics',
+  path: '/panel/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NewsSlugRoute = NewsSlugRouteImport.update({
@@ -279,6 +285,7 @@ export interface FileRoutesByFullPath {
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
   '/news/$slug': typeof NewsSlugRoute
+  '/panel/analytics': typeof PanelAnalyticsRoute
   '/panel/bookmarks': typeof PanelBookmarksRoute
   '/panel/history': typeof PanelHistoryRoute
   '/panel/notifications': typeof PanelNotificationsRoute
@@ -321,6 +328,7 @@ export interface FileRoutesByTo {
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
   '/news/$slug': typeof NewsSlugRoute
+  '/panel/analytics': typeof PanelAnalyticsRoute
   '/panel/bookmarks': typeof PanelBookmarksRoute
   '/panel/history': typeof PanelHistoryRoute
   '/panel/notifications': typeof PanelNotificationsRoute
@@ -364,6 +372,7 @@ export interface FileRoutesById {
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
   '/news/$slug': typeof NewsSlugRoute
+  '/panel/analytics': typeof PanelAnalyticsRoute
   '/panel/bookmarks': typeof PanelBookmarksRoute
   '/panel/history': typeof PanelHistoryRoute
   '/panel/notifications': typeof PanelNotificationsRoute
@@ -408,6 +417,7 @@ export interface FileRouteTypes {
     | '/developers/api'
     | '/directory/$category'
     | '/news/$slug'
+    | '/panel/analytics'
     | '/panel/bookmarks'
     | '/panel/history'
     | '/panel/notifications'
@@ -450,6 +460,7 @@ export interface FileRouteTypes {
     | '/developers/api'
     | '/directory/$category'
     | '/news/$slug'
+    | '/panel/analytics'
     | '/panel/bookmarks'
     | '/panel/history'
     | '/panel/notifications'
@@ -492,6 +503,7 @@ export interface FileRouteTypes {
     | '/developers/api'
     | '/directory/$category'
     | '/news/$slug'
+    | '/panel/analytics'
     | '/panel/bookmarks'
     | '/panel/history'
     | '/panel/notifications'
@@ -534,6 +546,7 @@ export interface RootRouteChildren {
   AdminWalletConnectConfigRoute: typeof AdminWalletConnectConfigRoute
   DirectoryCategoryRoute: typeof DirectoryCategoryRoute
   NewsSlugRoute: typeof NewsSlugRoute
+  PanelAnalyticsRoute: typeof PanelAnalyticsRoute
   PanelBookmarksRoute: typeof PanelBookmarksRoute
   PanelHistoryRoute: typeof PanelHistoryRoute
   PanelNotificationsRoute: typeof PanelNotificationsRoute
@@ -696,6 +709,13 @@ declare module '@tanstack/react-router' {
       path: '/panel/bookmarks'
       fullPath: '/panel/bookmarks'
       preLoaderRoute: typeof PanelBookmarksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/analytics': {
+      id: '/panel/analytics'
+      path: '/panel/analytics'
+      fullPath: '/panel/analytics'
+      preLoaderRoute: typeof PanelAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/news/$slug': {
@@ -884,6 +904,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminWalletConnectConfigRoute: AdminWalletConnectConfigRoute,
   DirectoryCategoryRoute: DirectoryCategoryRoute,
   NewsSlugRoute: NewsSlugRoute,
+  PanelAnalyticsRoute: PanelAnalyticsRoute,
   PanelBookmarksRoute: PanelBookmarksRoute,
   PanelHistoryRoute: PanelHistoryRoute,
   PanelNotificationsRoute: PanelNotificationsRoute,
