@@ -22,7 +22,7 @@ function Directory() {
   if (sort === "newest") items = [...items].sort((a, b) => b.dateAdded.localeCompare(a.dateAdded));
   if (sort === "trending") items = [...items].sort((a, b) => b.visits - a.visits);
 
-  const isRetro = theme === "dark";
+  const isRetro = theme === "retro";
 
   return (
     <PublicShell>

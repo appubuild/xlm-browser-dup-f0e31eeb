@@ -1,6 +1,6 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { Sun, Moon, Wallet, Rocket, Menu, User as UserIcon, Bell, Search, ChevronLeft, Shield } from "lucide-react";
+import { Sun, Moon, Terminal, Wallet, Rocket, Menu, User as UserIcon, Bell, Search, ChevronLeft, Shield } from "lucide-react";
 import { useApp } from "@/lib/app-store";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -17,7 +17,9 @@ export function PublicShell({ children }: { children: ReactNode }) {
   const [walletOpen, setWalletOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [mobileNav, setMobileNav] = useState(false);
-  const isRetro = theme === "dark";
+  const isRetro = theme === "retro";
+  const themeIcon = theme === "light" ? <Moon className="h-4 w-4" /> : theme === "dark" ? <Terminal className="h-4 w-4" /> : <Sun className="h-4 w-4" />;
+  const themeTitle = theme === "light" ? "Switch to Dark" : theme === "dark" ? "Switch to 1999" : "Switch to Light";
   const viewport = useViewport();
   const hideSidebar = path.startsWith("/panel") || path.startsWith("/admin");
   const featured = projects.filter((p) => p.featured && p.status === "approved" && p.isPublic).slice(0, 5);
@@ -51,8 +53,8 @@ export function PublicShell({ children }: { children: ReactNode }) {
           {/* Right-aligned actions */}
           <div className="ml-auto flex items-center gap-2">
             {/* Desktop actions */}
-            <button onClick={toggleTheme} className={`hidden sm:inline-flex ${isRetro ? "retro-btn" : "rounded-md border p-2 hover:bg-muted"}`} title="Toggle theme">
-              {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+            <button onClick={toggleTheme} className={`hidden sm:inline-flex ${isRetro ? "retro-btn" : "rounded-md border p-2 hover:bg-muted"}`} title={themeTitle}>
+              {themeIcon}
             </button>
             <button onClick={() => setWalletOpen(true)} className={`hidden sm:inline-flex ${isRetro ? "retro-btn" : "items-center gap-1.5 rounded-md border px-3 py-2 text-sm hover:bg-muted"}`}>
               <Wallet className="h-4 w-4" /> {user?.walletAddress ? `${user.walletAddress.slice(0, 6)}…` : "Connect Wallet"}
@@ -98,7 +100,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
                     <Wallet className="mr-2 h-4 w-4" /> {user?.walletAddress ? "Wallet" : "Connect wallet"}
                   </DropdownMenuItem>
                   <DropdownMenuItem className="sm:hidden" onClick={toggleTheme}>
-                    {theme === "light" ? <Moon className="mr-2 h-4 w-4" /> : <Sun className="mr-2 h-4 w-4" />} Toggle theme
+                    {themeIcon}<span className="ml-2">{themeTitle}</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => { logout(); toast("Logged out"); }}>Log out</DropdownMenuItem>
                 </DropdownMenuContent>
@@ -216,7 +218,7 @@ function RetroChrome({ path, loading }: { path: string; loading: boolean }) {
 
 function Footer() {
   const { theme, siteSettings } = useApp();
-  const isRetro = theme === "dark";
+  const isRetro = theme === "retro";
   return (
     <footer className={isRetro ? "border-t-2 border-primary bg-background px-4 py-6 font-mono text-sm" : "border-t bg-card px-6 py-10"}>
       {isRetro && <div className="mb-3 text-center font-mono">========================================================</div>}
