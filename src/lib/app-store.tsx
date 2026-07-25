@@ -163,6 +163,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   contactEmail: "partner@skipads.ai", contactCompany: "SkipAds AI LLC", contactLocation: "Detroit, MI · USA", autoApprove: false,
   listingFeeXrp: 0, listingPaymentAddress: "",
   cloudinaryCloudName: "", cloudinaryUploadPreset: "",
+  aiDefaultInstruction: "You are a helpful writer for XRPBrowser, an XRP Ledger discovery portal. Write clear, accurate, upbeat posts.",
 };
 
 type ProjectRow = {
