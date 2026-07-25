@@ -82,6 +82,41 @@
 }
 
 .dark {
+  /* MODERN DARK */
+  --background: oklch(0.16 0.02 260);
+  --foreground: oklch(0.95 0.01 240);
+  --card: oklch(0.20 0.02 260);
+  --card-foreground: oklch(0.95 0.01 240);
+  --popover: oklch(0.20 0.02 260);
+  --popover-foreground: oklch(0.95 0.01 240);
+  --primary: oklch(0.72 0.16 250);
+  --primary-foreground: oklch(0.14 0.02 260);
+  --secondary: oklch(0.24 0.02 260);
+  --secondary-foreground: oklch(0.95 0.01 240);
+  --muted: oklch(0.24 0.02 260);
+  --muted-foreground: oklch(0.72 0.02 260);
+  --accent: oklch(0.72 0.15 220);
+  --accent-foreground: oklch(0.14 0.02 260);
+  --destructive: oklch(0.62 0.24 27);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.30 0.02 260);
+  --input: oklch(0.24 0.02 260);
+  --ring: oklch(0.6 0.16 240);
+  --brand: oklch(0.72 0.16 250);
+  --brand-2: oklch(0.72 0.15 220);
+  --success: oklch(0.65 0.18 150);
+  --warning: oklch(0.75 0.16 75);
+  --sidebar: oklch(0.18 0.02 260);
+  --sidebar-foreground: oklch(0.95 0.01 240);
+  --sidebar-primary: oklch(0.72 0.16 250);
+  --sidebar-primary-foreground: oklch(0.14 0.02 260);
+  --sidebar-accent: oklch(0.24 0.02 260);
+  --sidebar-accent-foreground: oklch(0.95 0.01 240);
+  --sidebar-border: oklch(0.30 0.02 260);
+  --sidebar-ring: oklch(0.6 0.16 240);
+}
+
+.retro {
   /* RETRO 1999 TERMINAL */
   --background: oklch(0.08 0 0);
   --foreground: oklch(0.88 0.24 145);
@@ -115,6 +150,30 @@
   --sidebar-border: oklch(0.32 0.14 145);
   --sidebar-ring: oklch(0.88 0.24 145);
 }
+
+/* ==== ADMIN LIGHT MODE OVERRIDES ==== */
+/* Admin routes hardcode slate-* utilities. When the AdminShell selects light mode,
+   .admin-light is applied on <html> so overrides also reach portal-rendered dialogs. */
+.admin-light .bg-slate-950 { background-color: #f8fafc !important; }
+.admin-light .bg-slate-900 { background-color: #ffffff !important; }
+.admin-light .bg-slate-900\/60 { background-color: rgba(241,245,249,0.6) !important; }
+.admin-light .bg-slate-900\/50 { background-color: rgba(241,245,249,0.5) !important; }
+.admin-light .bg-slate-800 { background-color: #f1f5f9 !important; }
+.admin-light .bg-slate-800\/50 { background-color: rgba(241,245,249,0.6) !important; }
+.admin-light .hover\:bg-slate-800:hover { background-color: #f1f5f9 !important; }
+.admin-light .hover\:bg-slate-900:hover { background-color: #f8fafc !important; }
+.admin-light .border-slate-950 { border-color: #e2e8f0 !important; }
+.admin-light .border-slate-900 { border-color: #e2e8f0 !important; }
+.admin-light .border-slate-800 { border-color: #e2e8f0 !important; }
+.admin-light .border-slate-700 { border-color: #cbd5e1 !important; }
+.admin-light .text-slate-100 { color: #0f172a !important; }
+.admin-light .text-slate-200 { color: #1e293b !important; }
+.admin-light .text-slate-300 { color: #334155 !important; }
+.admin-light .text-slate-400 { color: #64748b !important; }
+.admin-light .text-slate-500 { color: #64748b !important; }
+.admin-light .divide-slate-800 > * + * { border-color: #e2e8f0 !important; }
+.admin-light .placeholder\:text-slate-500::placeholder { color: #94a3b8 !important; }
+
 
 @layer base {
   * { border-color: var(--color-border); }
