@@ -91,6 +91,16 @@ interface AppState {
   updateNews: (id: string, patch: Partial<NewsArticle>) => Promise<void>;
   deleteNews: (id: string) => Promise<void>;
 
+  blogCategories: BlogCategory[];
+  addBlogCategory: (c: Partial<BlogCategory> & { name: string; slug: string }) => Promise<void>;
+  updateBlogCategory: (id: string, patch: Partial<BlogCategory>) => Promise<void>;
+  deleteBlogCategory: (id: string) => Promise<void>;
+
+  mediaGallery: MediaAsset[];
+  addMedia: (m: { url: string; filename?: string; tags?: string[] }) => Promise<MediaAsset | null>;
+  deleteMedia: (id: string) => Promise<void>;
+  refreshMedia: () => Promise<void>;
+
   tickers: Ticker[];
   addTicker: (t: Partial<Ticker> & { label: string }) => Promise<void>;
   updateTicker: (id: string, patch: Partial<Ticker>) => Promise<void>;
