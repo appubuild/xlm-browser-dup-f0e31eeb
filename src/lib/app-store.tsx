@@ -420,8 +420,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const { data } = await supabase.from("news").insert({
       slug: a.slug, title: a.title, category: a.category, author: a.author, cover_image: a.coverImage,
       excerpt: a.excerpt, body: a.body, publish_date: a.publishDate, status: a.status,
-    }).select().single();
-    if (data) setNews((n) => [{ id: data.id, slug: data.slug, title: data.title, category: data.category, author: data.author, coverImage: data.cover_image ?? "📰", excerpt: data.excerpt ?? "", body: data.body ?? "", publishDate: data.publish_date, status: data.status, views: data.views }, ...n]);
+      cover_image_url: a.coverImageUrl ?? null, meta_description: a.metaDescription ?? null,
+      seo_keywords: a.seoKeywords ?? null, tags: a.tags ?? [], gallery: a.gallery ?? [],
+    } as never).select().single();
+    if (data) setNews((n) => [mapNews(data), ...n]);
   };
   const updateNews = async (id: string, patch: Partial<NewsArticle>) => {
     const dbPatch: Record<string, unknown> = {};
@@ -430,16 +432,68 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.category !== undefined) dbPatch.category = patch.category;
     if (patch.author !== undefined) dbPatch.author = patch.author;
     if (patch.coverImage !== undefined) dbPatch.cover_image = patch.coverImage;
+    if (patch.coverImageUrl !== undefined) dbPatch.cover_image_url = patch.coverImageUrl;
     if (patch.excerpt !== undefined) dbPatch.excerpt = patch.excerpt;
     if (patch.body !== undefined) dbPatch.body = patch.body;
     if (patch.publishDate !== undefined) dbPatch.publish_date = patch.publishDate;
     if (patch.status !== undefined) dbPatch.status = patch.status;
+    if (patch.metaDescription !== undefined) dbPatch.meta_description = patch.metaDescription;
+    if (patch.seoKeywords !== undefined) dbPatch.seo_keywords = patch.seoKeywords;
+    if (patch.tags !== undefined) dbPatch.tags = patch.tags;
+    if (patch.gallery !== undefined) dbPatch.gallery = patch.gallery;
     await supabase.from("news").update(dbPatch as never).eq("id", id);
     setNews((n) => n.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   };
   const deleteNews = async (id: string) => {
     await supabase.from("news").delete().eq("id", id);
     setNews((n) => n.filter((x) => x.id !== id));
+  };
+
+  // ---- Blog categories
+  const addBlogCategory: AppState["addBlogCategory"] = async (c) => {
+    const { data } = await supabase.from("blog_categories" as never).insert({
+      name: c.name, slug: c.slug, description: c.description ?? "",
+      sort_order: c.sortOrder ?? (blogCategories.length + 1), visible: c.visible ?? true,
+    } as never).select().single();
+    if (data) {
+      const r = data as any;
+      setBlogCategories((xs) => [...xs, { id: r.id, name: r.name, slug: r.slug, description: r.description ?? "", sortOrder: r.sort_order, visible: r.visible }]);
+    }
+  };
+  const updateBlogCategory: AppState["updateBlogCategory"] = async (id, patch) => {
+    const dbPatch: Record<string, unknown> = {};
+    if (patch.name !== undefined) dbPatch.name = patch.name;
+    if (patch.slug !== undefined) dbPatch.slug = patch.slug;
+    if (patch.description !== undefined) dbPatch.description = patch.description;
+    if (patch.sortOrder !== undefined) dbPatch.sort_order = patch.sortOrder;
+    if (patch.visible !== undefined) dbPatch.visible = patch.visible;
+    await supabase.from("blog_categories" as never).update(dbPatch as never).eq("id", id);
+    setBlogCategories((xs) => xs.map((x) => (x.id === id ? { ...x, ...patch } : x)));
+  };
+  const deleteBlogCategory: AppState["deleteBlogCategory"] = async (id) => {
+    await supabase.from("blog_categories" as never).delete().eq("id", id);
+    setBlogCategories((xs) => xs.filter((x) => x.id !== id));
+  };
+
+  // ---- Media Gallery
+  const addMedia: AppState["addMedia"] = async (m) => {
+    const { data } = await supabase.from("media_gallery" as never).insert({
+      url: m.url, filename: m.filename ?? null, tags: m.tags ?? [],
+      uploaded_by: user?.id ?? null,
+    } as never).select().single();
+    if (!data) return null;
+    const r = data as any;
+    const asset: MediaAsset = { id: r.id, url: r.url, filename: r.filename, tags: r.tags ?? [], createdAt: r.created_at, uploadedBy: r.uploaded_by };
+    setMediaGallery((xs) => [asset, ...xs]);
+    return asset;
+  };
+  const deleteMedia: AppState["deleteMedia"] = async (id) => {
+    await supabase.from("media_gallery" as never).delete().eq("id", id);
+    setMediaGallery((xs) => xs.filter((x) => x.id !== id));
+  };
+  const refreshMedia: AppState["refreshMedia"] = async () => {
+    const { data } = await supabase.from("media_gallery" as never).select("*").order("created_at", { ascending: false }).limit(300);
+    if (data) setMediaGallery((data as any[]).map((r) => ({ id: r.id, url: r.url, filename: r.filename, tags: r.tags ?? [], createdAt: r.created_at, uploadedBy: r.uploaded_by })));
   };
 
   // ---- Tickers
