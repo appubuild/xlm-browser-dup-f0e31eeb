@@ -34,7 +34,9 @@ export interface Project {
 }
 
 export interface Category { id: string; slug: string; name: string; icon: string; description: string; visible: boolean; sortOrder: number; }
-export interface NewsArticle { id: string; slug: string; title: string; category: string; author: string; coverImage: string; excerpt: string; body: string; publishDate: string; status: "draft" | "published"; views: number; }
+export interface NewsArticle { id: string; slug: string; title: string; category: string; author: string; coverImage: string; coverImageUrl?: string; excerpt: string; body: string; publishDate: string; status: "draft" | "published"; views: number; metaDescription?: string; seoKeywords?: string; tags?: string[]; gallery?: string[]; }
+export interface BlogCategory { id: string; slug: string; name: string; description: string; sortOrder: number; visible: boolean; }
+export interface MediaAsset { id: string; url: string; filename?: string | null; tags?: string[]; createdAt: string; uploadedBy?: string | null; }
 export interface Ticker { id: string; label: string; linkedProjectSlug?: string | null; sortOrder: number; visible: boolean; }
 export interface SidebarItem { id: string; label: string; icon: string; path: string; sortOrder: number; visible: boolean; requiresAuth: boolean; }
 export interface LandingSection { id: string; sectionKey: string; title: string; subtitle: string; visible: boolean; sortOrder: number; config: Record<string, unknown>; }
