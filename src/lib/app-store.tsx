@@ -60,6 +60,7 @@ interface SiteSettings {
   listingPaymentAddress: string;
   cloudinaryCloudName: string;
   cloudinaryUploadPreset: string;
+  aiDefaultInstruction: string;
 }
 
 interface AppState {
