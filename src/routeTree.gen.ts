@@ -155,9 +155,9 @@ const PanelBookmarksRoute = PanelBookmarksRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const NewsSlugRoute = NewsSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => NewsRoute,
+  id: '/news/$slug',
+  path: '/news/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const DirectoryCategoryRoute = DirectoryCategoryRouteImport.update({
   id: '/directory/$category',
@@ -520,6 +520,7 @@ export interface RootRouteChildren {
   AdminUsersRoute: typeof AdminUsersRoute
   AdminWalletConnectConfigRoute: typeof AdminWalletConnectConfigRoute
   DirectoryCategoryRoute: typeof DirectoryCategoryRoute
+  NewsSlugRoute: typeof NewsSlugRoute
   PanelBookmarksRoute: typeof PanelBookmarksRoute
   PanelHistoryRoute: typeof PanelHistoryRoute
   PanelNotificationsRoute: typeof PanelNotificationsRoute
@@ -686,10 +687,10 @@ declare module '@tanstack/react-router' {
     }
     '/news/$slug': {
       id: '/news/$slug'
-      path: '/$slug'
+      path: '/news/$slug'
       fullPath: '/news/$slug'
       preLoaderRoute: typeof NewsSlugRouteImport
-      parentRoute: typeof NewsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/directory/$category': {
       id: '/directory/$category'
@@ -861,6 +862,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminUsersRoute: AdminUsersRoute,
   AdminWalletConnectConfigRoute: AdminWalletConnectConfigRoute,
   DirectoryCategoryRoute: DirectoryCategoryRoute,
+  NewsSlugRoute: NewsSlugRoute,
   PanelBookmarksRoute: PanelBookmarksRoute,
   PanelHistoryRoute: PanelHistoryRoute,
   PanelNotificationsRoute: PanelNotificationsRoute,
@@ -878,13 +880,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
