@@ -29,6 +29,14 @@ function useAdminTheme(): [AdminTheme, (t: AdminTheme) => void] {
     const v = (typeof window !== "undefined" && localStorage.getItem("admin-theme")) as AdminTheme | null;
     if (v === "light" || v === "dark") setTheme(v);
   }, []);
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    document.documentElement.classList.toggle("admin-light", theme === "light");
+    document.documentElement.classList.toggle("admin-dark", theme === "dark");
+    return () => {
+      document.documentElement.classList.remove("admin-light", "admin-dark");
+    };
+  }, [theme]);
   const update = (t: AdminTheme) => {
     setTheme(t);
     if (typeof window !== "undefined") localStorage.setItem("admin-theme", t);
