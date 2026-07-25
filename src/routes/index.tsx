@@ -5,6 +5,7 @@ import { PublicShell } from "@/components/public-shell";
 import { useApp, type Project, type LandingSection } from "@/lib/app-store";
 import { useViewport } from "@/components/browser-viewport";
 import { ProjectTicker, LivePricesGrid } from "@/components/crypto-ticker";
+import { GalaxyBg } from "@/components/galaxy-bg";
 
 export const Route = createFileRoute("/")({ component: Home });
 
