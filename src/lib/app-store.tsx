@@ -41,6 +41,8 @@ export interface Ticker { id: string; label: string; linkedProjectSlug?: string 
 export interface SidebarItem { id: string; label: string; icon: string; path: string; sortOrder: number; visible: boolean; requiresAuth: boolean; }
 export interface LandingSection { id: string; sectionKey: string; title: string; subtitle: string; visible: boolean; sortOrder: number; config: Record<string, unknown>; }
 export interface AppNotification { id: string; message: string; ts: number; read: boolean; userId?: string | null; }
+export interface FooterGroup { id: string; label: string; sortOrder: number; visible: boolean; }
+export interface FooterLink { id: string; groupId: string; label: string; href: string; external: boolean; sortOrder: number; visible: boolean; }
 
 interface AuthUser { id: string; name: string; email: string; avatar: string; walletAddress?: string }
 
