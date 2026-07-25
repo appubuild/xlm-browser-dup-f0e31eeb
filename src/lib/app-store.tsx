@@ -262,7 +262,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loadPublicData = useCallback(async () => {
-    const [pj, nw, tk, ct, sb, ls, ss, bc, mg] = await Promise.all([
+    const [pj, nw, tk, ct, sb, ls, ss, bc, mg, fg, fl] = await Promise.all([
       supabase.from("projects").select("*").order("date_added", { ascending: false }),
       supabase.from("news").select("*").order("publish_date", { ascending: false }),
       supabase.from("tickers").select("*").order("sort_order"),
@@ -272,6 +272,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       supabase.from("site_settings").select("*").eq("id", 1).maybeSingle(),
       supabase.from("blog_categories" as never).select("*").order("sort_order"),
       supabase.from("media_gallery" as never).select("*").order("created_at", { ascending: false }).limit(300),
+      supabase.from("footer_groups" as never).select("*").order("sort_order"),
+      supabase.from("footer_links" as never).select("*").order("sort_order"),
     ]);
     if (pj.data) setProjects(pj.data.map((r) => mapProject(r as ProjectRow)));
     if (nw.data) setNews((nw.data as never[]).map((r) => mapNews(r)));
@@ -281,6 +283,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (ls.data) setLandingSections(ls.data.map((r) => ({ id: r.id, sectionKey: r.section_key, title: r.title, subtitle: r.subtitle ?? "", visible: r.visible, sortOrder: r.sort_order, config: (r.config as Record<string, unknown>) ?? {} })));
     if (bc.data) setBlogCategories((bc.data as never[]).map((r: any) => ({ id: r.id, slug: r.slug, name: r.name, description: r.description ?? "", sortOrder: r.sort_order, visible: r.visible })));
     if (mg.data) setMediaGallery((mg.data as never[]).map((r: any) => ({ id: r.id, url: r.url, filename: r.filename, tags: r.tags ?? [], createdAt: r.created_at, uploadedBy: r.uploaded_by })));
+    if (fg.data) setFooterGroups((fg.data as never[]).map((r: any) => ({ id: r.id, label: r.label, sortOrder: r.sort_order, visible: r.visible })));
+    if (fl.data) setFooterLinks((fl.data as never[]).map((r: any) => ({ id: r.id, groupId: r.group_id, label: r.label, href: r.href, external: r.external, sortOrder: r.sort_order, visible: r.visible })));
     if (ss.data) {
       const s = ss.data as Record<string, unknown>;
       setSiteSettings({
