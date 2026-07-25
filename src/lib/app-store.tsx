@@ -188,6 +188,17 @@ function mapProject(r: ProjectRow): Project {
   };
 }
 
+function mapNews(r: any): NewsArticle {
+  return {
+    id: r.id, slug: r.slug, title: r.title, category: r.category, author: r.author,
+    coverImage: r.cover_image ?? "📰", coverImageUrl: r.cover_image_url ?? undefined,
+    excerpt: r.excerpt ?? "", body: r.body ?? "", publishDate: r.publish_date,
+    status: r.status, views: r.views,
+    metaDescription: r.meta_description ?? "", seoKeywords: r.seo_keywords ?? "",
+    tags: (r.tags as string[]) ?? [], gallery: (r.gallery as string[]) ?? [],
+  };
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("light");
   const [hydrated, setHydrated] = useState(false);
