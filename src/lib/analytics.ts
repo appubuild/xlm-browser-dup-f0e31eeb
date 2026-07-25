@@ -159,9 +159,14 @@ export function aggregate(events: RawProjectEvent[], searches: RawSearchEvent[],
     if (e.event_type === "view") dayMap[d].views++;
     if (e.event_type === "visit") dayMap[d].visits++;
   }
+  const seenSearch = new Set<string>();
   for (const s of searches) {
+    if (s.clicked) continue;
+    const key = `${s.query.trim().toLowerCase()}|${s.created_at}`;
+    if (seenSearch.has(key)) continue;
+    seenSearch.add(key);
     const d = s.created_at.slice(0, 10);
-    if (dayMap[d] && !s.clicked) dayMap[d].searches++;
+    if (dayMap[d]) dayMap[d].searches++;
   }
   for (const [date, v] of Object.entries(dayMap)) daily.push({ date, ...v });
 
@@ -175,7 +180,7 @@ export function aggregate(events: RawProjectEvent[], searches: RawSearchEvent[],
     visits: events.filter((e) => e.event_type === "visit").length,
     bookmarks: events.filter((e) => e.event_type === "bookmark").length,
     uniqueVisitors: allVisitors.size,
-    searches: searches.filter((s) => !s.clicked).length,
+    searches: seenSearch.size,
     clicks: searches.filter((s) => s.clicked).length,
   };
 
