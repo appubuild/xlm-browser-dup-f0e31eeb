@@ -236,7 +236,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loadPublicData = useCallback(async () => {
-    const [pj, nw, tk, ct, sb, ls, ss] = await Promise.all([
+    const [pj, nw, tk, ct, sb, ls, ss, bc, mg] = await Promise.all([
       supabase.from("projects").select("*").order("date_added", { ascending: false }),
       supabase.from("news").select("*").order("publish_date", { ascending: false }),
       supabase.from("tickers").select("*").order("sort_order"),
@@ -244,14 +244,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
       supabase.from("sidebar_menu").select("*").order("sort_order"),
       supabase.from("landing_sections").select("*").order("sort_order"),
       supabase.from("site_settings").select("*").eq("id", 1).maybeSingle(),
+      supabase.from("blog_categories" as never).select("*").order("sort_order"),
+      supabase.from("media_gallery" as never).select("*").order("created_at", { ascending: false }).limit(300),
     ]);
     if (pj.data) setProjects(pj.data.map((r) => mapProject(r as ProjectRow)));
-    if (nw.data) setNews(nw.data.map((r) => ({ id: r.id, slug: r.slug, title: r.title, category: r.category, author: r.author, coverImage: r.cover_image ?? "📰", excerpt: r.excerpt ?? "", body: r.body ?? "", publishDate: r.publish_date, status: r.status, views: r.views })));
+    if (nw.data) setNews((nw.data as never[]).map((r) => mapNews(r)));
     if (tk.data) setTickers(tk.data.map((r) => ({ id: r.id, label: r.label, linkedProjectSlug: r.linked_project_slug, sortOrder: r.sort_order, visible: r.visible })));
     if (ct.data) setCategories(ct.data.map((r) => ({ id: r.id, slug: r.slug, name: r.name, icon: r.icon, description: r.description ?? "", visible: r.visible, sortOrder: r.sort_order })));
     if (sb.data) setSidebarItems(sb.data.map((r) => ({ id: r.id, label: r.label, icon: r.icon ?? "📄", path: r.path, sortOrder: r.sort_order, visible: r.visible, requiresAuth: r.requires_auth })));
     if (ls.data) setLandingSections(ls.data.map((r) => ({ id: r.id, sectionKey: r.section_key, title: r.title, subtitle: r.subtitle ?? "", visible: r.visible, sortOrder: r.sort_order, config: (r.config as Record<string, unknown>) ?? {} })));
+    if (bc.data) setBlogCategories((bc.data as never[]).map((r: any) => ({ id: r.id, slug: r.slug, name: r.name, description: r.description ?? "", sortOrder: r.sort_order, visible: r.visible })));
+    if (mg.data) setMediaGallery((mg.data as never[]).map((r: any) => ({ id: r.id, url: r.url, filename: r.filename, tags: r.tags ?? [], createdAt: r.created_at, uploadedBy: r.uploaded_by })));
     if (ss.data) {
+      const s = ss.data as Record<string, unknown>;
       setSiteSettings({
         siteName: ss.data.site_name, metaDescription: ss.data.meta_description,
         defaultTheme: (ss.data.default_theme as Theme) ?? "light",
@@ -259,10 +264,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
         enableIframe: ss.data.enable_iframe, maintenanceMode: ss.data.maintenance_mode,
         contactEmail: ss.data.contact_email ?? "", contactCompany: ss.data.contact_company ?? "",
         contactLocation: ss.data.contact_location ?? "", autoApprove: ss.data.auto_approve,
-        listingFeeXrp: Number((ss.data as { listing_fee_xrp?: number | string | null }).listing_fee_xrp ?? 0),
-        listingPaymentAddress: (ss.data as { listing_payment_address?: string | null }).listing_payment_address ?? "",
-        cloudinaryCloudName: (ss.data as { cloudinary_cloud_name?: string | null }).cloudinary_cloud_name ?? "",
-        cloudinaryUploadPreset: (ss.data as { cloudinary_upload_preset?: string | null }).cloudinary_upload_preset ?? "",
+        listingFeeXrp: Number((s.listing_fee_xrp as number | string | null) ?? 0),
+        listingPaymentAddress: (s.listing_payment_address as string | null) ?? "",
+        cloudinaryCloudName: (s.cloudinary_cloud_name as string | null) ?? "",
+        cloudinaryUploadPreset: (s.cloudinary_upload_preset as string | null) ?? "",
+        aiDefaultInstruction: (s.ai_default_instruction as string | null) ?? DEFAULT_SETTINGS.aiDefaultInstruction,
       });
     }
   }, []);
