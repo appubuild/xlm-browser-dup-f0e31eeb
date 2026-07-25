@@ -119,7 +119,7 @@ export function BrowserViewport({ open, onClose, initialProject }: Props) {
   const goFwd = () => active && active.cursor < active.history.length - 1 && updateTab(active.id, { cursor: active.cursor + 1, loading: true, blocked: false, key: active.key + 1 });
   const refresh = () => active && updateTab(active.id, { loading: true, blocked: false, key: active.key + 1 });
 
-  const isRetro = theme === "dark";
+  const isRetro = theme === "retro";
   const currentUrl = active?.history[active.cursor];
 
   return (

@@ -13,7 +13,7 @@ function Home() {
   const nav = useNavigate();
   const viewport = useViewport();
   const [q, setQ] = useState("");
-  const isRetro = theme === "dark";
+  const isRetro = theme === "retro";
 
   const approved = useMemo(() => projects.filter((p) => p.status === "approved" && p.isPublic), [projects]);
   const sectionsByKey = useMemo(() => {

@@ -18,8 +18,8 @@ export function PublicShell({ children }: { children: ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileNav, setMobileNav] = useState(false);
   const isRetro = theme === "retro";
-  const themeIcon = theme === "light" ? <Moon className="h-4 w-4" /> : theme === "dark" ? <Terminal className="h-4 w-4" /> : <Sun className="h-4 w-4" />;
-  const themeTitle = theme === "light" ? "Switch to Dark" : theme === "dark" ? "Switch to 1999" : "Switch to Light";
+  const themeIcon = theme === "light" ? <Moon className="h-4 w-4" /> : theme === "retro" ? <Terminal className="h-4 w-4" /> : <Sun className="h-4 w-4" />;
+  const themeTitle = theme === "light" ? "Switch to Dark" : theme === "retro" ? "Switch to 1999" : "Switch to Light";
   const viewport = useViewport();
   const hideSidebar = path.startsWith("/panel") || path.startsWith("/admin");
   const featured = projects.filter((p) => p.featured && p.status === "approved" && p.isPublic).slice(0, 5);
