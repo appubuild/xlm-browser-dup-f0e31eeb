@@ -197,6 +197,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [news, setNews] = useState<NewsArticle[]>([]);
+  const [blogCategories, setBlogCategories] = useState<BlogCategory[]>([]);
+  const [mediaGallery, setMediaGallery] = useState<MediaAsset[]>([]);
   const [tickers, setTickers] = useState<Ticker[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [sidebarItems, setSidebarItems] = useState<SidebarItem[]>([]);
