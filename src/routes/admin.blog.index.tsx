@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { useState, useMemo } from "react";
 import { Plus, Search, Pencil, Copy, Trash2, Tag as TagIcon } from "lucide-react";
 
-export const Route = createFileRoute("/admin/blog")({ component: AdminBlog });
+export const Route = createFileRoute("/admin/blog/")({ component: AdminBlog });
 
 function AdminBlog() {
   const { news, addNews, deleteNews, updateNews, blogCategories, addBlogCategory, updateBlogCategory, deleteBlogCategory } = useApp();
