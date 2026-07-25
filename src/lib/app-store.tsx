@@ -122,6 +122,15 @@ interface AppState {
   landingSections: LandingSection[];
   updateLandingSection: (id: string, patch: Partial<LandingSection>) => Promise<void>;
 
+  footerGroups: FooterGroup[];
+  footerLinks: FooterLink[];
+  addFooterGroup: (label: string) => Promise<void>;
+  updateFooterGroup: (id: string, patch: Partial<FooterGroup>) => Promise<void>;
+  deleteFooterGroup: (id: string) => Promise<void>;
+  addFooterLink: (groupId: string, patch: Partial<FooterLink> & { label: string; href: string }) => Promise<void>;
+  updateFooterLink: (id: string, patch: Partial<FooterLink>) => Promise<void>;
+  deleteFooterLink: (id: string) => Promise<void>;
+
   bookmarks: string[];
   toggleBookmark: (slug: string) => Promise<void>;
 
