@@ -600,7 +600,47 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setLandingSections((xs) => xs.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   };
 
-  // ---- Bookmarks
+  // ---- Footer
+  const addFooterGroup = async (label: string) => {
+    const sortOrder = (footerGroups.at(-1)?.sortOrder ?? 0) + 1;
+    const { data } = await supabase.from("footer_groups" as never).insert({ label, sort_order: sortOrder } as never).select().single();
+    if (data) { const r = data as any; setFooterGroups((xs) => [...xs, { id: r.id, label: r.label, sortOrder: r.sort_order, visible: r.visible }]); }
+  };
+  const updateFooterGroup = async (id: string, patch: Partial<FooterGroup>) => {
+    const dbPatch: Record<string, unknown> = {};
+    if (patch.label !== undefined) dbPatch.label = patch.label;
+    if (patch.sortOrder !== undefined) dbPatch.sort_order = patch.sortOrder;
+    if (patch.visible !== undefined) dbPatch.visible = patch.visible;
+    await supabase.from("footer_groups" as never).update(dbPatch as never).eq("id", id);
+    setFooterGroups((xs) => xs.map((x) => (x.id === id ? { ...x, ...patch } : x)));
+  };
+  const deleteFooterGroup = async (id: string) => {
+    await supabase.from("footer_groups" as never).delete().eq("id", id);
+    setFooterGroups((xs) => xs.filter((x) => x.id !== id));
+    setFooterLinks((xs) => xs.filter((x) => x.groupId !== id));
+  };
+  const addFooterLink: AppState["addFooterLink"] = async (groupId, patch) => {
+    const sortOrder = (footerLinks.filter((l) => l.groupId === groupId).at(-1)?.sortOrder ?? 0) + 1;
+    const { data } = await supabase.from("footer_links" as never).insert({
+      group_id: groupId, label: patch.label, href: patch.href, external: patch.external ?? false, sort_order: sortOrder, visible: patch.visible ?? true,
+    } as never).select().single();
+    if (data) { const r = data as any; setFooterLinks((xs) => [...xs, { id: r.id, groupId: r.group_id, label: r.label, href: r.href, external: r.external, sortOrder: r.sort_order, visible: r.visible }]); }
+  };
+  const updateFooterLink = async (id: string, patch: Partial<FooterLink>) => {
+    const dbPatch: Record<string, unknown> = {};
+    if (patch.label !== undefined) dbPatch.label = patch.label;
+    if (patch.href !== undefined) dbPatch.href = patch.href;
+    if (patch.external !== undefined) dbPatch.external = patch.external;
+    if (patch.sortOrder !== undefined) dbPatch.sort_order = patch.sortOrder;
+    if (patch.visible !== undefined) dbPatch.visible = patch.visible;
+    await supabase.from("footer_links" as never).update(dbPatch as never).eq("id", id);
+    setFooterLinks((xs) => xs.map((x) => (x.id === id ? { ...x, ...patch } : x)));
+  };
+  const deleteFooterLink = async (id: string) => {
+    await supabase.from("footer_links" as never).delete().eq("id", id);
+    setFooterLinks((xs) => xs.filter((x) => x.id !== id));
+  };
+
   const toggleBookmark = async (slug: string) => {
     if (!user) return;
     if (bookmarks.includes(slug)) {
