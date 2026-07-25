@@ -134,6 +134,77 @@ export type Database = {
         }
         Relationships: []
       }
+      footer_groups: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          sort_order: number
+          updated_at: string
+          visible: boolean
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Relationships: []
+      }
+      footer_links: {
+        Row: {
+          created_at: string
+          external: boolean
+          group_id: string
+          href: string
+          id: string
+          label: string
+          sort_order: number
+          updated_at: string
+          visible: boolean
+        }
+        Insert: {
+          created_at?: string
+          external?: boolean
+          group_id: string
+          href: string
+          id?: string
+          label: string
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Update: {
+          created_at?: string
+          external?: boolean
+          group_id?: string
+          href?: string
+          id?: string
+          label?: string
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "footer_links_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "footer_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       history: {
         Row: {
           id: string
