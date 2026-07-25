@@ -639,6 +639,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.listingPaymentAddress !== undefined) dbPatch.listing_payment_address = patch.listingPaymentAddress;
     if (patch.cloudinaryCloudName !== undefined) dbPatch.cloudinary_cloud_name = patch.cloudinaryCloudName;
     if (patch.cloudinaryUploadPreset !== undefined) dbPatch.cloudinary_upload_preset = patch.cloudinaryUploadPreset;
+    if (patch.aiDefaultInstruction !== undefined) (dbPatch as any).ai_default_instruction = patch.aiDefaultInstruction;
     await supabase.from("site_settings").update(dbPatch as never).eq("id", 1);
     setSiteSettings((s) => ({ ...s, ...patch }));
   };
