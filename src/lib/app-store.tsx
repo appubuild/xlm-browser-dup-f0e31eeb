@@ -228,6 +228,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [bookmarks, setBookmarks] = useState<string[]>([]);
   const [history, setHistory] = useState<{ slug: string; ts: number }[]>([]);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
+  const [footerGroups, setFooterGroups] = useState<FooterGroup[]>([]);
+  const [footerLinks, setFooterLinks] = useState<FooterLink[]>([]);
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(DEFAULT_SETTINGS);
   const [walletConfig, setWalletConfig] = useState<AppState["walletConfig"]>({
     network: "Mainnet", rpcUrl: "wss://s1.ripple.com",
