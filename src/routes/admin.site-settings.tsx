@@ -164,6 +164,7 @@ function SiteSettings() {
           </F>
           <div className="text-xs text-slate-400">Used as the base system prompt whenever an admin clicks “AI: Write post”.</div>
         </Card>
+        <AiProvidersCard />
         <Card title="API Settings">
           <F label="Rate limit (req/min)"><input defaultValue={60} type="number" className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" /></F>
           <div className="text-xs text-slate-400">Issued keys</div>
