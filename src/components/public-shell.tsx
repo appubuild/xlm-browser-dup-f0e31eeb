@@ -370,7 +370,9 @@ function XamanConnected({ onClose }: { onClose: () => void }) {
     void (async () => {
       try {
         const res = await getBalance({ data: { account, network: walletConfig.network } });
-        if (!stop) setBalance(res.balance);
+        if (stop) return;
+        if (res.ok) setBalance(res.data.balance);
+        else setBalErr(res.error);
       } catch (e) {
         if (!stop) setBalErr(e instanceof Error ? e.message : "Could not read balance");
       }
