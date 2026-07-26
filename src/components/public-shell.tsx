@@ -275,7 +275,8 @@ function XamanConnect({ onDone }: { onDone: () => void }) {
     setPayload(null);
     try {
       const res = await signIn({ data: {} });
-      setPayload({ uuid: res.uuid, qrPng: res.qrPng, deeplink: res.deeplink });
+      if (!res.ok) { setError(res.error); setState("done"); return; }
+      setPayload({ uuid: res.data.uuid, qrPng: res.data.qrPng, deeplink: res.data.deeplink });
       setState("waiting");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not start Xaman sign-in");
@@ -291,8 +292,9 @@ function XamanConnect({ onDone }: { onDone: () => void }) {
     let stop = false;
     const tick = async () => {
       try {
-        const s = await status({ data: { uuid: payload.uuid } });
-        if (stop) return;
+        const res = await status({ data: { uuid: payload.uuid } });
+        if (stop || !res.ok) return;
+        const s = res.data;
         if (s.signed && s.account) {
           setState("done");
           await connectWallet("Xaman (Xumm)", s.account);
@@ -368,7 +370,9 @@ function XamanConnected({ onClose }: { onClose: () => void }) {
     void (async () => {
       try {
         const res = await getBalance({ data: { account, network: walletConfig.network } });
-        if (!stop) setBalance(res.balance);
+        if (stop) return;
+        if (res.ok) setBalance(res.data.balance);
+        else setBalErr(res.error);
       } catch (e) {
         if (!stop) setBalErr(e instanceof Error ? e.message : "Could not read balance");
       }
