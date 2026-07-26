@@ -20,15 +20,17 @@ async function loadAiConfig(): Promise<AiConfig> {
     google_key: process.env.GOOGLE_API_KEY ?? "",
   };
 
-  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  const { getServiceRoleKey, createAdminClient } = await import("@/lib/admin-db.server");
+
+  if (!getServiceRoleKey()) {
     if (envCfg.openai_key || envCfg.anthropic_key || envCfg.google_key) return envCfg;
     throw new Error(
-      "AI is not reachable: the server is missing SUPABASE_SERVICE_ROLE_KEY, so the saved API keys in Admin → Site Settings → AI Providers cannot be read. Add the Supabase service role key as a project secret.",
+      "AI is not reachable: the server cannot read the API keys saved in Admin → Site Settings → AI Providers because the Supabase service role key secret (SB_SERVICE_ROLE_KEY) is missing.",
     );
   }
 
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data, error } = await supabaseAdmin.from("ai_config" as never).select("*").eq("id", 1).maybeSingle();
+  const admin = createAdminClient();
+  const { data, error } = await admin.from("ai_config" as never).select("*").eq("id", 1).maybeSingle();
   if (error) throw new Error(`Failed to load AI config: ${error.message}`);
   const r = (data ?? {}) as Partial<AiConfig>;
   return {
