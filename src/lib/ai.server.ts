@@ -1,0 +1,184 @@
+import { createClient } from "@supabase/supabase-js";
+import { getRequest } from "@tanstack/react-start/server";
+import type { Database } from "@/integrations/supabase/types";
+
+export type AiMessage = { role: "system" | "user" | "assistant"; content: string };
+
+type AiProvider = "openai" | "anthropic" | "google";
+
+interface AiConfig {
+  provider: AiProvider;
+  model: string;
+  openai_key: string;
+  anthropic_key: string;
+  google_key: string;
+}
+
+function isProvider(value: unknown): value is AiProvider {
+  return value === "openai" || value === "anthropic" || value === "google";
+}
+
+function isNewSupabaseApiKey(value: string): boolean {
+  return value.startsWith("sb_publishable_") || value.startsWith("sb_secret_");
+}
+
+function createSupabaseFetch(supabaseKey: string): typeof fetch {
+  return (input, init) => {
+    const headers = new Headers(
+      typeof Request !== "undefined" && input instanceof Request ? input.headers : undefined,
+    );
+    if (init?.headers) new Headers(init.headers).forEach((value, key) => headers.set(key, value));
+    if (isNewSupabaseApiKey(supabaseKey) && headers.get("Authorization") === `Bearer ${supabaseKey}`) {
+      headers.delete("Authorization");
+    }
+    headers.set("apikey", supabaseKey);
+    return fetch(input, { ...init, headers });
+  };
+}
+
+function envConfig(): AiConfig {
+  const providerValue = process.env.AI_PROVIDER;
+  const provider = isProvider(providerValue) ? providerValue : "openai";
+  return {
+    provider,
+    model: process.env.AI_MODEL ?? "gpt-4o-mini",
+    openai_key: process.env.OPENAI_API_KEY ?? "",
+    anthropic_key: process.env.ANTHROPIC_API_KEY ?? "",
+    google_key: process.env.GOOGLE_API_KEY ?? "",
+  };
+}
+
+function hasKeyForProvider(config: AiConfig): boolean {
+  if (config.provider === "openai") return Boolean(config.openai_key);
+  if (config.provider === "anthropic") return Boolean(config.anthropic_key);
+  return Boolean(config.google_key);
+}
+
+function mergeConfig(base: AiConfig, row: Partial<AiConfig> | null | undefined): AiConfig {
+  if (!row) return base;
+  return {
+    provider: isProvider(row.provider) ? row.provider : base.provider,
+    model: row.model || base.model,
+    openai_key: row.openai_key || base.openai_key,
+    anthropic_key: row.anthropic_key || base.anthropic_key,
+    google_key: row.google_key || base.google_key,
+  };
+}
+
+function createServerSupabaseClient() {
+  const url = process.env.SUPABASE_URL;
+  const publishableKey = process.env.SUPABASE_PUBLISHABLE_KEY;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SB_SERVICE_ROLE_KEY;
+  if (!url) return null;
+
+  if (serviceKey) {
+    return createClient<Database>(url, serviceKey, {
+      global: { fetch: createSupabaseFetch(serviceKey) },
+      auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+    });
+  }
+
+  if (!publishableKey) return null;
+  const authHeader = getRequest()?.headers.get("authorization") ?? "";
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice("Bearer ".length) : "";
+  if (!token || token.split(".").length !== 3) return null;
+
+  return createClient<Database>(url, publishableKey, {
+    global: {
+      fetch: createSupabaseFetch(publishableKey),
+      headers: { Authorization: `Bearer ${token}` },
+    },
+    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+  });
+}
+
+async function loadAiConfig(): Promise<AiConfig> {
+  const fallback = envConfig();
+  const supabase = createServerSupabaseClient();
+
+  if (supabase) {
+    const { data, error } = await supabase
+      .from("ai_config")
+      .select("provider, model, openai_key, anthropic_key, google_key")
+      .eq("id", 1)
+      .maybeSingle();
+    if (!error && data) {
+      const merged = mergeConfig(fallback, data as Partial<AiConfig>);
+      if (hasKeyForProvider(merged)) return merged;
+    }
+  }
+
+  if (hasKeyForProvider(fallback)) return fallback;
+
+  throw new Error(
+    "AI provider key is not available on this deployment. Add SB_SERVICE_ROLE_KEY to Cloudflare Worker secrets to use Admin → Site Settings keys, or add the selected provider key as OPENAI_API_KEY, ANTHROPIC_API_KEY, or GOOGLE_API_KEY.",
+  );
+}
+
+export async function callAi(messages: AiMessage[], opts: { temperature?: number; json?: boolean } = {}): Promise<string> {
+  const cfg = await loadAiConfig();
+
+  if (cfg.provider === "openai") {
+    if (!cfg.openai_key) throw new Error("OpenAI API key not configured in Admin → Site Settings → AI Providers.");
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { "content-type": "application/json", Authorization: `Bearer ${cfg.openai_key}` },
+      body: JSON.stringify({
+        model: cfg.model,
+        messages,
+        temperature: opts.temperature ?? 0.4,
+        ...(opts.json ? { response_format: { type: "json_object" } } : {}),
+      }),
+    });
+    if (!res.ok) throw new Error(`OpenAI ${res.status}: ${(await res.text()).slice(0, 300)}`);
+    const data = await res.json();
+    return data?.choices?.[0]?.message?.content ?? "";
+  }
+
+  if (cfg.provider === "anthropic") {
+    if (!cfg.anthropic_key) throw new Error("Anthropic (Claude) API key not configured in Admin → Site Settings → AI Providers.");
+    const system = messages.filter((m) => m.role === "system").map((m) => m.content).join("\n\n");
+    const rest = messages.filter((m) => m.role !== "system").map((m) => ({ role: m.role, content: m.content }));
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": cfg.anthropic_key,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: cfg.model,
+        system: system || undefined,
+        messages: rest,
+        max_tokens: 2048,
+        temperature: opts.temperature ?? 0.4,
+      }),
+    });
+    if (!res.ok) throw new Error(`Anthropic ${res.status}: ${(await res.text()).slice(0, 300)}`);
+    const data = await res.json();
+    return Array.isArray(data?.content) ? data.content.map((b: { text?: string }) => b.text ?? "").join("") : "";
+  }
+
+  if (!cfg.google_key) throw new Error("Google (Gemini) API key not configured in Admin → Site Settings → AI Providers.");
+  const system = messages.filter((m) => m.role === "system").map((m) => m.content).join("\n\n");
+  const contents = messages
+    .filter((m) => m.role !== "system")
+    .map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] }));
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(cfg.model)}:generateContent?key=${cfg.google_key}`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      systemInstruction: system ? { parts: [{ text: system }] } : undefined,
+      contents,
+      generationConfig: {
+        temperature: opts.temperature ?? 0.4,
+        ...(opts.json ? { responseMimeType: "application/json" } : {}),
+      },
+    }),
+  });
+  if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  const data = await res.json();
+  const parts = data?.candidates?.[0]?.content?.parts ?? [];
+  return parts.map((p: { text?: string }) => p.text ?? "").join("");
+}
