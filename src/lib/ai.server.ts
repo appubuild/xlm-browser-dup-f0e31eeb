@@ -295,3 +295,76 @@ export async function callAi(messages: AiMessage[], opts: { temperature?: number
   }
   throw lastError;
 }
+export interface AiDiagnostics {
+  ok: boolean;
+  provider?: string;
+  model?: string;
+  keySource?: string;
+  env: Record<string, boolean>;
+  steps: string[];
+  error?: string;
+  reply?: string;
+}
+
+export async function diagnoseAi(): Promise<AiDiagnostics> {
+  const env = {
+    SUPABASE_URL: Boolean(process.env.SUPABASE_URL),
+    SUPABASE_PUBLISHABLE_KEY: Boolean(process.env.SUPABASE_PUBLISHABLE_KEY),
+    SUPABASE_SERVICE_ROLE_KEY: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
+    SB_SERVICE_ROLE_KEY: Boolean(process.env.SB_SERVICE_ROLE_KEY),
+    OPENAI_API_KEY: Boolean(process.env.OPENAI_API_KEY),
+    ANTHROPIC_API_KEY: Boolean(process.env.ANTHROPIC_API_KEY),
+    GOOGLE_API_KEY: Boolean(process.env.GOOGLE_API_KEY),
+  };
+  const { client, source, reason } = createServerSupabaseClient();
+  const steps: string[] = [`Supabase access on the server: ${reason}`];
+
+  let cfg: AiConfig | null = null;
+  if (client) {
+    const { data, error } = await client
+      .from("ai_config")
+      .select("provider, model, openai_key, anthropic_key, google_key")
+      .eq("id", 1)
+      .maybeSingle();
+    if (error) steps.push(`ai_config read via ${source} failed: ${error.message}`);
+    else if (!data) steps.push("ai_config row id=1 is missing — save AI settings once.");
+    else {
+      cfg = mergeConfig(envConfig(), data as Partial<AiConfig>);
+      steps.push(
+        `ai_config read OK via ${source}: provider="${cfg.provider}", model="${cfg.model}", key present: ${hasKeyForProvider(cfg) ? "yes" : "NO"}`,
+      );
+    }
+  }
+  if (!cfg || !hasKeyForProvider(cfg)) {
+    const fb = envConfig();
+    if (hasKeyForProvider(fb)) {
+      cfg = fb;
+      steps.push(`Falling back to deployment env key ${providerKeyName(fb.provider)}.`);
+    }
+  }
+
+  if (!cfg || !hasKeyForProvider(cfg)) {
+    return {
+      ok: false,
+      env,
+      steps,
+      error: `No usable API key. Add SB_SERVICE_ROLE_KEY as a Cloudflare Worker secret (so the server can read Admin → Site Settings keys), or set ${providerKeyName(envConfig().provider)} as a Worker secret.`,
+    };
+  }
+
+  try {
+    const reply = await callAi([{ role: "user", content: "Reply with the single word: OK" }], { temperature: 0 });
+    steps.push(`Live ${cfg.provider} call succeeded.`);
+    return { ok: true, provider: cfg.provider, model: cfg.model, keySource: source, env, steps, reply: reply.slice(0, 200) };
+  } catch (err) {
+    return {
+      ok: false,
+      provider: cfg.provider,
+      model: cfg.model,
+      keySource: source,
+      env,
+      steps,
+      error: err instanceof Error ? err.message : String(err),
+    };
+  }
+}
