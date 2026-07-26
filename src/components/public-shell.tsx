@@ -10,10 +10,35 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { toast } from "sonner";
 import { useViewport } from "@/components/browser-viewport";
 import { CryptoTicker } from "@/components/crypto-ticker";
+import { listPages, type SitePage } from "@/lib/cms";
 
+
+function useWalletBalance(account: string | undefined, network: "Mainnet" | "Testnet") {
+  const getBalance = useServerFn(xamanBalance);
+  const [balance, setBalance] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    if (!account) { setBalance(null); return; }
+    let stop = false;
+    const load = async () => {
+      try {
+        const res = await getBalance({ data: { account, network } });
+        if (stop) return;
+        if (res.ok) { setBalance(res.data.balance); setError(null); }
+        else setError(res.error);
+      } catch (e) {
+        if (!stop) setError(e instanceof Error ? e.message : "Could not read balance");
+      }
+    };
+    void load();
+    const t = setInterval(() => void load(), 30_000);
+    return () => { stop = true; clearInterval(t); };
+  }, [account, network, getBalance]);
+  return { balance, error };
+}
 
 export function PublicShell({ children }: { children: ReactNode }) {
-  const { theme, toggleTheme, user, logout, connectWallet, disconnectWallet, projects, xrpPrice, ledgerIndex, siteSettings, sidebarItems, isAdmin } = useApp();
+  const { theme, toggleTheme, user, logout, connectWallet, disconnectWallet, projects, xrpPrice, ledgerIndex, siteSettings, sidebarItems, isAdmin, walletConfig } = useApp();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const [walletOpen, setWalletOpen] = useState(false);
@@ -23,6 +48,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
   const themeIcon = theme === "light" ? <Moon className="h-4 w-4" /> : theme === "dark" ? <Terminal className="h-4 w-4" /> : <Sun className="h-4 w-4" />;
   const themeTitle = theme === "light" ? "Switch to Dark" : theme === "dark" ? "Switch to 1999" : "Switch to Light";
   const viewport = useViewport();
+  const { balance: headerBalance } = useWalletBalance(user?.walletAddress, walletConfig.network);
   const hideSidebar = path.startsWith("/panel") || path.startsWith("/admin");
   const featured = projects.filter((p) => p.featured && p.status === "approved" && p.isPublic).slice(0, 5);
   const nav = [...sidebarItems]
@@ -59,7 +85,13 @@ export function PublicShell({ children }: { children: ReactNode }) {
               {themeIcon}
             </button>
             <button onClick={() => setWalletOpen(true)} className={`hidden sm:inline-flex ${isRetro ? "retro-btn" : "items-center gap-1.5 rounded-md border px-3 py-2 text-sm hover:bg-muted"}`}>
-              <Wallet className="h-4 w-4" /> {user?.walletAddress ? `${user.walletAddress.slice(0, 6)}…` : "Connect Wallet"}
+              <Wallet className="h-4 w-4" />
+              {user?.walletAddress ? (
+                <span className="flex items-center gap-1.5">
+                  <span className="font-mono font-semibold">{headerBalance === null ? "…" : `${headerBalance.toLocaleString(undefined, { maximumFractionDigits: 4 })} XRP`}</span>
+                  <span className="text-xs text-muted-foreground">{user.walletAddress.slice(0, 4)}…{user.walletAddress.slice(-4)}</span>
+                </span>
+              ) : "Connect Wallet"}
             </button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -221,6 +253,14 @@ function RetroChrome({ path, loading }: { path: string; loading: boolean }) {
 function Footer() {
   const { theme, siteSettings, footerGroups, footerLinks } = useApp();
   const isRetro = theme === "retro";
+  const [footerPages, setFooterPages] = useState<SitePage[]>([]);
+  useEffect(() => {
+    let stop = false;
+    void listPages(false)
+      .then((ps) => { if (!stop) setFooterPages(ps.filter((p) => p.showInFooter)); })
+      .catch(() => {});
+    return () => { stop = true; };
+  }, []);
   const groups = [...footerGroups].filter((g) => g.visible).sort((a, b) => a.sortOrder - b.sortOrder);
   return (
     <footer className={isRetro ? "border-t-2 border-primary bg-background px-4 py-6 font-mono text-sm" : "border-t bg-card px-6 py-10"}>
@@ -228,6 +268,7 @@ function Footer() {
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 md:grid-cols-4">
         {groups.map((g) => {
           const links = footerLinks.filter((l) => l.groupId === g.id && l.visible).sort((a, b) => a.sortOrder - b.sortOrder);
+          const pages = footerPages.filter((p) => p.footerGroupId === g.id).sort((a, b) => a.sortOrder - b.sortOrder);
           return (
             <div key={g.id}>
               <div className="mb-2 font-semibold">{g.label}</div>
@@ -239,6 +280,11 @@ function Footer() {
                     ) : (
                       <a href={l.href} className="hover:underline">{l.label}</a>
                     )}
+                  </li>
+                ))}
+                {pages.map((p) => (
+                  <li key={p.id}>
+                    <Link to="/p/$slug" params={{ slug: p.slug }} className="hover:underline">{p.title}</Link>
                   </li>
                 ))}
               </ul>
