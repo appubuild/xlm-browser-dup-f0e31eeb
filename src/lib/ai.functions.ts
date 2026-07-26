@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import type { AiMessage } from "@/lib/ai.server";
+
+type AiMessage = { role: "system" | "user" | "assistant"; content: string };
 
 export const askProjectAi = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({
