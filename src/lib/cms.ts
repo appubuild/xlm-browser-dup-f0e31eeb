@@ -8,6 +8,7 @@ export interface SitePage {
   metaDescription: string;
   published: boolean;
   showInFooter: boolean;
+  footerGroupId: string | null;
   sortOrder: number;
   updatedAt: string;
 }
