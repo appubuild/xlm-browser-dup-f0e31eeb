@@ -178,7 +178,7 @@ function WalletConfig() {
         </div>
 
         <div className="mt-6 flex justify-end">
-          <button onClick={save} className="rounded bg-sky-500 px-4 py-2 text-sm text-white hover:bg-sky-400">Save configuration</button>
+          <button onClick={save} disabled={saving} className="rounded bg-sky-500 px-4 py-2 text-sm text-white hover:bg-sky-400 disabled:opacity-50">{saving ? "Saving…" : "Save configuration"}</button>
         </div>
       </div>
     </AdminShell>
