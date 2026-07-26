@@ -51,6 +51,7 @@ import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminPagesIndexRouteImport } from './routes/admin.pages.index'
 import { Route as AdminBlogIndexRouteImport } from './routes/admin.blog.index'
+import { Route as ApiPublicEnvprobeRouteImport } from './routes/api/public/envprobe'
 import { Route as AdminProjectsPendingRouteImport } from './routes/admin.projects.pending'
 import { Route as AdminPagesNewRouteImport } from './routes/admin.pages.new'
 import { Route as AdminPagesIdRouteImport } from './routes/admin.pages.$id'
@@ -269,6 +270,11 @@ const AdminBlogIndexRoute = AdminBlogIndexRouteImport.update({
   path: '/admin/blog/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicEnvprobeRoute = ApiPublicEnvprobeRouteImport.update({
+  id: '/api/public/envprobe',
+  path: '/api/public/envprobe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminProjectsPendingRoute = AdminProjectsPendingRouteImport.update({
   id: '/pending',
   path: '/pending',
@@ -346,6 +352,7 @@ export interface FileRoutesByFullPath {
   '/admin/pages/$id': typeof AdminPagesIdRoute
   '/admin/pages/new': typeof AdminPagesNewRoute
   '/admin/projects/pending': typeof AdminProjectsPendingRoute
+  '/api/public/envprobe': typeof ApiPublicEnvprobeRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
   '/admin/pages/': typeof AdminPagesIndexRoute
   '/api/public/xaman/webhook': typeof ApiPublicXamanWebhookRoute
@@ -396,6 +403,7 @@ export interface FileRoutesByTo {
   '/admin/pages/$id': typeof AdminPagesIdRoute
   '/admin/pages/new': typeof AdminPagesNewRoute
   '/admin/projects/pending': typeof AdminProjectsPendingRoute
+  '/api/public/envprobe': typeof ApiPublicEnvprobeRoute
   '/admin/blog': typeof AdminBlogIndexRoute
   '/admin/pages': typeof AdminPagesIndexRoute
   '/api/public/xaman/webhook': typeof ApiPublicXamanWebhookRoute
@@ -447,6 +455,7 @@ export interface FileRoutesById {
   '/admin/pages/$id': typeof AdminPagesIdRoute
   '/admin/pages/new': typeof AdminPagesNewRoute
   '/admin/projects/pending': typeof AdminProjectsPendingRoute
+  '/api/public/envprobe': typeof ApiPublicEnvprobeRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
   '/admin/pages/': typeof AdminPagesIndexRoute
   '/api/public/xaman/webhook': typeof ApiPublicXamanWebhookRoute
@@ -499,6 +508,7 @@ export interface FileRouteTypes {
     | '/admin/pages/$id'
     | '/admin/pages/new'
     | '/admin/projects/pending'
+    | '/api/public/envprobe'
     | '/admin/blog/'
     | '/admin/pages/'
     | '/api/public/xaman/webhook'
@@ -549,6 +559,7 @@ export interface FileRouteTypes {
     | '/admin/pages/$id'
     | '/admin/pages/new'
     | '/admin/projects/pending'
+    | '/api/public/envprobe'
     | '/admin/blog'
     | '/admin/pages'
     | '/api/public/xaman/webhook'
@@ -599,6 +610,7 @@ export interface FileRouteTypes {
     | '/admin/pages/$id'
     | '/admin/pages/new'
     | '/admin/projects/pending'
+    | '/api/public/envprobe'
     | '/admin/blog/'
     | '/admin/pages/'
     | '/api/public/xaman/webhook'
@@ -648,6 +660,7 @@ export interface RootRouteChildren {
   AdminBlogNewRoute: typeof AdminBlogNewRoute
   AdminPagesIdRoute: typeof AdminPagesIdRoute
   AdminPagesNewRoute: typeof AdminPagesNewRoute
+  ApiPublicEnvprobeRoute: typeof ApiPublicEnvprobeRoute
   AdminBlogIndexRoute: typeof AdminBlogIndexRoute
   AdminPagesIndexRoute: typeof AdminPagesIndexRoute
   ApiPublicXamanWebhookRoute: typeof ApiPublicXamanWebhookRoute
@@ -949,6 +962,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/envprobe': {
+      id: '/api/public/envprobe'
+      path: '/api/public/envprobe'
+      fullPath: '/api/public/envprobe'
+      preLoaderRoute: typeof ApiPublicEnvprobeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/projects/pending': {
       id: '/admin/projects/pending'
       path: '/pending'
@@ -1062,6 +1082,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminBlogNewRoute: AdminBlogNewRoute,
   AdminPagesIdRoute: AdminPagesIdRoute,
   AdminPagesNewRoute: AdminPagesNewRoute,
+  ApiPublicEnvprobeRoute: ApiPublicEnvprobeRoute,
   AdminBlogIndexRoute: AdminBlogIndexRoute,
   AdminPagesIndexRoute: AdminPagesIndexRoute,
   ApiPublicXamanWebhookRoute: ApiPublicXamanWebhookRoute,
@@ -1069,3 +1090,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
