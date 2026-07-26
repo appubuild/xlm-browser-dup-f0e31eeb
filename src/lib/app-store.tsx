@@ -253,13 +253,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
     document.documentElement.classList.toggle("retro", theme === "retro");
   }, [theme, hydrated]);
 
-  // --- Simulated live price/ledger
+  // --- Real XRP price from CoinGecko (refreshed every 60s) + ledger tick
   useEffect(() => {
-    const t = setInterval(() => {
-      setXrpPrice((p) => ({ price: +(p.price + (Math.random() - 0.5) * 0.005).toFixed(4), change: +(p.change + (Math.random() - 0.5) * 0.4).toFixed(2) }));
-      setLedgerIndex((n) => n + 1);
-    }, 3500);
-    return () => clearInterval(t);
+    let alive = true;
+    const load = async () => {
+      try {
+        const res = await fetch(
+          "https://api.coingecko.com/api/v3/simple/price?ids=ripple&vs_currencies=usd&include_24hr_change=true",
+        );
+        if (!res.ok) return;
+        const json = (await res.json()) as { ripple?: { usd?: number; usd_24h_change?: number } };
+        const price = json.ripple?.usd;
+        if (alive && typeof price === "number") {
+          setXrpPrice({ price, change: Number(json.ripple?.usd_24h_change ?? 0) });
+        }
+      } catch {
+        /* keep last known price */
+      }
+    };
+    void load();
+    const t = setInterval(() => void load(), 60_000);
+    const l = setInterval(() => setLedgerIndex((n) => n + 1), 3500);
+    return () => { alive = false; clearInterval(t); clearInterval(l); };
   }, []);
 
   const loadPublicData = useCallback(async () => {
