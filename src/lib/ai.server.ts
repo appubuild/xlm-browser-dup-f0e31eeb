@@ -65,36 +65,75 @@ function mergeConfig(base: AiConfig, row: Partial<AiConfig> | null | undefined):
   };
 }
 
-function createServerSupabaseClient() {
+type ConfigSource = "service-role" | "user-session" | "none";
+
+interface ClientResult {
+  client: ReturnType<typeof createClient<Database>> | null;
+  source: ConfigSource;
+  reason: string;
+}
+
+function createServerSupabaseClient(): ClientResult {
   const url = process.env.SUPABASE_URL;
   const publishableKey = process.env.SUPABASE_PUBLISHABLE_KEY;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SB_SERVICE_ROLE_KEY;
-  if (!url) return null;
 
-  if (serviceKey) {
-    return createClient<Database>(url, serviceKey, {
-      global: { fetch: createSupabaseFetch(serviceKey) },
-      auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
-    });
+  if (!url) {
+    return { client: null, source: "none", reason: "SUPABASE_URL is not set in the deployment environment." };
   }
 
-  if (!publishableKey) return null;
+  if (serviceKey) {
+    return {
+      client: createClient<Database>(url, serviceKey, {
+        global: { fetch: createSupabaseFetch(serviceKey) },
+        auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+      }),
+      source: "service-role",
+      reason: `service-role key found (${process.env.SUPABASE_SERVICE_ROLE_KEY ? "SUPABASE_SERVICE_ROLE_KEY" : "SB_SERVICE_ROLE_KEY"})`,
+    };
+  }
+
+  if (!publishableKey) {
+    return {
+      client: null,
+      source: "none",
+      reason: "no service-role key (SUPABASE_SERVICE_ROLE_KEY / SB_SERVICE_ROLE_KEY) and no SUPABASE_PUBLISHABLE_KEY in the deployment environment.",
+    };
+  }
+
   const authHeader = getRequest()?.headers.get("authorization") ?? "";
   const token = authHeader.startsWith("Bearer ") ? authHeader.slice("Bearer ".length) : "";
-  if (!token || token.split(".").length !== 3) return null;
+  if (!token || token.split(".").length !== 3) {
+    return {
+      client: null,
+      source: "none",
+      reason: "no service-role key in the deployment environment, and the request carried no signed-in user token (so the admin-saved keys in ai_config cannot be read).",
+    };
+  }
 
-  return createClient<Database>(url, publishableKey, {
-    global: {
-      fetch: createSupabaseFetch(publishableKey),
-      headers: { Authorization: `Bearer ${token}` },
-    },
-    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
-  });
+  return {
+    client: createClient<Database>(url, publishableKey, {
+      global: {
+        fetch: createSupabaseFetch(publishableKey),
+        headers: { Authorization: `Bearer ${token}` },
+      },
+      auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+    }),
+    source: "user-session",
+    reason: "using the signed-in user's token (only admins can read ai_config under RLS)",
+  };
+}
+
+function providerKeyName(provider: AiProvider): string {
+  if (provider === "openai") return "OPENAI_API_KEY";
+  if (provider === "anthropic") return "ANTHROPIC_API_KEY";
+  return "GOOGLE_API_KEY";
 }
 
 async function loadAiConfig(): Promise<AiConfig> {
   const fallback = envConfig();
-  const supabase = createServerSupabaseClient();
+  const { client: supabase, source, reason } = createServerSupabaseClient();
+  const steps: string[] = [`Supabase access: ${reason}`];
 
   if (supabase) {
     const { data, error } = await supabase
@@ -102,18 +141,35 @@ async function loadAiConfig(): Promise<AiConfig> {
       .select("provider, model, openai_key, anthropic_key, google_key")
       .eq("id", 1)
       .maybeSingle();
-    if (!error && data) {
+
+    if (error) {
+      steps.push(
+        `Reading ai_config via ${source} failed: ${error.message}${error.code ? ` (code ${error.code})` : ""}.` +
+          (source === "user-session"
+            ? " RLS only allows admins to read ai_config, so this path works only while an admin is signed in."
+            : ""),
+      );
+    } else if (!data) {
+      steps.push("ai_config row id=1 does not exist yet — open Admin → Site Settings → AI Providers and save your keys once.");
+    } else {
       const merged = mergeConfig(fallback, data as Partial<AiConfig>);
       if (hasKeyForProvider(merged)) return merged;
+      steps.push(
+        `ai_config was read successfully, but the selected provider "${merged.provider}" has an empty API key field. Paste the ${merged.provider} key in Admin → Site Settings → AI Providers and save.`,
+      );
     }
   }
 
   if (hasKeyForProvider(fallback)) return fallback;
-
-  throw new Error(
-    "AI provider key is not available on this deployment. Add SB_SERVICE_ROLE_KEY to Cloudflare Worker secrets to use Admin → Site Settings keys, or add the selected provider key as OPENAI_API_KEY, ANTHROPIC_API_KEY, or GOOGLE_API_KEY.",
+  steps.push(
+    `No deployment env fallback either: ${providerKeyName(fallback.provider)} is not set (provider "${fallback.provider}").`,
   );
+
+  const message = `AI is not configured on this deployment.\n\nWhat actually failed:\n- ${steps.join("\n- ")}\n\nFix: add SB_SERVICE_ROLE_KEY (Supabase service_role key) to the Cloudflare Worker secrets so the server can read the keys saved in Admin → Site Settings, or set ${providerKeyName(fallback.provider)} as a Worker secret.`;
+  console.error("[AI config]", message);
+  throw new Error(message);
 }
+
 
 const RETRYABLE_STATUS = new Set([408, 429, 500, 502, 503, 504, 529]);
 
@@ -238,4 +294,77 @@ export async function callAi(messages: AiMessage[], opts: { temperature?: number
     }
   }
   throw lastError;
+}
+export interface AiDiagnostics {
+  ok: boolean;
+  provider?: string;
+  model?: string;
+  keySource?: string;
+  env: Record<string, boolean>;
+  steps: string[];
+  error?: string;
+  reply?: string;
+}
+
+export async function diagnoseAi(): Promise<AiDiagnostics> {
+  const env = {
+    SUPABASE_URL: Boolean(process.env.SUPABASE_URL),
+    SUPABASE_PUBLISHABLE_KEY: Boolean(process.env.SUPABASE_PUBLISHABLE_KEY),
+    SUPABASE_SERVICE_ROLE_KEY: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
+    SB_SERVICE_ROLE_KEY: Boolean(process.env.SB_SERVICE_ROLE_KEY),
+    OPENAI_API_KEY: Boolean(process.env.OPENAI_API_KEY),
+    ANTHROPIC_API_KEY: Boolean(process.env.ANTHROPIC_API_KEY),
+    GOOGLE_API_KEY: Boolean(process.env.GOOGLE_API_KEY),
+  };
+  const { client, source, reason } = createServerSupabaseClient();
+  const steps: string[] = [`Supabase access on the server: ${reason}`];
+
+  let cfg: AiConfig | null = null;
+  if (client) {
+    const { data, error } = await client
+      .from("ai_config")
+      .select("provider, model, openai_key, anthropic_key, google_key")
+      .eq("id", 1)
+      .maybeSingle();
+    if (error) steps.push(`ai_config read via ${source} failed: ${error.message}`);
+    else if (!data) steps.push("ai_config row id=1 is missing — save AI settings once.");
+    else {
+      cfg = mergeConfig(envConfig(), data as Partial<AiConfig>);
+      steps.push(
+        `ai_config read OK via ${source}: provider="${cfg.provider}", model="${cfg.model}", key present: ${hasKeyForProvider(cfg) ? "yes" : "NO"}`,
+      );
+    }
+  }
+  if (!cfg || !hasKeyForProvider(cfg)) {
+    const fb = envConfig();
+    if (hasKeyForProvider(fb)) {
+      cfg = fb;
+      steps.push(`Falling back to deployment env key ${providerKeyName(fb.provider)}.`);
+    }
+  }
+
+  if (!cfg || !hasKeyForProvider(cfg)) {
+    return {
+      ok: false,
+      env,
+      steps,
+      error: `No usable API key. Add SB_SERVICE_ROLE_KEY as a Cloudflare Worker secret (so the server can read Admin → Site Settings keys), or set ${providerKeyName(envConfig().provider)} as a Worker secret.`,
+    };
+  }
+
+  try {
+    const reply = await callAi([{ role: "user", content: "Reply with the single word: OK" }], { temperature: 0 });
+    steps.push(`Live ${cfg.provider} call succeeded.`);
+    return { ok: true, provider: cfg.provider, model: cfg.model, keySource: source, env, steps, reply: reply.slice(0, 200) };
+  } catch (err) {
+    return {
+      ok: false,
+      provider: cfg.provider,
+      model: cfg.model,
+      keySource: source,
+      env,
+      steps,
+      error: err instanceof Error ? err.message : String(err),
+    };
+  }
 }

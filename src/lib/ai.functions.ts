@@ -101,3 +101,8 @@ export const generateBlogSeo = createServerFn({ method: "POST" })
       return { metaDescription: "", keywords: [] as string[], slug: "" };
     }
   });
+
+export const aiDiagnostics = createServerFn({ method: "POST" }).handler(async () => {
+  const { diagnoseAi } = await import("@/lib/ai.server");
+  return diagnoseAi();
+});

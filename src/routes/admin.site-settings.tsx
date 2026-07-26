@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { AdminShell } from "@/components/admin-shell";
 import { useApp } from "@/lib/app-store";
 import { supabase } from "@/integrations/supabase/client";
+import { aiDiagnostics } from "@/lib/ai.functions";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/admin/site-settings")({ component: SiteSettings });
 
@@ -22,11 +25,46 @@ const MODEL_SUGGESTIONS: Record<AiProvider, string[]> = {
   google: ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.5-pro"],
 };
 
+type DiagResult = {
+  ok: boolean;
+  provider?: string;
+  model?: string;
+  keySource?: string;
+  env: Record<string, boolean>;
+  steps: string[];
+  error?: string;
+};
+
 function AiProvidersCard() {
+  const runDiag = useServerFn(aiDiagnostics);
   const [cfg, setCfg] = useState<AiConfigRow>({ provider: "openai", model: "gpt-4o-mini", openai_key: "", anthropic_key: "", google_key: "" });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [reveal, setReveal] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [diag, setDiag] = useState<DiagResult | null>(null);
+
+  const runTest = async () => {
+    setTesting(true);
+    setDiag(null);
+    try {
+      const res = (await runDiag({ data: undefined })) as DiagResult;
+      setDiag(res);
+      if (res.ok) toast.success("AI connection OK");
+      else toast.error("AI test failed — see the report below");
+    } catch (err) {
+      setDiag({
+        ok: false,
+        env: {},
+        steps: ["The diagnostics request itself failed before reaching the AI provider."],
+        error: err instanceof Error ? err.message : String(err),
+      });
+      toast.error("AI test failed");
+    } finally {
+      setTesting(false);
+    }
+  };
+
 
   useEffect(() => {
     (async () => {
@@ -89,9 +127,24 @@ function AiProvidersCard() {
             <input type={keyType} value={cfg.google_key} onChange={(e) => setCfg((c) => ({ ...c, google_key: e.target.value }))} placeholder="AIza..." className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm font-mono" />
           </F>
           <div className="text-xs text-slate-400">Keys are stored in an admin-only table (RLS). The active provider powers all AI features: project Ask AI, FAQ, blog writer, and SEO.</div>
-          <div className="flex justify-end">
+          <div className="flex flex-wrap justify-end gap-2">
+            <button onClick={runTest} disabled={testing} className="rounded border border-slate-600 px-3 py-1.5 text-sm text-slate-200 disabled:opacity-50">{testing ? "Testing…" : "Test AI connection"}</button>
             <button onClick={save} disabled={saving} className="rounded bg-sky-500 px-3 py-1.5 text-sm text-white disabled:opacity-50">{saving ? "Saving…" : "Save AI settings"}</button>
           </div>
+          {diag && (
+            <div className={`rounded border p-3 text-xs ${diag.ok ? "border-emerald-600 bg-emerald-950/40" : "border-rose-600 bg-rose-950/40"}`}>
+              <div className="mb-1 font-semibold">{diag.ok ? "AI is working ✅" : "AI failed ❌ — real reason below"}</div>
+              {diag.provider && <div className="text-slate-300">provider: {diag.provider} · model: {diag.model} · key source: {diag.keySource}</div>}
+              <ul className="mt-2 list-disc space-y-0.5 pl-4 text-slate-300">
+                {diag.steps.map((s: string, i: number) => <li key={i}>{s}</li>)}
+              </ul>
+              {diag.error && <pre className="mt-2 whitespace-pre-wrap font-mono text-rose-300">{diag.error}</pre>}
+              <div className="mt-2 font-mono text-slate-400">
+                Worker env: {Object.entries(diag.env).map(([k, v]) => `${k}=${v ? "set" : "missing"}`).join(" · ")}
+              </div>
+            </div>
+          )}
+
         </>
       )}
     </Card>
