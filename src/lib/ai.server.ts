@@ -165,7 +165,7 @@ export async function callAi(messages: AiMessage[], opts: { temperature?: number
 
   if (cfg.provider === "openai") {
     if (!cfg.openai_key) throw new Error("OpenAI API key not configured in Admin → Site Settings → AI Providers.");
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    const res = await fetchWithRetry("OpenAI", "https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: { "content-type": "application/json", Authorization: `Bearer ${cfg.openai_key}` },
       body: JSON.stringify({
@@ -175,7 +175,6 @@ export async function callAi(messages: AiMessage[], opts: { temperature?: number
         ...(opts.json ? { response_format: { type: "json_object" } } : {}),
       }),
     });
-    if (!res.ok) throw new Error(`OpenAI ${res.status}: ${(await res.text()).slice(0, 300)}`);
     const data = await res.json();
     return data?.choices?.[0]?.message?.content ?? "";
   }
