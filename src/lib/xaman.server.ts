@@ -50,6 +50,25 @@ function serverSupabase() {
   };
 }
 
+/** Public (non-secret) part of the wallet config — readable by ANY visitor through a
+ *  security-definer RPC, so signing in / paying never depends on the caller being an admin. */
+async function loadPublicConfig(): Promise<{ network?: string; rpcUrl?: string; treasuryAddress?: string }> {
+  const url = env("SUPABASE_URL", "VITE_SUPABASE_URL");
+  const publishable = env("SUPABASE_PUBLISHABLE_KEY", "VITE_SUPABASE_PUBLISHABLE_KEY");
+  if (!url || !publishable) return {};
+  try {
+    const anon = createClient<Database>(url, publishable, {
+      auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+    });
+    const { data } = await anon.rpc("xaman_public_config" as never);
+    const row = Array.isArray(data) ? (data[0] as Record<string, string> | undefined) : undefined;
+    if (!row) return {};
+    return { network: row.network, rpcUrl: row.rpc_url, treasuryAddress: row.treasury_address };
+  } catch {
+    return {};
+  }
+}
+
 /** Load Xaman credentials: env secrets first, then the admin-saved wallet_config row. */
 export async function loadXamanCreds(): Promise<XamanCreds> {
   const steps: string[] = [];
@@ -63,6 +82,13 @@ export async function loadXamanCreds(): Promise<XamanCreds> {
     treasuryAddress: "",
     source: "env",
   };
+
+  // Non-secret settings (network / rpc / treasury) work for every visitor.
+  const pub = await loadPublicConfig();
+  if (pub.network === "Mainnet" || pub.network === "Testnet") creds.network = pub.network;
+  if (pub.rpcUrl) creds.rpcUrl = pub.rpcUrl;
+  if (pub.treasuryAddress) creds.treasuryAddress = pub.treasuryAddress;
+
   if (creds.apiKey && creds.apiSecret) return creds;
   steps.push("XAMAN_API_KEY / XAMAN_API_SECRET are not both set as deployment secrets.");
 
@@ -82,9 +108,9 @@ export async function loadXamanCreds(): Promise<XamanCreds> {
       creds = {
         apiKey: r.xaman_api_key || creds.apiKey,
         apiSecret: r.xaman_api_secret || creds.apiSecret,
-        network: (r.network as "Mainnet" | "Testnet") || "Mainnet",
+        network: (r.network as "Mainnet" | "Testnet") || creds.network,
         rpcUrl: r.rpc_url || creds.rpcUrl,
-        treasuryAddress: r.treasury_address || "",
+        treasuryAddress: r.treasury_address || creds.treasuryAddress,
         source: `wallet_config (${source})`,
       };
       if (creds.apiKey && creds.apiSecret) return creds;
@@ -95,9 +121,10 @@ export async function loadXamanCreds(): Promise<XamanCreds> {
   throw new Error(
     `Xaman is not configured on this deployment.\n\nWhat actually failed:\n- ${steps.join(
       "\n- ",
-    )}\n\nFix: paste your API key + secret in Admin → Wallet Connect Config and save (needs SB_SERVICE_ROLE_KEY on the deployment so public visitors can sign in too), or set XAMAN_API_KEY and XAMAN_API_SECRET as deployment secrets.`,
+    )}\n\nFix: paste your API key + secret in Admin → Wallet Connect Config and save, then ask the site owner to add XAMAN_API_KEY and XAMAN_API_SECRET as deployment secrets so every visitor (not just admins) can connect.`,
   );
 }
+
 
 async function xummFetch(path: string, creds: XamanCreds, init?: RequestInit) {
   const res = await fetch(`${XUMM_API}${path}`, {

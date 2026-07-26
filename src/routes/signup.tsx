@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PublicShell } from "@/components/public-shell";
 import { useApp } from "@/lib/app-store";
 import { toast } from "sonner";
@@ -7,12 +7,25 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/signup")({ component: SignupPage });
 
 function SignupPage() {
-  const { signUpEmail, signInGoogle } = useApp();
+  const { signUpEmail, signInGoogle, session, loading: authLoading, isAdmin } = useApp();
   const nav = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && session) nav({ to: isAdmin ? "/admin" : "/panel", replace: true });
+  }, [authLoading, session, isAdmin, nav]);
+
+  if (authLoading || session) {
+    return (
+      <PublicShell>
+        <div className="grid place-items-center py-24 text-sm text-muted-foreground">Redirecting…</div>
+      </PublicShell>
+    );
+  }
+
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
