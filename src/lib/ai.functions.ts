@@ -12,16 +12,31 @@ interface AiConfig {
 }
 
 async function loadAiConfig(): Promise<AiConfig> {
+  const envCfg: AiConfig = {
+    provider: (process.env.AI_PROVIDER as AiConfig["provider"]) ?? "openai",
+    model: process.env.AI_MODEL ?? "gpt-4o-mini",
+    openai_key: process.env.OPENAI_API_KEY ?? "",
+    anthropic_key: process.env.ANTHROPIC_API_KEY ?? "",
+    google_key: process.env.GOOGLE_API_KEY ?? "",
+  };
+
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (envCfg.openai_key || envCfg.anthropic_key || envCfg.google_key) return envCfg;
+    throw new Error(
+      "AI is not reachable: the server is missing SUPABASE_SERVICE_ROLE_KEY, so the saved API keys in Admin → Site Settings → AI Providers cannot be read. Add the Supabase service role key as a project secret.",
+    );
+  }
+
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin.from("ai_config" as never).select("*").eq("id", 1).maybeSingle();
   if (error) throw new Error(`Failed to load AI config: ${error.message}`);
   const r = (data ?? {}) as Partial<AiConfig>;
   return {
-    provider: (r.provider as AiConfig["provider"]) ?? "openai",
-    model: r.model ?? "gpt-4o-mini",
-    openai_key: r.openai_key ?? "",
-    anthropic_key: r.anthropic_key ?? "",
-    google_key: r.google_key ?? "",
+    provider: (r.provider as AiConfig["provider"]) ?? envCfg.provider,
+    model: r.model ?? envCfg.model,
+    openai_key: r.openai_key || envCfg.openai_key,
+    anthropic_key: r.anthropic_key || envCfg.anthropic_key,
+    google_key: r.google_key || envCfg.google_key,
   };
 }
 
