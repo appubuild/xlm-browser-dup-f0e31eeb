@@ -49,6 +49,7 @@ import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminPagesIndexRouteImport } from './routes/admin.pages.index'
 import { Route as AdminBlogIndexRouteImport } from './routes/admin.blog.index'
 import { Route as AdminProjectsPendingRouteImport } from './routes/admin.projects.pending'
+import { Route as AdminPagesNewRouteImport } from './routes/admin.pages.new'
 import { Route as AdminBlogNewRouteImport } from './routes/admin.blog.new'
 import { Route as AdminBlogIdRouteImport } from './routes/admin.blog.$id'
 
@@ -253,6 +254,11 @@ const AdminProjectsPendingRoute = AdminProjectsPendingRouteImport.update({
   path: '/pending',
   getParentRoute: () => AdminProjectsRoute,
 } as any)
+const AdminPagesNewRoute = AdminPagesNewRouteImport.update({
+  id: '/admin/pages/new',
+  path: '/admin/pages/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminBlogNewRoute = AdminBlogNewRouteImport.update({
   id: '/admin/blog/new',
   path: '/admin/blog/new',
@@ -304,6 +310,7 @@ export interface FileRoutesByFullPath {
   '/panel/': typeof PanelIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
+  '/admin/pages/new': typeof AdminPagesNewRoute
   '/admin/projects/pending': typeof AdminProjectsPendingRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
   '/admin/pages/': typeof AdminPagesIndexRoute
@@ -348,6 +355,7 @@ export interface FileRoutesByTo {
   '/panel': typeof PanelIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
+  '/admin/pages/new': typeof AdminPagesNewRoute
   '/admin/projects/pending': typeof AdminProjectsPendingRoute
   '/admin/blog': typeof AdminBlogIndexRoute
   '/admin/pages': typeof AdminPagesIndexRoute
@@ -393,6 +401,7 @@ export interface FileRoutesById {
   '/panel/': typeof PanelIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
+  '/admin/pages/new': typeof AdminPagesNewRoute
   '/admin/projects/pending': typeof AdminProjectsPendingRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
   '/admin/pages/': typeof AdminPagesIndexRoute
@@ -439,6 +448,7 @@ export interface FileRouteTypes {
     | '/panel/'
     | '/admin/blog/$id'
     | '/admin/blog/new'
+    | '/admin/pages/new'
     | '/admin/projects/pending'
     | '/admin/blog/'
     | '/admin/pages/'
@@ -483,6 +493,7 @@ export interface FileRouteTypes {
     | '/panel'
     | '/admin/blog/$id'
     | '/admin/blog/new'
+    | '/admin/pages/new'
     | '/admin/projects/pending'
     | '/admin/blog'
     | '/admin/pages'
@@ -527,6 +538,7 @@ export interface FileRouteTypes {
     | '/panel/'
     | '/admin/blog/$id'
     | '/admin/blog/new'
+    | '/admin/pages/new'
     | '/admin/projects/pending'
     | '/admin/blog/'
     | '/admin/pages/'
@@ -571,6 +583,7 @@ export interface RootRouteChildren {
   PanelIndexRoute: typeof PanelIndexRoute
   AdminBlogIdRoute: typeof AdminBlogIdRoute
   AdminBlogNewRoute: typeof AdminBlogNewRoute
+  AdminPagesNewRoute: typeof AdminPagesNewRoute
   AdminBlogIndexRoute: typeof AdminBlogIndexRoute
   AdminPagesIndexRoute: typeof AdminPagesIndexRoute
 }
@@ -857,6 +870,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProjectsPendingRouteImport
       parentRoute: typeof AdminProjectsRoute
     }
+    '/admin/pages/new': {
+      id: '/admin/pages/new'
+      path: '/admin/pages/new'
+      fullPath: '/admin/pages/new'
+      preLoaderRoute: typeof AdminPagesNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/blog/new': {
       id: '/admin/blog/new'
       path: '/admin/blog/new'
@@ -937,6 +957,7 @@ const rootRouteChildren: RootRouteChildren = {
   PanelIndexRoute: PanelIndexRoute,
   AdminBlogIdRoute: AdminBlogIdRoute,
   AdminBlogNewRoute: AdminBlogNewRoute,
+  AdminPagesNewRoute: AdminPagesNewRoute,
   AdminBlogIndexRoute: AdminBlogIndexRoute,
   AdminPagesIndexRoute: AdminPagesIndexRoute,
 }
