@@ -207,21 +207,35 @@ export async function callAi(messages: AiMessage[], opts: { temperature?: number
   const contents = messages
     .filter((m) => m.role !== "system")
     .map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] }));
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(cfg.model)}:generateContent?key=${cfg.google_key}`;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      systemInstruction: system ? { parts: [{ text: system }] } : undefined,
-      contents,
-      generationConfig: {
-        temperature: opts.temperature ?? 0.4,
-        ...(opts.json ? { responseMimeType: "application/json" } : {}),
-      },
-    }),
+  const body = JSON.stringify({
+    systemInstruction: system ? { parts: [{ text: system }] } : undefined,
+    contents,
+    generationConfig: {
+      temperature: opts.temperature ?? 0.4,
+      ...(opts.json ? { responseMimeType: "application/json" } : {}),
+    },
   });
-  if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
-  const data = await res.json();
-  const parts = data?.candidates?.[0]?.content?.parts ?? [];
-  return parts.map((p: { text?: string }) => p.text ?? "").join("");
+
+  // If the configured model is overloaded, try a lighter fallback model before giving up.
+  const fallbacks = ["gemini-2.0-flash", "gemini-1.5-flash"].filter((m) => m !== cfg.model);
+  const models = [cfg.model, ...fallbacks];
+
+  let lastError: Error = new Error("Gemini request failed");
+  for (const model of models) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${cfg.google_key}`;
+    try {
+      const res = await fetchWithRetry("Gemini", url, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body,
+      });
+      const data = await res.json();
+      const parts = data?.candidates?.[0]?.content?.parts ?? [];
+      return parts.map((p: { text?: string }) => p.text ?? "").join("");
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      if (!/overloaded|rate limiting|network error/i.test(lastError.message)) throw lastError;
+    }
+  }
+  throw lastError;
 }
