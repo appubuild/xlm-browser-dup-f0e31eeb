@@ -908,6 +908,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      xaman_public_config: {
+        Args: never
+        Returns: {
+          network: string
+          rpc_url: string
+          treasury_address: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
