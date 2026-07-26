@@ -118,7 +118,7 @@ function WalletConfig() {
                   placeholder="••••••••••••••••••••••••••••••••"
                   className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-sm"
                 />
-                <div className="mt-1 text-[11px] text-slate-500">Kept locally in this prototype. In production, store as a server-side secret.</div>
+                <div className="mt-1 text-[11px] text-slate-500">Stored server-side in the database; only admins can read it. It is never sent to visitors' browsers.</div>
               </label>
             </div>
           </section>
