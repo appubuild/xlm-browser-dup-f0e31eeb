@@ -31,6 +31,7 @@ import { Route as PanelNotificationsRouteImport } from './routes/panel.notificat
 import { Route as PanelHistoryRouteImport } from './routes/panel.history'
 import { Route as PanelBookmarksRouteImport } from './routes/panel.bookmarks'
 import { Route as PanelAnalyticsRouteImport } from './routes/panel.analytics'
+import { Route as PSlugRouteImport } from './routes/p.$slug'
 import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 import { Route as DirectoryCategoryRouteImport } from './routes/directory.$category'
 import { Route as DevelopersApiRouteImport } from './routes/developers.api'
@@ -50,6 +51,7 @@ import { Route as AdminPagesIndexRouteImport } from './routes/admin.pages.index'
 import { Route as AdminBlogIndexRouteImport } from './routes/admin.blog.index'
 import { Route as AdminProjectsPendingRouteImport } from './routes/admin.projects.pending'
 import { Route as AdminPagesNewRouteImport } from './routes/admin.pages.new'
+import { Route as AdminPagesIdRouteImport } from './routes/admin.pages.$id'
 import { Route as AdminBlogNewRouteImport } from './routes/admin.blog.new'
 import { Route as AdminBlogIdRouteImport } from './routes/admin.blog.$id'
 
@@ -163,6 +165,11 @@ const PanelAnalyticsRoute = PanelAnalyticsRouteImport.update({
   path: '/panel/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PSlugRoute = PSlugRouteImport.update({
+  id: '/p/$slug',
+  path: '/p/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NewsSlugRoute = NewsSlugRouteImport.update({
   id: '/news/$slug',
   path: '/news/$slug',
@@ -259,6 +266,11 @@ const AdminPagesNewRoute = AdminPagesNewRouteImport.update({
   path: '/admin/pages/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPagesIdRoute = AdminPagesIdRouteImport.update({
+  id: '/admin/pages/$id',
+  path: '/admin/pages/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminBlogNewRoute = AdminBlogNewRouteImport.update({
   id: '/admin/blog/new',
   path: '/admin/blog/new',
@@ -297,6 +309,7 @@ export interface FileRoutesByFullPath {
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
   '/news/$slug': typeof NewsSlugRoute
+  '/p/$slug': typeof PSlugRoute
   '/panel/analytics': typeof PanelAnalyticsRoute
   '/panel/bookmarks': typeof PanelBookmarksRoute
   '/panel/history': typeof PanelHistoryRoute
@@ -310,6 +323,7 @@ export interface FileRoutesByFullPath {
   '/panel/': typeof PanelIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
+  '/admin/pages/$id': typeof AdminPagesIdRoute
   '/admin/pages/new': typeof AdminPagesNewRoute
   '/admin/projects/pending': typeof AdminProjectsPendingRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
@@ -342,6 +356,7 @@ export interface FileRoutesByTo {
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
   '/news/$slug': typeof NewsSlugRoute
+  '/p/$slug': typeof PSlugRoute
   '/panel/analytics': typeof PanelAnalyticsRoute
   '/panel/bookmarks': typeof PanelBookmarksRoute
   '/panel/history': typeof PanelHistoryRoute
@@ -355,6 +370,7 @@ export interface FileRoutesByTo {
   '/panel': typeof PanelIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
+  '/admin/pages/$id': typeof AdminPagesIdRoute
   '/admin/pages/new': typeof AdminPagesNewRoute
   '/admin/projects/pending': typeof AdminProjectsPendingRoute
   '/admin/blog': typeof AdminBlogIndexRoute
@@ -388,6 +404,7 @@ export interface FileRoutesById {
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
   '/news/$slug': typeof NewsSlugRoute
+  '/p/$slug': typeof PSlugRoute
   '/panel/analytics': typeof PanelAnalyticsRoute
   '/panel/bookmarks': typeof PanelBookmarksRoute
   '/panel/history': typeof PanelHistoryRoute
@@ -401,6 +418,7 @@ export interface FileRoutesById {
   '/panel/': typeof PanelIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
+  '/admin/pages/$id': typeof AdminPagesIdRoute
   '/admin/pages/new': typeof AdminPagesNewRoute
   '/admin/projects/pending': typeof AdminProjectsPendingRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
@@ -435,6 +453,7 @@ export interface FileRouteTypes {
     | '/developers/api'
     | '/directory/$category'
     | '/news/$slug'
+    | '/p/$slug'
     | '/panel/analytics'
     | '/panel/bookmarks'
     | '/panel/history'
@@ -448,6 +467,7 @@ export interface FileRouteTypes {
     | '/panel/'
     | '/admin/blog/$id'
     | '/admin/blog/new'
+    | '/admin/pages/$id'
     | '/admin/pages/new'
     | '/admin/projects/pending'
     | '/admin/blog/'
@@ -480,6 +500,7 @@ export interface FileRouteTypes {
     | '/developers/api'
     | '/directory/$category'
     | '/news/$slug'
+    | '/p/$slug'
     | '/panel/analytics'
     | '/panel/bookmarks'
     | '/panel/history'
@@ -493,6 +514,7 @@ export interface FileRouteTypes {
     | '/panel'
     | '/admin/blog/$id'
     | '/admin/blog/new'
+    | '/admin/pages/$id'
     | '/admin/pages/new'
     | '/admin/projects/pending'
     | '/admin/blog'
@@ -525,6 +547,7 @@ export interface FileRouteTypes {
     | '/developers/api'
     | '/directory/$category'
     | '/news/$slug'
+    | '/p/$slug'
     | '/panel/analytics'
     | '/panel/bookmarks'
     | '/panel/history'
@@ -538,6 +561,7 @@ export interface FileRouteTypes {
     | '/panel/'
     | '/admin/blog/$id'
     | '/admin/blog/new'
+    | '/admin/pages/$id'
     | '/admin/pages/new'
     | '/admin/projects/pending'
     | '/admin/blog/'
@@ -570,6 +594,7 @@ export interface RootRouteChildren {
   AdminWalletConnectConfigRoute: typeof AdminWalletConnectConfigRoute
   DirectoryCategoryRoute: typeof DirectoryCategoryRoute
   NewsSlugRoute: typeof NewsSlugRoute
+  PSlugRoute: typeof PSlugRoute
   PanelAnalyticsRoute: typeof PanelAnalyticsRoute
   PanelBookmarksRoute: typeof PanelBookmarksRoute
   PanelHistoryRoute: typeof PanelHistoryRoute
@@ -583,6 +608,7 @@ export interface RootRouteChildren {
   PanelIndexRoute: typeof PanelIndexRoute
   AdminBlogIdRoute: typeof AdminBlogIdRoute
   AdminBlogNewRoute: typeof AdminBlogNewRoute
+  AdminPagesIdRoute: typeof AdminPagesIdRoute
   AdminPagesNewRoute: typeof AdminPagesNewRoute
   AdminBlogIndexRoute: typeof AdminBlogIndexRoute
   AdminPagesIndexRoute: typeof AdminPagesIndexRoute
@@ -744,6 +770,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PanelAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/p/$slug': {
+      id: '/p/$slug'
+      path: '/p/$slug'
+      fullPath: '/p/$slug'
+      preLoaderRoute: typeof PSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/news/$slug': {
       id: '/news/$slug'
       path: '/news/$slug'
@@ -877,6 +910,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPagesNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/pages/$id': {
+      id: '/admin/pages/$id'
+      path: '/admin/pages/$id'
+      fullPath: '/admin/pages/$id'
+      preLoaderRoute: typeof AdminPagesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/blog/new': {
       id: '/admin/blog/new'
       path: '/admin/blog/new'
@@ -944,6 +984,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminWalletConnectConfigRoute: AdminWalletConnectConfigRoute,
   DirectoryCategoryRoute: DirectoryCategoryRoute,
   NewsSlugRoute: NewsSlugRoute,
+  PSlugRoute: PSlugRoute,
   PanelAnalyticsRoute: PanelAnalyticsRoute,
   PanelBookmarksRoute: PanelBookmarksRoute,
   PanelHistoryRoute: PanelHistoryRoute,
@@ -957,6 +998,7 @@ const rootRouteChildren: RootRouteChildren = {
   PanelIndexRoute: PanelIndexRoute,
   AdminBlogIdRoute: AdminBlogIdRoute,
   AdminBlogNewRoute: AdminBlogNewRoute,
+  AdminPagesIdRoute: AdminPagesIdRoute,
   AdminPagesNewRoute: AdminPagesNewRoute,
   AdminBlogIndexRoute: AdminBlogIndexRoute,
   AdminPagesIndexRoute: AdminPagesIndexRoute,
