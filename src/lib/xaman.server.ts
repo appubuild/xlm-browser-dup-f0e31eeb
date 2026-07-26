@@ -102,7 +102,7 @@ export async function loadXamanCreds(): Promise<XamanCreds> {
       .eq("id", 1)
       .maybeSingle();
     if (error) steps.push(`Reading wallet_config via ${source} failed: ${error.message}`);
-    else if (!data) steps.push("wallet_config row id=1 is missing — save the wallet settings once in Admin → Wallet Connect Config.");
+    else if (!data) steps.push("wallet_config row id=1 was not readable with this request's permissions (it is admin-only under RLS) — that is why non-admin visitors need the deployment secrets.");
     else {
       const r = data as Record<string, string>;
       creds = {
