@@ -14,6 +14,8 @@ const ADMIN_NAV = [
   { to: "/admin/sidebar", label: "Sidebar Menu", icon: "🧭" },
   { to: "/admin/users", label: "Users", icon: "👥" },
   { to: "/admin/blog", label: "News / Blog", icon: "📰" },
+  { to: "/admin/pages", label: "Pages", icon: "📄" },
+  { to: "/admin/contact", label: "Contact & Support", icon: "💬" },
   { to: "/admin/tickers", label: "Tickers", icon: "📡" },
   { to: "/admin/site-settings", label: "Site Settings", icon: "⚙️" },
   { to: "/admin/analytics", label: "Analytics", icon: "📈" },
