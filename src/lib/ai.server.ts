@@ -115,12 +115,57 @@ async function loadAiConfig(): Promise<AiConfig> {
   );
 }
 
+const RETRYABLE_STATUS = new Set([408, 429, 500, 502, 503, 504, 529]);
+
+function friendlyError(provider: string, status: number, body: string): Error {
+  if (status === 429) {
+    return new Error(`${provider} is rate limiting requests right now. Please wait a moment and try again.`);
+  }
+  if (RETRYABLE_STATUS.has(status)) {
+    return new Error(`${provider} is temporarily overloaded (${status}). Please try again in a few seconds, or pick another model in Admin → Site Settings → AI Providers.`);
+  }
+  return new Error(`${provider} ${status}: ${body.slice(0, 300)}`);
+}
+
+async function fetchWithRetry(
+  provider: string,
+  url: string,
+  init: RequestInit,
+  attempts = 3,
+): Promise<Response> {
+  let lastError: Error = new Error(`${provider} request failed`);
+  for (let attempt = 0; attempt < attempts; attempt++) {
+    let res: Response;
+    try {
+      res = await fetch(url, init);
+    } catch (err) {
+      lastError = new Error(`${provider} network error: ${err instanceof Error ? err.message : String(err)}`);
+      if (attempt < attempts - 1) {
+        await new Promise((r) => setTimeout(r, 700 * 2 ** attempt));
+        continue;
+      }
+      throw lastError;
+    }
+
+    if (res.ok) return res;
+
+    const body = await res.text();
+    lastError = friendlyError(provider, res.status, body);
+    if (RETRYABLE_STATUS.has(res.status) && attempt < attempts - 1) {
+      await new Promise((r) => setTimeout(r, 700 * 2 ** attempt));
+      continue;
+    }
+    throw lastError;
+  }
+  throw lastError;
+}
+
 export async function callAi(messages: AiMessage[], opts: { temperature?: number; json?: boolean } = {}): Promise<string> {
   const cfg = await loadAiConfig();
 
   if (cfg.provider === "openai") {
     if (!cfg.openai_key) throw new Error("OpenAI API key not configured in Admin → Site Settings → AI Providers.");
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    const res = await fetchWithRetry("OpenAI", "https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: { "content-type": "application/json", Authorization: `Bearer ${cfg.openai_key}` },
       body: JSON.stringify({
@@ -130,7 +175,6 @@ export async function callAi(messages: AiMessage[], opts: { temperature?: number
         ...(opts.json ? { response_format: { type: "json_object" } } : {}),
       }),
     });
-    if (!res.ok) throw new Error(`OpenAI ${res.status}: ${(await res.text()).slice(0, 300)}`);
     const data = await res.json();
     return data?.choices?.[0]?.message?.content ?? "";
   }
@@ -139,7 +183,7 @@ export async function callAi(messages: AiMessage[], opts: { temperature?: number
     if (!cfg.anthropic_key) throw new Error("Anthropic (Claude) API key not configured in Admin → Site Settings → AI Providers.");
     const system = messages.filter((m) => m.role === "system").map((m) => m.content).join("\n\n");
     const rest = messages.filter((m) => m.role !== "system").map((m) => ({ role: m.role, content: m.content }));
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetchWithRetry("Anthropic", "https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -154,7 +198,6 @@ export async function callAi(messages: AiMessage[], opts: { temperature?: number
         temperature: opts.temperature ?? 0.4,
       }),
     });
-    if (!res.ok) throw new Error(`Anthropic ${res.status}: ${(await res.text()).slice(0, 300)}`);
     const data = await res.json();
     return Array.isArray(data?.content) ? data.content.map((b: { text?: string }) => b.text ?? "").join("") : "";
   }
@@ -164,21 +207,35 @@ export async function callAi(messages: AiMessage[], opts: { temperature?: number
   const contents = messages
     .filter((m) => m.role !== "system")
     .map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] }));
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(cfg.model)}:generateContent?key=${cfg.google_key}`;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      systemInstruction: system ? { parts: [{ text: system }] } : undefined,
-      contents,
-      generationConfig: {
-        temperature: opts.temperature ?? 0.4,
-        ...(opts.json ? { responseMimeType: "application/json" } : {}),
-      },
-    }),
+  const body = JSON.stringify({
+    systemInstruction: system ? { parts: [{ text: system }] } : undefined,
+    contents,
+    generationConfig: {
+      temperature: opts.temperature ?? 0.4,
+      ...(opts.json ? { responseMimeType: "application/json" } : {}),
+    },
   });
-  if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
-  const data = await res.json();
-  const parts = data?.candidates?.[0]?.content?.parts ?? [];
-  return parts.map((p: { text?: string }) => p.text ?? "").join("");
+
+  // If the configured model is overloaded, try a lighter fallback model before giving up.
+  const fallbacks = ["gemini-2.0-flash", "gemini-1.5-flash"].filter((m) => m !== cfg.model);
+  const models = [cfg.model, ...fallbacks];
+
+  let lastError: Error = new Error("Gemini request failed");
+  for (const model of models) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${cfg.google_key}`;
+    try {
+      const res = await fetchWithRetry("Gemini", url, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body,
+      });
+      const data = await res.json();
+      const parts = data?.candidates?.[0]?.content?.parts ?? [];
+      return parts.map((p: { text?: string }) => p.text ?? "").join("");
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      if (!/overloaded|rate limiting|network error/i.test(lastError.message)) throw lastError;
+    }
+  }
+  throw lastError;
 }
