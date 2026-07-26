@@ -8,6 +8,7 @@ export interface SitePage {
   metaDescription: string;
   published: boolean;
   showInFooter: boolean;
+  footerGroupId: string | null;
   sortOrder: number;
   updatedAt: string;
 }
@@ -50,6 +51,7 @@ const mapPage = (r: Row): SitePage => ({
   metaDescription: String(r.meta_description ?? ""),
   published: Boolean(r.published),
   showInFooter: Boolean(r.show_in_footer),
+  footerGroupId: (r.footer_group_id as string) ?? null,
   sortOrder: Number(r.sort_order ?? 0),
   updatedAt: String(r.updated_at ?? ""),
 });
@@ -102,6 +104,7 @@ export async function createPage(p: Partial<SitePage> & { title: string; slug: s
       meta_description: p.metaDescription ?? "",
       published: p.published ?? true,
       show_in_footer: p.showInFooter ?? false,
+      footer_group_id: p.footerGroupId ?? null,
       sort_order: p.sortOrder ?? 0,
     } as never)
     .select()
@@ -118,6 +121,7 @@ export async function updatePage(id: string, patch: Partial<SitePage>) {
   if (patch.metaDescription !== undefined) row.meta_description = patch.metaDescription;
   if (patch.published !== undefined) row.published = patch.published;
   if (patch.showInFooter !== undefined) row.show_in_footer = patch.showInFooter;
+  if (patch.footerGroupId !== undefined) row.footer_group_id = patch.footerGroupId;
   if (patch.sortOrder !== undefined) row.sort_order = patch.sortOrder;
   const { error } = await t("pages").update(row as never).eq("id", id);
   if (error) throw new Error(error.message);

@@ -487,6 +487,7 @@ export type Database = {
         Row: {
           body: string
           created_at: string
+          footer_group_id: string | null
           id: string
           meta_description: string | null
           published: boolean
@@ -499,6 +500,7 @@ export type Database = {
         Insert: {
           body?: string
           created_at?: string
+          footer_group_id?: string | null
           id?: string
           meta_description?: string | null
           published?: boolean
@@ -511,6 +513,7 @@ export type Database = {
         Update: {
           body?: string
           created_at?: string
+          footer_group_id?: string | null
           id?: string
           meta_description?: string | null
           published?: boolean
@@ -520,7 +523,15 @@ export type Database = {
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "pages_footer_group_id_fkey"
+            columns: ["footer_group_id"]
+            isOneToOne: false
+            referencedRelation: "footer_groups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
