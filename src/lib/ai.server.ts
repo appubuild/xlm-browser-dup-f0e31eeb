@@ -73,14 +73,31 @@ interface ClientResult {
   reason: string;
 }
 
+function getServerEnv(name: string, viteFallback?: string): string | undefined {
+  // Cloudflare Worker / Lovable Cloud runtime secrets use process.env.
+  // Vite-injected public variables use import.meta.env (available at build time).
+  const processValue = process.env[name];
+  if (processValue) return processValue;
+  if (viteFallback && typeof import.meta.env !== "undefined" && import.meta.env[viteFallback]) {
+    return import.meta.env[viteFallback] as string;
+  }
+  return undefined;
+}
+
 function createServerSupabaseClient(): ClientResult {
-  const url = process.env.SUPABASE_URL;
-  const publishableKey = process.env.SUPABASE_PUBLISHABLE_KEY;
+  const url = getServerEnv("SUPABASE_URL", "VITE_SUPABASE_URL");
+  const publishableKey = getServerEnv("SUPABASE_PUBLISHABLE_KEY", "VITE_SUPABASE_PUBLISHABLE_KEY");
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SB_SERVICE_ROLE_KEY;
 
   if (!url) {
-    return { client: null, source: "none", reason: "SUPABASE_URL is not set in the deployment environment." };
+    return {
+      client: null,
+      source: "none",
+      reason:
+        "SUPABASE_URL is not set in the deployment environment (checked process.env.SUPABASE_URL and import.meta.env.VITE_SUPABASE_URL).",
+    };
   }
+
 
   if (serviceKey) {
     return {
@@ -308,14 +325,15 @@ export interface AiDiagnostics {
 
 export async function diagnoseAi(): Promise<AiDiagnostics> {
   const env = {
-    SUPABASE_URL: Boolean(process.env.SUPABASE_URL),
-    SUPABASE_PUBLISHABLE_KEY: Boolean(process.env.SUPABASE_PUBLISHABLE_KEY),
+    SUPABASE_URL: Boolean(getServerEnv("SUPABASE_URL", "VITE_SUPABASE_URL")),
+    SUPABASE_PUBLISHABLE_KEY: Boolean(getServerEnv("SUPABASE_PUBLISHABLE_KEY", "VITE_SUPABASE_PUBLISHABLE_KEY")),
     SUPABASE_SERVICE_ROLE_KEY: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
     SB_SERVICE_ROLE_KEY: Boolean(process.env.SB_SERVICE_ROLE_KEY),
     OPENAI_API_KEY: Boolean(process.env.OPENAI_API_KEY),
     ANTHROPIC_API_KEY: Boolean(process.env.ANTHROPIC_API_KEY),
     GOOGLE_API_KEY: Boolean(process.env.GOOGLE_API_KEY),
   };
+
   const { client, source, reason } = createServerSupabaseClient();
   const steps: string[] = [`Supabase access on the server: ${reason}`];
 
