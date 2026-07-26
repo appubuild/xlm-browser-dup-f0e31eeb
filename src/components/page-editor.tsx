@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { RichEditor } from "@/components/rich-editor";
 import { createPage, updatePage, deletePage, type SitePage } from "@/lib/cms";
+import { useApp } from "@/lib/app-store";
 
 const slugify = (s: string) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
@@ -14,6 +15,8 @@ export function PageEditor({ initial }: { initial?: SitePage }) {
   const [meta, setMeta] = useState(initial?.metaDescription ?? "");
   const [published, setPublished] = useState(initial?.published ?? true);
   const [showInFooter, setShowInFooter] = useState(initial?.showInFooter ?? false);
+  const [footerGroupId, setFooterGroupId] = useState<string>(initial?.footerGroupId ?? "");
+  const { footerGroups } = useApp();
   const [sortOrder, setSortOrder] = useState(initial?.sortOrder ?? 0);
   const [saving, setSaving] = useState(false);
 
@@ -26,9 +29,10 @@ export function PageEditor({ initial }: { initial?: SitePage }) {
 
   const save = async () => {
     if (!title.trim() || !slug.trim()) { toast.error("Title and slug are required"); return; }
+    if (showInFooter && !footerGroupId) { toast.error("Pick a footer group for this page"); return; }
     setSaving(true);
     try {
-      const payload = { title: title.trim(), slug: slugify(slug), body, metaDescription: meta, published, showInFooter, sortOrder };
+      const payload = { title: title.trim(), slug: slugify(slug), body, metaDescription: meta, published, showInFooter, footerGroupId: showInFooter ? (footerGroupId || null) : null, sortOrder };
       if (initial) {
         await updatePage(initial.id, payload);
         toast.success("Page saved");
@@ -92,6 +96,16 @@ export function PageEditor({ initial }: { initial?: SitePage }) {
         <div className="flex flex-wrap items-center gap-6 text-sm">
           <label className="flex items-center gap-2"><input type="checkbox" checked={published} onChange={(e) => setPublished(e.target.checked)} /> Published</label>
           <label className="flex items-center gap-2"><input type="checkbox" checked={showInFooter} onChange={(e) => setShowInFooter(e.target.checked)} /> Show in footer</label>
+          {showInFooter && (
+            <label className="flex items-center gap-2 text-sm">Group *
+              <select value={footerGroupId} onChange={(e) => setFooterGroupId(e.target.value)} className="rounded-md border bg-background px-2 py-1 text-sm">
+                <option value="">Select group…</option>
+                {[...footerGroups].sort((a, b) => a.sortOrder - b.sortOrder).map((g) => (
+                  <option key={g.id} value={g.id}>{g.label}</option>
+                ))}
+              </select>
+            </label>
+          )}
           <label className="flex items-center gap-2">Order
             <input type="number" value={sortOrder} onChange={(e) => setSortOrder(parseInt(e.target.value) || 0)} className="w-20 rounded-md border bg-background px-2 py-1" />
           </label>
