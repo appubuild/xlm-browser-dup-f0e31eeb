@@ -183,7 +183,7 @@ export async function callAi(messages: AiMessage[], opts: { temperature?: number
     if (!cfg.anthropic_key) throw new Error("Anthropic (Claude) API key not configured in Admin → Site Settings → AI Providers.");
     const system = messages.filter((m) => m.role === "system").map((m) => m.content).join("\n\n");
     const rest = messages.filter((m) => m.role !== "system").map((m) => ({ role: m.role, content: m.content }));
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetchWithRetry("Anthropic", "https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -198,7 +198,6 @@ export async function callAi(messages: AiMessage[], opts: { temperature?: number
         temperature: opts.temperature ?? 0.4,
       }),
     });
-    if (!res.ok) throw new Error(`Anthropic ${res.status}: ${(await res.text()).slice(0, 300)}`);
     const data = await res.json();
     return Array.isArray(data?.content) ? data.content.map((b: { text?: string }) => b.text ?? "").join("") : "";
   }
