@@ -1,16 +1,15 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-
-const ChatInput = z.object({
-  projectName: z.string(),
-  projectTagline: z.string().optional().default(""),
-  aiDoc: z.string(),
-  history: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string() })),
-  question: z.string().min(1).max(2000),
-});
+import type { AiMessage } from "@/lib/ai.server";
 
 export const askProjectAi = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => ChatInput.parse(input))
+  .inputValidator((input: unknown) => z.object({
+    projectName: z.string(),
+    projectTagline: z.string().optional().default(""),
+    aiDoc: z.string(),
+    history: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string() })),
+    question: z.string().min(1).max(2000),
+  }).parse(input))
   .handler(async ({ data }) => {
     const { callAi } = await import("@/lib/ai.server");
     const doc = (data.aiDoc || "").slice(0, 12000);
@@ -21,7 +20,7 @@ export const askProjectAi = createServerFn({ method: "POST" })
 === PROJECT DOCUMENTATION ===
 ${doc || "(No documentation provided by the project owner.)"}
 === END DOCUMENTATION ===`;
-    const messages = [
+    const messages: AiMessage[] = [
       { role: "system", content: system },
       ...data.history.slice(-10),
       { role: "user", content: data.question },
@@ -30,10 +29,8 @@ ${doc || "(No documentation provided by the project owner.)"}
     return { reply };
   });
 
-const FaqInput = z.object({ projectName: z.string(), aiDoc: z.string() });
-
 export const generateProjectFaq = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => FaqInput.parse(input))
+  .inputValidator((input: unknown) => z.object({ projectName: z.string(), aiDoc: z.string() }).parse(input))
   .handler(async ({ data }) => {
     const { callAi } = await import("@/lib/ai.server");
     const doc = (data.aiDoc || "").slice(0, 12000);
@@ -53,13 +50,12 @@ export const generateProjectFaq = createServerFn({ method: "POST" })
     }
   });
 
-const BlogPostInput = z.object({
-  category: z.string().default(""),
-  angle: z.string().default(""),
-  instruction: z.string().default(""),
-});
 export const generateBlogPost = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => BlogPostInput.parse(input))
+  .inputValidator((input: unknown) => z.object({
+    category: z.string().default(""),
+    angle: z.string().default(""),
+    instruction: z.string().default(""),
+  }).parse(input))
   .handler(async ({ data }) => {
     const { callAi } = await import("@/lib/ai.server");
     const system = `${data.instruction || "You are a helpful blog writer for XRPBrowser."}
@@ -83,9 +79,8 @@ Return ONLY strict JSON: {"title":"...","excerpt":"...","body":"<html>","tags":[
     }
   });
 
-const SeoInput = z.object({ title: z.string(), body: z.string() });
 export const generateBlogSeo = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => SeoInput.parse(input))
+  .inputValidator((input: unknown) => z.object({ title: z.string(), body: z.string() }).parse(input))
   .handler(async ({ data }) => {
     const { callAi } = await import("@/lib/ai.server");
     const system = `Generate SEO metadata for a blog post. Return ONLY JSON: {"metaDescription":"...","keywords":["..."],"slug":"kebab-case-slug"}. metaDescription <=155 chars.`;

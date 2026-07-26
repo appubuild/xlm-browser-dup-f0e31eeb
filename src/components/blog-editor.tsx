@@ -6,7 +6,7 @@ import { RichEditor } from "@/components/rich-editor";
 import { GalleryPicker } from "@/components/gallery-picker";
 import { useServerFn } from "@tanstack/react-start";
 import { generateBlogPost, generateBlogSeo } from "@/lib/ai.functions";
-import { Sparkles, Image as ImgIcon, ArrowLeft, Save, Wand2 } from "lucide-react";
+import { Sparkles, Image as ImgIcon, ArrowLeft, Save, Wand2, Bot, Loader2 } from "lucide-react";
 
 type Draft = Omit<NewsArticle, "id" | "views">;
 
@@ -188,6 +188,21 @@ export function BlogEditor({ initial, id }: { initial?: NewsArticle; id?: string
           </F>
         </aside>
       </div>
+
+      {aiBusy && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/70 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-xl border border-sky-400/30 bg-slate-900 p-6 text-center text-slate-100 shadow-2xl">
+            <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-sky-500/15 text-sky-300">
+              <Bot className="h-8 w-8" />
+            </div>
+            <div className="mt-4 text-lg font-semibold">AI robot is writing</div>
+            <div className="mt-2 text-sm text-slate-400">Generating your blog draft, excerpt, and tags…</div>
+            <div className="mt-5 flex items-center justify-center gap-2 text-xs text-sky-300">
+              <Loader2 className="h-4 w-4 animate-spin" /> Please wait
+            </div>
+          </div>
+        </div>
+      )}
 
       <GalleryPicker open={pickerFor === "cover"} value={d.coverImageUrl} onClose={() => setPickerFor(null)} onSelect={(url) => { set("coverImageUrl", url); setPickerFor(null); }} />
     </div>
