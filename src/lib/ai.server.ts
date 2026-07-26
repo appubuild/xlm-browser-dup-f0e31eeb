@@ -115,6 +115,51 @@ async function loadAiConfig(): Promise<AiConfig> {
   );
 }
 
+const RETRYABLE_STATUS = new Set([408, 429, 500, 502, 503, 504, 529]);
+
+function friendlyError(provider: string, status: number, body: string): Error {
+  if (status === 429) {
+    return new Error(`${provider} is rate limiting requests right now. Please wait a moment and try again.`);
+  }
+  if (RETRYABLE_STATUS.has(status)) {
+    return new Error(`${provider} is temporarily overloaded (${status}). Please try again in a few seconds, or pick another model in Admin → Site Settings → AI Providers.`);
+  }
+  return new Error(`${provider} ${status}: ${body.slice(0, 300)}`);
+}
+
+async function fetchWithRetry(
+  provider: string,
+  url: string,
+  init: RequestInit,
+  attempts = 3,
+): Promise<Response> {
+  let lastError: Error = new Error(`${provider} request failed`);
+  for (let attempt = 0; attempt < attempts; attempt++) {
+    let res: Response;
+    try {
+      res = await fetch(url, init);
+    } catch (err) {
+      lastError = new Error(`${provider} network error: ${err instanceof Error ? err.message : String(err)}`);
+      if (attempt < attempts - 1) {
+        await new Promise((r) => setTimeout(r, 700 * 2 ** attempt));
+        continue;
+      }
+      throw lastError;
+    }
+
+    if (res.ok) return res;
+
+    const body = await res.text();
+    lastError = friendlyError(provider, res.status, body);
+    if (RETRYABLE_STATUS.has(res.status) && attempt < attempts - 1) {
+      await new Promise((r) => setTimeout(r, 700 * 2 ** attempt));
+      continue;
+    }
+    throw lastError;
+  }
+  throw lastError;
+}
+
 export async function callAi(messages: AiMessage[], opts: { temperature?: number; json?: boolean } = {}): Promise<string> {
   const cfg = await loadAiConfig();
 
