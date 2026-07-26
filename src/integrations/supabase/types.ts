@@ -855,6 +855,36 @@ export type Database = {
         }
         Relationships: []
       }
+      wallet_config: {
+        Row: {
+          id: number
+          network: string
+          rpc_url: string
+          treasury_address: string
+          updated_at: string
+          xaman_api_key: string
+          xaman_api_secret: string
+        }
+        Insert: {
+          id?: number
+          network?: string
+          rpc_url?: string
+          treasury_address?: string
+          updated_at?: string
+          xaman_api_key?: string
+          xaman_api_secret?: string
+        }
+        Update: {
+          id?: number
+          network?: string
+          rpc_url?: string
+          treasury_address?: string
+          updated_at?: string
+          xaman_api_key?: string
+          xaman_api_secret?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
