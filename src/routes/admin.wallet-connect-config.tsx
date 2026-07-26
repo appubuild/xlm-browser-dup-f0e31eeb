@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AdminShell } from "@/components/admin-shell";
 import { useApp } from "@/lib/app-store";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/wallet-connect-config")({ component: WalletConfig });
@@ -9,12 +10,48 @@ export const Route = createFileRoute("/admin/wallet-connect-config")({ component
 function WalletConfig() {
   const { walletConfig, updateWalletConfig, siteSettings, updateSiteSettings } = useApp();
   const [showSecret, setShowSecret] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const webhookUrl = typeof window !== "undefined" ? `${window.location.origin}/api/public/xaman/webhook` : "";
+
+  // Load the saved server-side credentials (admins only, enforced by RLS).
+  useEffect(() => {
+    void (async () => {
+      const { data } = await supabase.from("wallet_config" as never).select("*").eq("id", 1).maybeSingle();
+      if (!data) return;
+      const r = data as Record<string, string>;
+      updateWalletConfig({
+        xamanApiKey: r.xaman_api_key ?? "",
+        xamanApiSecret: r.xaman_api_secret ?? "",
+        treasuryAddress: r.treasury_address ?? "",
+        network: (r.network as "Mainnet" | "Testnet") ?? "Mainnet",
+        rpcUrl: r.rpc_url ?? "https://xrplcluster.com",
+      });
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const save = async () => {
-    if (siteSettings.listingPaymentAddress !== walletConfig.treasuryAddress) {
-      await updateSiteSettings({ listingPaymentAddress: walletConfig.treasuryAddress });
+    setSaving(true);
+    try {
+      const { error } = await supabase.from("wallet_config" as never).upsert({
+        id: 1,
+        xaman_api_key: walletConfig.xamanApiKey.trim(),
+        xaman_api_secret: walletConfig.xamanApiSecret.trim(),
+        treasury_address: walletConfig.treasuryAddress.trim(),
+        network: walletConfig.network,
+        rpc_url: walletConfig.rpcUrl,
+        updated_at: new Date().toISOString(),
+      } as never);
+      if (error) throw error;
+      if (siteSettings.listingPaymentAddress !== walletConfig.treasuryAddress) {
+        await updateSiteSettings({ listingPaymentAddress: walletConfig.treasuryAddress });
+      }
+      toast.success("Wallet configuration saved");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not save wallet configuration");
+    } finally {
+      setSaving(false);
     }
-    toast.success("Wallet configuration saved");
   };
 
   return (
@@ -25,6 +62,25 @@ function WalletConfig() {
           XRPBrowser uses <b>Xaman (Xumm)</b> as the exclusive wallet for user connect &amp; payments.
           Users connect via QR or the Xaman mobile app and pay listing fees to the treasury address below.
         </p>
+
+        <section className="mt-5 rounded-xl border border-slate-800 bg-slate-900 p-4">
+          <div className="text-sm font-semibold">Webhook URL for callbacks</div>
+          <div className="mt-1 text-xs text-slate-400">
+            Paste this into <a className="text-sky-400 hover:underline" href="https://apps.xaman.dev" target="_blank" rel="noreferrer">apps.xaman.dev</a> → your app → “Webhook URL for callbacks”.
+          </div>
+          <div className="mt-2 flex gap-2">
+            <input readOnly value={webhookUrl} className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-xs" />
+            <button
+              type="button"
+              onClick={() => { void navigator.clipboard.writeText(webhookUrl); toast("Copied"); }}
+              className="rounded border border-slate-700 px-3 py-2 text-xs hover:bg-slate-800"
+            >Copy</button>
+          </div>
+          <div className="mt-2 text-[11px] text-slate-500">
+            Sign-in and payment status is also polled directly, so the webhook is optional — it only needs to return 200 for Xaman.
+          </div>
+        </section>
+
 
         <div className="mt-6 space-y-4">
           <section className="rounded-xl border border-slate-800 bg-slate-900 p-4">
@@ -62,7 +118,7 @@ function WalletConfig() {
                   placeholder="••••••••••••••••••••••••••••••••"
                   className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-sm"
                 />
-                <div className="mt-1 text-[11px] text-slate-500">Kept locally in this prototype. In production, store as a server-side secret.</div>
+                <div className="mt-1 text-[11px] text-slate-500">Stored server-side in the database; only admins can read it. It is never sent to visitors' browsers.</div>
               </label>
             </div>
           </section>
@@ -122,7 +178,7 @@ function WalletConfig() {
         </div>
 
         <div className="mt-6 flex justify-end">
-          <button onClick={save} className="rounded bg-sky-500 px-4 py-2 text-sm text-white hover:bg-sky-400">Save configuration</button>
+          <button onClick={save} disabled={saving} className="rounded bg-sky-500 px-4 py-2 text-sm text-white hover:bg-sky-400 disabled:opacity-50">{saving ? "Saving…" : "Save configuration"}</button>
         </div>
       </div>
     </AdminShell>

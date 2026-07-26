@@ -1,5 +1,7 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { xamanSignIn, xamanStatus, xamanBalance } from "@/lib/xaman.functions";
 import { Sun, Moon, Terminal, Wallet, Rocket, Menu, User as UserIcon, Bell, Search, ChevronLeft, Shield } from "lucide-react";
 import { useApp } from "@/lib/app-store";
 
@@ -260,34 +262,71 @@ function Footer() {
 }
 
 function XamanConnect({ onDone }: { onDone: () => void }) {
-  const { connectWallet, walletConfig } = useApp();
-  const [step, setStep] = useState<"scan" | "connecting">("scan");
-  // Mock payload uuid — a real integration would call Xaman /payload with the admin API key/secret.
-  const payloadId = useState(() => crypto.randomUUID())[0];
-  const deeplink = `xaman://xapp/sign/${payloadId}`;
-  const qrTarget = `https://xaman.app/sign/${payloadId}`;
-  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrTarget)}`;
-  const ready = !!walletConfig.xamanApiKey;
+  const { connectWallet } = useApp();
+  const signIn = useServerFn(xamanSignIn);
+  const status = useServerFn(xamanStatus);
+  const [payload, setPayload] = useState<{ uuid: string; qrPng: string; deeplink: string } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [state, setState] = useState<"creating" | "waiting" | "done">("creating");
 
-  const simulate = async () => {
-    setStep("connecting");
-    await new Promise((r) => setTimeout(r, 1200));
-    // mock address returned by Xaman after user approves
-    const addr = "r" + Math.random().toString(36).slice(2, 12).toUpperCase() + "XRP";
-    await connectWallet("Xaman (Xumm)", addr);
-    onDone();
-  };
+  const start = useCallback(async () => {
+    setError(null);
+    setState("creating");
+    setPayload(null);
+    try {
+      const res = await signIn({ data: {} });
+      setPayload({ uuid: res.uuid, qrPng: res.qrPng, deeplink: res.deeplink });
+      setState("waiting");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not start Xaman sign-in");
+      setState("done");
+    }
+  }, [signIn]);
+
+  useEffect(() => { void start(); }, [start]);
+
+  // Poll the payload until the user approves / rejects / it expires.
+  useEffect(() => {
+    if (!payload || state !== "waiting") return;
+    let stop = false;
+    const tick = async () => {
+      try {
+        const s = await status({ data: { uuid: payload.uuid } });
+        if (stop) return;
+        if (s.signed && s.account) {
+          setState("done");
+          await connectWallet("Xaman (Xumm)", s.account);
+          onDone();
+          return;
+        }
+        if (s.cancelled || (s.resolved && !s.signed)) { setError("Sign-in request was rejected in Xaman."); setState("done"); return; }
+        if (s.expired) { setError("The sign-in request expired. Please try again."); setState("done"); return; }
+      } catch {
+        /* transient — keep polling */
+      }
+    };
+    const t = setInterval(() => { void tick(); }, 2500);
+    return () => { stop = true; clearInterval(t); };
+  }, [payload, state, status, connectWallet, onDone]);
+
+  if (error) {
+    return (
+      <div className="space-y-3 text-sm">
+        <div className="whitespace-pre-wrap rounded-md border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">{error}</div>
+        <button onClick={() => void start()} className="w-full rounded-md border px-3 py-2 text-xs hover:bg-muted">Try again</button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
-      {!ready && (
-        <div className="rounded-md border border-warning/40 bg-warning/10 p-2 text-xs text-warning">
-          Admin hasn't configured Xaman API credentials yet — using demo mode.
-        </div>
-      )}
       <div className="grid gap-3 sm:grid-cols-[220px_1fr] sm:items-center">
-        <div className="mx-auto rounded-lg border bg-white p-2">
-          <img src={qrSrc} alt="Xaman sign-in QR" className="h-[220px] w-[220px]" />
+        <div className="mx-auto grid h-[236px] w-[236px] place-items-center rounded-lg border bg-white p-2">
+          {payload ? (
+            <img src={payload.qrPng} alt="Xaman sign-in QR" className="h-[220px] w-[220px]" />
+          ) : (
+            <span className="text-xs text-slate-500">Creating sign-in request…</span>
+          )}
         </div>
         <div className="space-y-2 text-sm">
           <div className="font-medium">Scan with Xaman</div>
@@ -297,15 +336,19 @@ function XamanConnect({ onDone }: { onDone: () => void }) {
             <li>Point at the QR code</li>
             <li>Approve the sign-in request</li>
           </ol>
-          <a
-            href={deeplink}
-            className="mt-1 inline-flex w-full items-center justify-center rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground hover:opacity-90"
-          >
-            Open Xaman app
-          </a>
-          <button onClick={simulate} disabled={step === "connecting"} className="w-full rounded-md border px-3 py-2 text-xs hover:bg-muted disabled:opacity-50">
-            {step === "connecting" ? "Waiting for approval…" : "I've approved — continue"}
-          </button>
+          {payload && (
+            <a
+              href={payload.deeplink}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-1 inline-flex w-full items-center justify-center rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground hover:opacity-90"
+            >
+              Open in Xaman
+            </a>
+          )}
+          <div className="text-[11px] text-muted-foreground">
+            {state === "waiting" ? "Waiting for approval in Xaman…" : "Preparing…"}
+          </div>
         </div>
       </div>
     </div>
@@ -314,8 +357,26 @@ function XamanConnect({ onDone }: { onDone: () => void }) {
 
 function XamanConnected({ onClose }: { onClose: () => void }) {
   const { user, disconnectWallet, walletConfig, xrpPrice } = useApp();
-  const [balance] = useState(() => +(Math.random() * 500 + 25).toFixed(2));
-  const usd = (balance * xrpPrice.price).toFixed(2);
+  const getBalance = useServerFn(xamanBalance);
+  const [balance, setBalance] = useState<number | null>(null);
+  const [balErr, setBalErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    const account = user?.walletAddress;
+    if (!account) return;
+    let stop = false;
+    void (async () => {
+      try {
+        const res = await getBalance({ data: { account, network: walletConfig.network } });
+        if (!stop) setBalance(res.balance);
+      } catch (e) {
+        if (!stop) setBalErr(e instanceof Error ? e.message : "Could not read balance");
+      }
+    })();
+    return () => { stop = true; };
+  }, [user?.walletAddress, walletConfig.network, getBalance]);
+
+  const usd = balance !== null ? (balance * xrpPrice.price).toFixed(2) : null;
   return (
     <div className="space-y-3 text-sm">
       <div className="rounded-md border bg-muted/40 p-3">
@@ -324,8 +385,8 @@ function XamanConnected({ onClose }: { onClose: () => void }) {
         <div className="mt-3 flex items-center justify-between">
           <div>
             <div className="text-xs text-muted-foreground">Balance</div>
-            <div className="text-lg font-semibold">{balance} XRP</div>
-            <div className="text-xs text-muted-foreground">≈ ${usd}</div>
+            <div className="text-lg font-semibold">{balance === null ? (balErr ? "—" : "Loading…") : `${balance.toLocaleString()} XRP`}</div>
+            <div className="text-xs text-muted-foreground">{usd ? `≈ $${usd}` : balErr ?? ""}</div>
           </div>
           <div className="text-right text-[11px] text-muted-foreground">
             <div>Network</div>
@@ -339,3 +400,4 @@ function XamanConnected({ onClose }: { onClose: () => void }) {
     </div>
   );
 }
+
