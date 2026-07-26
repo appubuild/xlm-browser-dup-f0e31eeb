@@ -25,11 +25,46 @@ const MODEL_SUGGESTIONS: Record<AiProvider, string[]> = {
   google: ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.5-pro"],
 };
 
+type DiagResult = {
+  ok: boolean;
+  provider?: string;
+  model?: string;
+  keySource?: string;
+  env: Record<string, boolean>;
+  steps: string[];
+  error?: string;
+};
+
 function AiProvidersCard() {
+  const runDiag = useServerFn(aiDiagnostics);
   const [cfg, setCfg] = useState<AiConfigRow>({ provider: "openai", model: "gpt-4o-mini", openai_key: "", anthropic_key: "", google_key: "" });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [reveal, setReveal] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [diag, setDiag] = useState<DiagResult | null>(null);
+
+  const runTest = async () => {
+    setTesting(true);
+    setDiag(null);
+    try {
+      const res = (await runDiag({ data: undefined })) as DiagResult;
+      setDiag(res);
+      if (res.ok) toast.success("AI connection OK");
+      else toast.error("AI test failed — see the report below");
+    } catch (err) {
+      setDiag({
+        ok: false,
+        env: {},
+        steps: ["The diagnostics request itself failed before reaching the AI provider."],
+        error: err instanceof Error ? err.message : String(err),
+      });
+      toast.error("AI test failed");
+    } finally {
+      setTesting(false);
+    }
+  };
+
 
   useEffect(() => {
     (async () => {
