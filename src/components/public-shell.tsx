@@ -430,7 +430,13 @@ function XamanConnected({ onClose }: { onClose: () => void }) {
   return (
     <div className="space-y-3 text-sm">
       <div className="rounded-md border bg-muted/40 p-3">
-        <div className="text-xs text-muted-foreground">Address</div>
+        <div className="flex items-center justify-between">
+          <div className="text-xs text-muted-foreground">Address</div>
+          <button
+            onClick={() => { void navigator.clipboard.writeText(user?.walletAddress ?? ""); toast("Address copied"); }}
+            className="text-[11px] underline hover:no-underline"
+          >Copy</button>
+        </div>
         <div className="mt-0.5 break-all font-mono text-xs">{user?.walletAddress}</div>
         <div className="mt-3 flex items-center justify-between">
           <div>
@@ -442,6 +448,26 @@ function XamanConnected({ onClose }: { onClose: () => void }) {
             <div>Network</div>
             <div className="font-medium text-foreground">{walletConfig.network}</div>
           </div>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3 rounded-md border p-3 text-xs">
+        <div>
+          <div className="text-muted-foreground">XRP price</div>
+          <div className="font-mono font-medium text-foreground">${xrpPrice.price.toFixed(4)}</div>
+        </div>
+        <div className="text-right">
+          <div className="text-muted-foreground">24h</div>
+          <div className={`font-mono font-medium ${xrpPrice.change >= 0 ? "text-success" : "text-destructive"}`}>
+            {xrpPrice.change >= 0 ? "+" : ""}{xrpPrice.change.toFixed(2)}%
+          </div>
+        </div>
+        <div className="col-span-2">
+          <a
+            href={`https://livenet.xrpl.org/accounts/${user?.walletAddress ?? ""}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 underline hover:no-underline"
+          >View on XRPL explorer ↗</a>
         </div>
       </div>
       <button onClick={() => { disconnectWallet(); onClose(); toast("Xaman disconnected"); }} className="w-full rounded-md border px-3 py-2 hover:bg-muted">
