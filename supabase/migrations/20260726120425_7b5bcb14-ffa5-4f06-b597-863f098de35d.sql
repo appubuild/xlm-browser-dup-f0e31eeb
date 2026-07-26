@@ -1,0 +1,1 @@
+ALTER TABLE public.pages ADD COLUMN IF NOT EXISTS footer_group_id uuid REFERENCES public.footer_groups(id) ON DELETE SET NULL;
