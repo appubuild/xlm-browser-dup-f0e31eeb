@@ -78,7 +78,8 @@ function PayDialog({ project, onClose, onPaid }: { project: Project | null; onCl
     setCreating(true);
     try {
       const res = await pay({ data: { amountXrp: siteSettings.listingFeeXrp, memo: `XRPBrowser listing: ${project.name}` } });
-      setPayload({ uuid: res.uuid, qrPng: res.qrPng, deeplink: res.deeplink, destination: res.destination });
+      if (!res.ok) { setError(res.error); return; }
+      setPayload({ uuid: res.data.uuid, qrPng: res.data.qrPng, deeplink: res.data.deeplink, destination: res.data.destination });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not create the payment request");
     } finally {
@@ -93,8 +94,9 @@ function PayDialog({ project, onClose, onPaid }: { project: Project | null; onCl
     const t = setInterval(() => {
       void (async () => {
         try {
-          const s = await status({ data: { uuid: payload.uuid } });
-          if (stop) return;
+          const res = await status({ data: { uuid: payload.uuid } });
+          if (stop || !res.ok) return;
+          const s = res.data;
           if (s.signed && s.txid) { clearInterval(t); await onPaid(project, s.txid); return; }
           if (s.cancelled || (s.resolved && !s.signed)) { clearInterval(t); setError("Payment was rejected in Xaman."); setPayload(null); }
           else if (s.expired) { clearInterval(t); setError("The payment request expired."); setPayload(null); }
