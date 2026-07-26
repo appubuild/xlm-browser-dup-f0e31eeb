@@ -18,6 +18,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as EcosystemRouteImport } from './routes/ecosystem'
 import { Route as DevelopersRouteImport } from './routes/developers'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PanelIndexRouteImport } from './routes/panel.index'
@@ -98,6 +99,11 @@ const EcosystemRoute = EcosystemRouteImport.update({
 const DevelopersRoute = DevelopersRouteImport.update({
   id: '/developers',
   path: '/developers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -285,6 +291,7 @@ const AdminBlogIdRoute = AdminBlogIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/contact': typeof ContactRoute
   '/developers': typeof DevelopersRouteWithChildren
   '/ecosystem': typeof EcosystemRoute
   '/help': typeof HelpRoute
@@ -332,6 +339,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/contact': typeof ContactRoute
   '/developers': typeof DevelopersRouteWithChildren
   '/ecosystem': typeof EcosystemRoute
   '/help': typeof HelpRoute
@@ -380,6 +388,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/contact': typeof ContactRoute
   '/developers': typeof DevelopersRouteWithChildren
   '/ecosystem': typeof EcosystemRoute
   '/help': typeof HelpRoute
@@ -429,6 +438,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/contact'
     | '/developers'
     | '/ecosystem'
     | '/help'
@@ -476,6 +486,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/contact'
     | '/developers'
     | '/ecosystem'
     | '/help'
@@ -523,6 +534,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/contact'
     | '/developers'
     | '/ecosystem'
     | '/help'
@@ -571,6 +583,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  ContactRoute: typeof ContactRoute
   DevelopersRoute: typeof DevelopersRouteWithChildren
   EcosystemRoute: typeof EcosystemRoute
   HelpRoute: typeof HelpRoute
@@ -677,6 +690,13 @@ declare module '@tanstack/react-router' {
       path: '/developers'
       fullPath: '/developers'
       preLoaderRoute: typeof DevelopersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -961,6 +981,7 @@ const AdminProjectsRouteWithChildren = AdminProjectsRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  ContactRoute: ContactRoute,
   DevelopersRoute: DevelopersRouteWithChildren,
   EcosystemRoute: EcosystemRoute,
   HelpRoute: HelpRoute,
