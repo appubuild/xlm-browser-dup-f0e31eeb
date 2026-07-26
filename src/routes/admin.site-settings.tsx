@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { AdminShell } from "@/components/admin-shell";
 import { useApp } from "@/lib/app-store";
 import { supabase } from "@/integrations/supabase/client";
+import { aiDiagnostics } from "@/lib/ai.functions";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/admin/site-settings")({ component: SiteSettings });
 
