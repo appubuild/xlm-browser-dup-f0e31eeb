@@ -233,8 +233,43 @@ async function fetchWithRetry(
   throw lastError;
 }
 
+async function callViaSupabaseProxy(
+  messages: AiMessage[],
+  opts: { temperature?: number; json?: boolean },
+): Promise<string> {
+  const url = getServerEnv("SUPABASE_URL", "VITE_SUPABASE_URL");
+  const anon =
+    getServerEnv("SUPABASE_PUBLISHABLE_KEY", "VITE_SUPABASE_PUBLISHABLE_KEY") ||
+    getServerEnv("SUPABASE_ANON_KEY", "VITE_SUPABASE_ANON_KEY");
+  if (!url || !anon) throw new Error("Supabase URL / publishable key not available for the AI proxy fallback.");
+
+  const res = await fetch(`${url}/functions/v1/ai-proxy`, {
+    method: "POST",
+    headers: { "content-type": "application/json", apikey: anon },
+    body: JSON.stringify({ messages, temperature: opts.temperature, json: opts.json }),
+  });
+  const data = (await res.json().catch(() => ({}))) as { text?: string; error?: string };
+  if (!res.ok || data.error) throw new Error(data.error || `AI proxy ${res.status}`);
+  return data.text ?? "";
+}
+
 export async function callAi(messages: AiMessage[], opts: { temperature?: number; json?: boolean } = {}): Promise<string> {
-  const cfg = await loadAiConfig();
+  let cfg: AiConfig;
+  try {
+    cfg = await loadAiConfig();
+  } catch (configError) {
+    // No local config/secrets (typical for a self-hosted Worker): let the
+    // Supabase-hosted proxy use the admin-saved keys instead.
+    try {
+      return await callViaSupabaseProxy(messages, opts);
+    } catch (proxyError) {
+      const detail = proxyError instanceof Error ? proxyError.message : String(proxyError);
+      throw new Error(
+        `${configError instanceof Error ? configError.message : String(configError)}\n\nSupabase AI proxy fallback also failed: ${detail}`,
+      );
+    }
+  }
+
 
   if (cfg.provider === "openai") {
     if (!cfg.openai_key) throw new Error("OpenAI API key not configured in Admin → Site Settings → AI Providers.");
