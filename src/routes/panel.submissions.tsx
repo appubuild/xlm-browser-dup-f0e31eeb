@@ -7,6 +7,8 @@ import { useApp, type Project } from "@/lib/app-store";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { callXamanProxy, formatXamanConnectError, shouldUseXamanProxy, type XamanPaymentPayload, type XamanStatusPayload } from "@/lib/xaman-client";
+import { XamanPayDialog } from "@/components/xaman-pay-dialog";
+import { fetchPromotionPackages, createPromotion, SLOT_LABEL, type PromotionPackage, type PromoSlot } from "@/lib/monetization";
 
 export const Route = createFileRoute("/panel/submissions")({ component: Submissions });
 
