@@ -15,10 +15,15 @@ function exposeRuntimeEnv(env: unknown) {
   if (!env || typeof env !== "object") return;
   const runtimeEnv = env as Record<string, string | undefined>;
   (globalThis as RuntimeGlobals).__env__ = runtimeEnv;
-  if (typeof process !== "undefined" && process.env) {
-    for (const [key, value] of Object.entries(runtimeEnv)) {
-      if (typeof value === "string" && !process.env[key]) process.env[key] = value;
+  try {
+    if (typeof process !== "undefined" && process.env) {
+      for (const [key, value] of Object.entries(runtimeEnv)) {
+        if (typeof value === "string" && !process.env[key]) process.env[key] = value;
+      }
     }
+  } catch {
+    // Some Worker runtimes expose process.env as read-only. Code that uses
+    // readRuntimeEnv() still reads from globalThis.__env__ above.
   }
 }
 
