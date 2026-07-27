@@ -13,13 +13,37 @@ export type XamanCreds = {
   source: string;
 };
 
+type RuntimeGlobals = typeof globalThis & {
+  __env__?: Record<string, string | undefined>;
+  ENV?: Record<string, string | undefined>;
+};
+
+function readRuntimeEnv(name: string): string | undefined {
+  const processValue = typeof process !== "undefined" ? process.env?.[name] : undefined;
+  if (processValue) return processValue;
+
+  const globals = globalThis as RuntimeGlobals;
+  return globals.__env__?.[name] || globals.ENV?.[name];
+}
+
 function env(name: string, viteName?: string): string | undefined {
-  const v = typeof process !== "undefined" ? process.env?.[name] : undefined;
-  if (v) return v;
+  const runtimeValue = readRuntimeEnv(name);
+  if (runtimeValue) return runtimeValue;
   if (viteName && typeof import.meta.env !== "undefined" && import.meta.env[viteName]) {
     return import.meta.env[viteName] as string;
   }
   return undefined;
+}
+
+function envAny(names: string[], viteName?: string): { value?: string; source?: string } {
+  for (const name of names) {
+    const value = readRuntimeEnv(name);
+    if (value) return { value, source: name };
+  }
+  if (viteName && typeof import.meta.env !== "undefined" && import.meta.env[viteName]) {
+    return { value: import.meta.env[viteName] as string, source: viteName };
+  }
+  return {};
 }
 
 function isNewSupabaseApiKey(value: string): boolean {
@@ -46,7 +70,14 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 
 function serverSupabase() {
   const url = env("SUPABASE_URL", "VITE_SUPABASE_URL");
-  const serviceKey = env("SUPABASE_SERVICE_ROLE_KEY") || env("SB_SERVICE_ROLE_KEY");
+  const service = envAny([
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SB_SERVICE_ROLE_KEY",
+    "SUPABASE_SERVICE_KEY",
+    "SUPABASE_SERVICE_ROLE",
+    "SERVICE_ROLE_KEY",
+  ]);
+  const serviceKey = service.value;
   const publishable = env("SUPABASE_PUBLISHABLE_KEY", "VITE_SUPABASE_PUBLISHABLE_KEY");
   if (!url) return { client: null, source: "none", reason: "SUPABASE_URL is not set on the server." };
   if (serviceKey) {
@@ -56,7 +87,7 @@ function serverSupabase() {
         auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
       }),
       source: "service-role",
-      reason: `service-role key present (${env("SUPABASE_SERVICE_ROLE_KEY") ? "SUPABASE_SERVICE_ROLE_KEY" : "SB_SERVICE_ROLE_KEY"})`,
+      reason: `service-role key present (${service.source ?? "service role secret"})`,
     };
   }
   if (!publishable) return { client: null, source: "none", reason: "no service-role and no publishable key on the server." };
@@ -95,11 +126,11 @@ async function loadPublicConfig(): Promise<{ network?: string; rpcUrl?: string; 
 /** Load Xaman credentials: env secrets first, then the admin-saved wallet_config row. */
 export async function loadXamanCreds(): Promise<XamanCreds> {
   const steps: string[] = [];
-  const envKey = env("XAMAN_API_KEY");
-  const envSecret = env("XAMAN_API_SECRET");
+  const envKey = envAny(["XAMAN_API_KEY", "XUMM_API_KEY"]);
+  const envSecret = envAny(["XAMAN_API_SECRET", "XAMAN_API_SECRE", "XAMAN_API_SECRET_KEY", "XUMM_API_SECRET"]);
   let creds: XamanCreds = {
-    apiKey: envKey ?? "",
-    apiSecret: envSecret ?? "",
+    apiKey: envKey.value ?? "",
+    apiSecret: envSecret.value ?? "",
     network: "Mainnet",
     rpcUrl: "https://xrplcluster.com",
     treasuryAddress: "",
@@ -113,7 +144,9 @@ export async function loadXamanCreds(): Promise<XamanCreds> {
   if (pub.treasuryAddress) creds.treasuryAddress = pub.treasuryAddress;
 
   if (creds.apiKey && creds.apiSecret) return creds;
-  steps.push("XAMAN_API_KEY / XAMAN_API_SECRET are not both set as deployment secrets.");
+  steps.push(
+    `XAMAN API deployment secrets are incomplete. Found API key: ${envKey.source ?? "no"}; found API secret: ${envSecret.source ?? "no"}.`,
+  );
 
   const { client, reason, source } = serverSupabase();
   if (!client) {
@@ -125,7 +158,13 @@ export async function loadXamanCreds(): Promise<XamanCreds> {
       .eq("id", 1)
       .maybeSingle();
     if (error) steps.push(`Reading wallet_config via ${source} failed: ${error.message}`);
-    else if (!data) steps.push("wallet_config row id=1 was not readable with this request's permissions (it is admin-only under RLS) — that is why non-admin visitors need the deployment secrets.");
+    else if (!data) {
+      steps.push(
+        source === "user-session"
+          ? "wallet_config row id=1 is hidden from this signed-in user by admin-only RLS. Admins can connect because their session can read it, but normal users and visitors need the Worker to have SB_SERVICE_ROLE_KEY or XAMAN_API_KEY + XAMAN_API_SECRET."
+          : "wallet_config row id=1 was not readable. For public wallet connect, the Worker must have SB_SERVICE_ROLE_KEY or XAMAN_API_KEY + XAMAN_API_SECRET.",
+      );
+    }
     else {
       const r = data as Record<string, string>;
       creds = {
@@ -144,7 +183,7 @@ export async function loadXamanCreds(): Promise<XamanCreds> {
   throw new Error(
     `Xaman is not configured on this deployment.\n\nWhat actually failed:\n- ${steps.join(
       "\n- ",
-    )}\n\nFix: paste your API key + secret in Admin → Wallet Connect Config and save, then ask the site owner to add XAMAN_API_KEY and XAMAN_API_SECRET as deployment secrets so every visitor (not just admins) can connect.`,
+    )}\n\nFix: for Cloudflare Worker, add either XAMAN_API_KEY + XAMAN_API_SECRET as Worker secrets, or add SB_SERVICE_ROLE_KEY as a Worker secret so the server can safely read Admin → Wallet Connect Config. Saving keys only in the admin panel is not enough for anonymous visitors unless the Worker has SB_SERVICE_ROLE_KEY.`,
   );
 }
 
