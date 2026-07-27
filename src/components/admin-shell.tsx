@@ -21,6 +21,7 @@ const ADMIN_NAV = [
   { to: "/admin/contact", label: "Contact & Support", icon: "💬" },
   { to: "/admin/notifications", label: "Notifications", icon: "🔔" },
   { to: "/admin/wallet-connect-config", label: "Wallet Config", icon: "👛" },
+  { to: "/admin/monetization", label: "Monetization", icon: "💎" },
   { to: "/admin/site-settings", label: "Site Settings", icon: "⚙️" },
 ] as const;
 

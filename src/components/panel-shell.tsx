@@ -8,7 +8,9 @@ const PANEL_NAV = [
   { to: "/panel/analytics", label: "Analytics", icon: "📈" },
   { to: "/panel/bookmarks", label: "Bookmarks", icon: "🔖" },
   { to: "/panel/history", label: "History", icon: "🕐" },
-  { to: "/panel/submissions", label: "Submissions", icon: "📤" },
+  { to: "/panel/submissions", label: "My Projects", icon: "📤" },
+  { to: "/panel/company", label: "Company Profile", icon: "🏢" },
+  { to: "/panel/transactions", label: "Transactions", icon: "💳" },
   { to: "/panel/notifications", label: "Notifications", icon: "🔔" },
   { to: "/panel/settings", label: "Settings", icon: "⚙️" },
 ] as const;

@@ -44,6 +44,129 @@ export type Database = {
         }
         Relationships: []
       }
+      author_profiles: {
+        Row: {
+          badge_since: string | null
+          badge_tier: string | null
+          bio: string | null
+          company_name: string
+          created_at: string
+          id: string
+          logo: string | null
+          official_email: string | null
+          slug: string | null
+          socials: Json
+          updated_at: string
+          user_id: string
+          verified: boolean
+          website: string | null
+        }
+        Insert: {
+          badge_since?: string | null
+          badge_tier?: string | null
+          bio?: string | null
+          company_name: string
+          created_at?: string
+          id?: string
+          logo?: string | null
+          official_email?: string | null
+          slug?: string | null
+          socials?: Json
+          updated_at?: string
+          user_id: string
+          verified?: boolean
+          website?: string | null
+        }
+        Update: {
+          badge_since?: string | null
+          badge_tier?: string | null
+          bio?: string | null
+          company_name?: string
+          created_at?: string
+          id?: string
+          logo?: string | null
+          official_email?: string | null
+          slug?: string | null
+          socials?: Json
+          updated_at?: string
+          user_id?: string
+          verified?: boolean
+          website?: string | null
+        }
+        Relationships: []
+      }
+      badge_purchases: {
+        Row: {
+          amount_xrp: number
+          created_at: string
+          id: string
+          status: string
+          tier_key: string
+          tx_hash: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_xrp?: number
+          created_at?: string
+          id?: string
+          status?: string
+          tier_key: string
+          tx_hash?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_xrp?: number
+          created_at?: string
+          id?: string
+          status?: string
+          tier_key?: string
+          tx_hash?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      badge_tiers: {
+        Row: {
+          active: boolean
+          benefits: string[]
+          color: string
+          created_at: string
+          id: string
+          key: string
+          name: string
+          price_xrp: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          benefits?: string[]
+          color?: string
+          created_at?: string
+          id?: string
+          key: string
+          name: string
+          price_xrp?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          benefits?: string[]
+          color?: string
+          created_at?: string
+          id?: string
+          key?: string
+          name?: string
+          price_xrp?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       blog_categories: {
         Row: {
           created_at: string
@@ -593,6 +716,51 @@ export type Database = {
         }
         Relationships: []
       }
+      project_promotions: {
+        Row: {
+          amount_xrp: number
+          created_at: string
+          duration_days: number
+          ends_at: string | null
+          id: string
+          project_slug: string
+          slot: string
+          starts_at: string | null
+          status: string
+          tx_hash: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_xrp?: number
+          created_at?: string
+          duration_days: number
+          ends_at?: string | null
+          id?: string
+          project_slug: string
+          slot: string
+          starts_at?: string | null
+          status?: string
+          tx_hash?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_xrp?: number
+          created_at?: string
+          duration_days?: number
+          ends_at?: string | null
+          id?: string
+          project_slug?: string
+          slot?: string
+          starts_at?: string | null
+          status?: string
+          tx_hash?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
           ai_doc: string | null
@@ -680,6 +848,39 @@ export type Database = {
           url?: string
           verified?: boolean
           visits?: number
+        }
+        Relationships: []
+      }
+      promotion_packages: {
+        Row: {
+          active: boolean
+          created_at: string
+          duration_days: number
+          id: string
+          price_xrp: number
+          slot: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          duration_days: number
+          id?: string
+          price_xrp?: number
+          slot: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          duration_days?: number
+          id?: string
+          price_xrp?: number
+          slot?: string
+          sort_order?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -842,6 +1043,48 @@ export type Database = {
           sort_order?: number
           updated_at?: string
           visible?: boolean
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          account: string | null
+          amount_xrp: number
+          created_at: string
+          description: string | null
+          id: string
+          kind: string
+          reference_id: string | null
+          status: string
+          tx_hash: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account?: string | null
+          amount_xrp?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind: string
+          reference_id?: string | null
+          status?: string
+          tx_hash?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account?: string | null
+          amount_xrp?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: string
+          reference_id?: string | null
+          status?: string
+          tx_hash?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

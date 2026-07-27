@@ -25,11 +25,13 @@ import { Route as PanelIndexRouteImport } from './routes/panel.index'
 import { Route as NewsIndexRouteImport } from './routes/news.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProjectSlugRouteImport } from './routes/project.$slug'
+import { Route as PanelTransactionsRouteImport } from './routes/panel.transactions'
 import { Route as PanelSubmitRouteImport } from './routes/panel.submit'
 import { Route as PanelSubmissionsRouteImport } from './routes/panel.submissions'
 import { Route as PanelSettingsRouteImport } from './routes/panel.settings'
 import { Route as PanelNotificationsRouteImport } from './routes/panel.notifications'
 import { Route as PanelHistoryRouteImport } from './routes/panel.history'
+import { Route as PanelCompanyRouteImport } from './routes/panel.company'
 import { Route as PanelBookmarksRouteImport } from './routes/panel.bookmarks'
 import { Route as PanelAnalyticsRouteImport } from './routes/panel.analytics'
 import { Route as PSlugRouteImport } from './routes/p.$slug'
@@ -43,6 +45,7 @@ import { Route as AdminSiteSettingsRouteImport } from './routes/admin.site-setti
 import { Route as AdminSidebarRouteImport } from './routes/admin.sidebar'
 import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
 import { Route as AdminNotificationsRouteImport } from './routes/admin.notifications'
+import { Route as AdminMonetizationRouteImport } from './routes/admin.monetization'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminLandingRouteImport } from './routes/admin.landing'
 import { Route as AdminFooterRouteImport } from './routes/admin.footer'
@@ -139,6 +142,11 @@ const ProjectSlugRoute = ProjectSlugRouteImport.update({
   path: '/project/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PanelTransactionsRoute = PanelTransactionsRouteImport.update({
+  id: '/panel/transactions',
+  path: '/panel/transactions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PanelSubmitRoute = PanelSubmitRouteImport.update({
   id: '/panel/submit',
   path: '/panel/submit',
@@ -162,6 +170,11 @@ const PanelNotificationsRoute = PanelNotificationsRouteImport.update({
 const PanelHistoryRoute = PanelHistoryRouteImport.update({
   id: '/panel/history',
   path: '/panel/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PanelCompanyRoute = PanelCompanyRouteImport.update({
+  id: '/panel/company',
+  path: '/panel/company',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PanelBookmarksRoute = PanelBookmarksRouteImport.update({
@@ -228,6 +241,11 @@ const AdminProjectsRoute = AdminProjectsRouteImport.update({
 const AdminNotificationsRoute = AdminNotificationsRouteImport.update({
   id: '/admin/notifications',
   path: '/admin/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminMonetizationRoute = AdminMonetizationRouteImport.update({
+  id: '/admin/monetization',
+  path: '/admin/monetization',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
@@ -325,6 +343,7 @@ export interface FileRoutesByFullPath {
   '/admin/footer': typeof AdminFooterRoute
   '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/monetization': typeof AdminMonetizationRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/projects': typeof AdminProjectsRouteWithChildren
   '/admin/sidebar': typeof AdminSidebarRoute
@@ -338,11 +357,13 @@ export interface FileRoutesByFullPath {
   '/p/$slug': typeof PSlugRoute
   '/panel/analytics': typeof PanelAnalyticsRoute
   '/panel/bookmarks': typeof PanelBookmarksRoute
+  '/panel/company': typeof PanelCompanyRoute
   '/panel/history': typeof PanelHistoryRoute
   '/panel/notifications': typeof PanelNotificationsRoute
   '/panel/settings': typeof PanelSettingsRoute
   '/panel/submissions': typeof PanelSubmissionsRoute
   '/panel/submit': typeof PanelSubmitRoute
+  '/panel/transactions': typeof PanelTransactionsRoute
   '/project/$slug': typeof ProjectSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/news/': typeof NewsIndexRoute
@@ -376,6 +397,7 @@ export interface FileRoutesByTo {
   '/admin/footer': typeof AdminFooterRoute
   '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/monetization': typeof AdminMonetizationRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/projects': typeof AdminProjectsRouteWithChildren
   '/admin/sidebar': typeof AdminSidebarRoute
@@ -389,11 +411,13 @@ export interface FileRoutesByTo {
   '/p/$slug': typeof PSlugRoute
   '/panel/analytics': typeof PanelAnalyticsRoute
   '/panel/bookmarks': typeof PanelBookmarksRoute
+  '/panel/company': typeof PanelCompanyRoute
   '/panel/history': typeof PanelHistoryRoute
   '/panel/notifications': typeof PanelNotificationsRoute
   '/panel/settings': typeof PanelSettingsRoute
   '/panel/submissions': typeof PanelSubmissionsRoute
   '/panel/submit': typeof PanelSubmitRoute
+  '/panel/transactions': typeof PanelTransactionsRoute
   '/project/$slug': typeof ProjectSlugRoute
   '/admin': typeof AdminIndexRoute
   '/news': typeof NewsIndexRoute
@@ -428,6 +452,7 @@ export interface FileRoutesById {
   '/admin/footer': typeof AdminFooterRoute
   '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/monetization': typeof AdminMonetizationRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/projects': typeof AdminProjectsRouteWithChildren
   '/admin/sidebar': typeof AdminSidebarRoute
@@ -441,11 +466,13 @@ export interface FileRoutesById {
   '/p/$slug': typeof PSlugRoute
   '/panel/analytics': typeof PanelAnalyticsRoute
   '/panel/bookmarks': typeof PanelBookmarksRoute
+  '/panel/company': typeof PanelCompanyRoute
   '/panel/history': typeof PanelHistoryRoute
   '/panel/notifications': typeof PanelNotificationsRoute
   '/panel/settings': typeof PanelSettingsRoute
   '/panel/submissions': typeof PanelSubmissionsRoute
   '/panel/submit': typeof PanelSubmitRoute
+  '/panel/transactions': typeof PanelTransactionsRoute
   '/project/$slug': typeof ProjectSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/news/': typeof NewsIndexRoute
@@ -481,6 +508,7 @@ export interface FileRouteTypes {
     | '/admin/footer'
     | '/admin/landing'
     | '/admin/login'
+    | '/admin/monetization'
     | '/admin/notifications'
     | '/admin/projects'
     | '/admin/sidebar'
@@ -494,11 +522,13 @@ export interface FileRouteTypes {
     | '/p/$slug'
     | '/panel/analytics'
     | '/panel/bookmarks'
+    | '/panel/company'
     | '/panel/history'
     | '/panel/notifications'
     | '/panel/settings'
     | '/panel/submissions'
     | '/panel/submit'
+    | '/panel/transactions'
     | '/project/$slug'
     | '/admin/'
     | '/news/'
@@ -532,6 +562,7 @@ export interface FileRouteTypes {
     | '/admin/footer'
     | '/admin/landing'
     | '/admin/login'
+    | '/admin/monetization'
     | '/admin/notifications'
     | '/admin/projects'
     | '/admin/sidebar'
@@ -545,11 +576,13 @@ export interface FileRouteTypes {
     | '/p/$slug'
     | '/panel/analytics'
     | '/panel/bookmarks'
+    | '/panel/company'
     | '/panel/history'
     | '/panel/notifications'
     | '/panel/settings'
     | '/panel/submissions'
     | '/panel/submit'
+    | '/panel/transactions'
     | '/project/$slug'
     | '/admin'
     | '/news'
@@ -583,6 +616,7 @@ export interface FileRouteTypes {
     | '/admin/footer'
     | '/admin/landing'
     | '/admin/login'
+    | '/admin/monetization'
     | '/admin/notifications'
     | '/admin/projects'
     | '/admin/sidebar'
@@ -596,11 +630,13 @@ export interface FileRouteTypes {
     | '/p/$slug'
     | '/panel/analytics'
     | '/panel/bookmarks'
+    | '/panel/company'
     | '/panel/history'
     | '/panel/notifications'
     | '/panel/settings'
     | '/panel/submissions'
     | '/panel/submit'
+    | '/panel/transactions'
     | '/project/$slug'
     | '/admin/'
     | '/news/'
@@ -635,6 +671,7 @@ export interface RootRouteChildren {
   AdminFooterRoute: typeof AdminFooterRoute
   AdminLandingRoute: typeof AdminLandingRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminMonetizationRoute: typeof AdminMonetizationRoute
   AdminNotificationsRoute: typeof AdminNotificationsRoute
   AdminProjectsRoute: typeof AdminProjectsRouteWithChildren
   AdminSidebarRoute: typeof AdminSidebarRoute
@@ -647,11 +684,13 @@ export interface RootRouteChildren {
   PSlugRoute: typeof PSlugRoute
   PanelAnalyticsRoute: typeof PanelAnalyticsRoute
   PanelBookmarksRoute: typeof PanelBookmarksRoute
+  PanelCompanyRoute: typeof PanelCompanyRoute
   PanelHistoryRoute: typeof PanelHistoryRoute
   PanelNotificationsRoute: typeof PanelNotificationsRoute
   PanelSettingsRoute: typeof PanelSettingsRoute
   PanelSubmissionsRoute: typeof PanelSubmissionsRoute
   PanelSubmitRoute: typeof PanelSubmitRoute
+  PanelTransactionsRoute: typeof PanelTransactionsRoute
   ProjectSlugRoute: typeof ProjectSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   NewsIndexRoute: typeof NewsIndexRoute
@@ -780,6 +819,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/panel/transactions': {
+      id: '/panel/transactions'
+      path: '/panel/transactions'
+      fullPath: '/panel/transactions'
+      preLoaderRoute: typeof PanelTransactionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/panel/submit': {
       id: '/panel/submit'
       path: '/panel/submit'
@@ -813,6 +859,13 @@ declare module '@tanstack/react-router' {
       path: '/panel/history'
       fullPath: '/panel/history'
       preLoaderRoute: typeof PanelHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/company': {
+      id: '/panel/company'
+      path: '/panel/company'
+      fullPath: '/panel/company'
+      preLoaderRoute: typeof PanelCompanyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/panel/bookmarks': {
@@ -904,6 +957,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/notifications'
       fullPath: '/admin/notifications'
       preLoaderRoute: typeof AdminNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/monetization': {
+      id: '/admin/monetization'
+      path: '/admin/monetization'
+      fullPath: '/admin/monetization'
+      preLoaderRoute: typeof AdminMonetizationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/login': {
@@ -1057,6 +1117,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminFooterRoute: AdminFooterRoute,
   AdminLandingRoute: AdminLandingRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminMonetizationRoute: AdminMonetizationRoute,
   AdminNotificationsRoute: AdminNotificationsRoute,
   AdminProjectsRoute: AdminProjectsRouteWithChildren,
   AdminSidebarRoute: AdminSidebarRoute,
@@ -1069,11 +1130,13 @@ const rootRouteChildren: RootRouteChildren = {
   PSlugRoute: PSlugRoute,
   PanelAnalyticsRoute: PanelAnalyticsRoute,
   PanelBookmarksRoute: PanelBookmarksRoute,
+  PanelCompanyRoute: PanelCompanyRoute,
   PanelHistoryRoute: PanelHistoryRoute,
   PanelNotificationsRoute: PanelNotificationsRoute,
   PanelSettingsRoute: PanelSettingsRoute,
   PanelSubmissionsRoute: PanelSubmissionsRoute,
   PanelSubmitRoute: PanelSubmitRoute,
+  PanelTransactionsRoute: PanelTransactionsRoute,
   ProjectSlugRoute: ProjectSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   NewsIndexRoute: NewsIndexRoute,
