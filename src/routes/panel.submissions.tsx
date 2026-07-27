@@ -7,6 +7,8 @@ import { useApp, type Project } from "@/lib/app-store";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { callXamanProxy, formatXamanConnectError, shouldUseXamanProxy, type XamanPaymentPayload, type XamanStatusPayload } from "@/lib/xaman-client";
+import { XamanPayDialog } from "@/components/xaman-pay-dialog";
+import { fetchPromotionPackages, createPromotion, SLOT_LABEL, type PromotionPackage, type PromoSlot } from "@/lib/monetization";
 
 export const Route = createFileRoute("/panel/submissions")({ component: Submissions });
 
@@ -14,6 +16,7 @@ function Submissions() {
   const { user, projects, siteSettings, markProjectPaid } = useApp();
   const mine = projects.filter((p) => p.submitterId === user?.id);
   const [payFor, setPayFor] = useState<Project | null>(null);
+  const [promoteFor, setPromoteFor] = useState<Project | null>(null);
   return (
     <PanelShell>
       <div className="p-6">
@@ -45,6 +48,7 @@ function Submissions() {
                       <td className="p-3 text-muted-foreground">{p.dateAdded}</td>
                       <td className="p-3">
                         {needsPay && <button onClick={() => setPayFor(p)} className="rounded bg-primary px-2.5 py-1 text-xs text-primary-foreground">Pay {siteSettings.listingFeeXrp} XRP</button>}
+                        {p.isPublic && <button onClick={() => setPromoteFor(p)} className="ml-1 rounded border px-2.5 py-1 text-xs hover:bg-accent">🚀 Promote</button>}
                         {p.status === "rejected" && <Link to="/panel/submit" className="text-primary hover:underline">Edit &amp; Resubmit</Link>}
                       </td>
                     </tr>
@@ -61,7 +65,81 @@ function Submissions() {
         toast.success("Payment received — project is now live");
         setPayFor(null);
       }} />
+
+      <PromoteDialog project={promoteFor} onClose={() => setPromoteFor(null)} />
     </PanelShell>
+  );
+}
+
+function PromoteDialog({ project, onClose }: { project: Project | null; onClose: () => void }) {
+  const { user } = useApp();
+  const [pkgs, setPkgs] = useState<PromotionPackage[]>([]);
+  const [picked, setPicked] = useState<PromotionPackage | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!project) { setPicked(null); return; }
+    setLoading(true);
+    void fetchPromotionPackages()
+      .then(setPkgs)
+      .catch((e) => toast.error(e instanceof Error ? e.message : "Could not load packages"))
+      .finally(() => setLoading(false));
+  }, [project]);
+
+  if (!project) return null;
+  const bySlot = (Object.keys(SLOT_LABEL) as PromoSlot[]).map((slot) => ({ slot, items: pkgs.filter((p) => p.slot === slot) }));
+
+  return (
+    <>
+      <Dialog open={!!project && !picked} onOpenChange={(o) => !o && onClose()}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader><DialogTitle>Promote {project.name}</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">Pick a section and duration. After payment the placement waits for admin verification, then goes live.</p>
+          {loading ? <div className="py-6 text-center text-sm text-muted-foreground">Loading packages…</div> : (
+            <div className="space-y-4">
+              {bySlot.map(({ slot, items }) => items.length > 0 && (
+                <div key={slot}>
+                  <div className="mb-2 text-sm font-semibold">{SLOT_LABEL[slot]}</div>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {items.map((p) => (
+                      <button key={p.id} onClick={() => setPicked(p)}
+                        className="flex items-center justify-between rounded-lg border p-3 text-left text-sm hover:border-primary hover:bg-accent">
+                        <span>{p.durationDays} days</span>
+                        <b>{p.priceXrp} XRP</b>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              {pkgs.length === 0 && <div className="py-6 text-center text-sm text-muted-foreground">No promotion packages are available right now.</div>}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <XamanPayDialog
+        open={!!picked}
+        title={`Promote ${project.name}`}
+        subtitle={picked ? `${SLOT_LABEL[picked.slot]} · ${picked.durationDays} days` : undefined}
+        amountXrp={picked?.priceXrp ?? 0}
+        memo={`XRPBrowser promotion ${project.slug}`}
+        onClose={() => setPicked(null)}
+        onPaid={async (txHash, account) => {
+          if (!user || !picked) return;
+          try {
+            await createPromotion({
+              userId: user.id, projectSlug: project.slug, projectName: project.name,
+              pkg: picked, txHash, account, autoVerify: true,
+            });
+            toast.success("Payment confirmed — your promotion is live");
+            setPicked(null);
+            onClose();
+          } catch (e) {
+            toast.error(e instanceof Error ? e.message : "Could not record the promotion");
+          }
+        }}
+      />
+    </>
   );
 }
 
