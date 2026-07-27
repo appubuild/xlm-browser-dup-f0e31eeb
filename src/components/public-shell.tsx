@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { useViewport } from "@/components/browser-viewport";
 import { CryptoTicker } from "@/components/crypto-ticker";
 import { listPages, type SitePage } from "@/lib/cms";
+import { callXamanProxy, formatXamanConnectError, shouldUseXamanProxy, type XamanSignInPayload, type XamanStatusPayload } from "@/lib/xaman-client";
 
 
 function useWalletBalance(account: string | undefined, network: "Mainnet" | "Testnet") {
@@ -321,8 +322,14 @@ function XamanConnect({ onDone }: { onDone: () => void }) {
     setPayload(null);
     try {
       const res = await signIn({ data: {} });
-      if (!res.ok) { setError(res.error); setState("done"); return; }
-      setPayload({ uuid: res.data.uuid, qrPng: res.data.qrPng, deeplink: res.data.deeplink });
+      let next: XamanSignInPayload | null = null;
+      if (res.ok) next = res.data;
+      else if (shouldUseXamanProxy(res.error)) {
+        const fallback = await callXamanProxy<XamanSignInPayload>({ action: "signin" });
+        if (fallback.ok) next = fallback.data;
+        else { setError(formatXamanConnectError(res.error, fallback.error)); setState("done"); return; }
+      } else { setError(res.error); setState("done"); return; }
+      setPayload({ uuid: next.uuid, qrPng: next.qrPng, deeplink: next.deeplink });
       setState("waiting");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not start Xaman sign-in");
@@ -339,8 +346,12 @@ function XamanConnect({ onDone }: { onDone: () => void }) {
     const tick = async () => {
       try {
         const res = await status({ data: { uuid: payload.uuid } });
-        if (stop || !res.ok) return;
-        const s = res.data;
+        let s: XamanStatusPayload | null = res.ok ? res.data : null;
+        if (!s && !res.ok && shouldUseXamanProxy(res.error)) {
+          const fallback = await callXamanProxy<XamanStatusPayload>({ action: "status", uuid: payload.uuid });
+          if (fallback.ok) s = fallback.data;
+        }
+        if (stop || !s) return;
         if (s.signed && s.account) {
           setState("done");
           await connectWallet("Xaman (Xumm)", s.account);
