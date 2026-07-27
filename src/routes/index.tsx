@@ -49,8 +49,8 @@ function Home() {
   };
 
   const featured = pickProjects("featured", "home", approved.filter((p) => p.featured).slice(0, 6));
-  const trending = pickProjects("trending", approved.slice(0, 6));
-  const popular = pickProjects("popular", [...approved].sort((a, b) => b.visits - a.visits).slice(0, 6));
+  const trending = pickProjects("trending", "trending", approved.slice(0, 6));
+  const popular = pickProjects("popular", "popular", [...approved].sort((a, b) => b.visits - a.visits).slice(0, 6));
 
   const isVisible = (key: string) => sectionsByKey[key]?.visible !== false;
 
