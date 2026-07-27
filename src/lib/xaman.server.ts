@@ -23,7 +23,8 @@ function readRuntimeEnv(name: string): string | undefined {
   if (processValue) return processValue;
 
   const globals = globalThis as RuntimeGlobals;
-  return globals.__env__?.[name] || globals.ENV?.[name];
+  const globalValue = globals.__env__?.[name] || globals.ENV?.[name];
+  return typeof globalValue === "string" ? globalValue : undefined;
 }
 
 function env(name: string, viteName?: string): string | undefined {
