@@ -22,18 +22,41 @@ function env(name: string, viteName?: string): string | undefined {
   return undefined;
 }
 
+function isNewSupabaseApiKey(value: string): boolean {
+  return value.startsWith("sb_publishable_") || value.startsWith("sb_secret_");
+}
+
+function createSupabaseFetch(supabaseKey: string): typeof fetch {
+  return (input, init) => {
+    const headers = new Headers(
+      typeof Request !== "undefined" && input instanceof Request ? input.headers : undefined,
+    );
+    if (init?.headers) new Headers(init.headers).forEach((value, key) => headers.set(key, value));
+
+    // Lovable/Supabase can inject new opaque sb_secret_* keys. They are valid
+    // Data API keys, but they are not JWTs and must not be sent as Bearer auth.
+    if (isNewSupabaseApiKey(supabaseKey) && headers.get("Authorization") === `Bearer ${supabaseKey}`) {
+      headers.delete("Authorization");
+    }
+
+    headers.set("apikey", supabaseKey);
+    return fetch(input, { ...init, headers });
+  };
+}
+
 function serverSupabase() {
   const url = env("SUPABASE_URL", "VITE_SUPABASE_URL");
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SB_SERVICE_ROLE_KEY;
+  const serviceKey = env("SUPABASE_SERVICE_ROLE_KEY") || env("SB_SERVICE_ROLE_KEY");
   const publishable = env("SUPABASE_PUBLISHABLE_KEY", "VITE_SUPABASE_PUBLISHABLE_KEY");
   if (!url) return { client: null, source: "none", reason: "SUPABASE_URL is not set on the server." };
   if (serviceKey) {
     return {
       client: createClient<Database>(url, serviceKey, {
+        global: { fetch: createSupabaseFetch(serviceKey) },
         auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
       }),
       source: "service-role",
-      reason: "service-role key present",
+      reason: `service-role key present (${env("SUPABASE_SERVICE_ROLE_KEY") ? "SUPABASE_SERVICE_ROLE_KEY" : "SB_SERVICE_ROLE_KEY"})`,
     };
   }
   if (!publishable) return { client: null, source: "none", reason: "no service-role and no publishable key on the server." };
