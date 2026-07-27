@@ -184,7 +184,7 @@ export async function loadXamanCreds(): Promise<XamanCreds> {
   throw new Error(
     `Xaman is not configured on this deployment.\n\nWhat actually failed:\n- ${steps.join(
       "\n- ",
-    )}\n\nFix: for Cloudflare Worker, add either XAMAN_API_KEY + XAMAN_API_SECRET as Worker secrets, or add SB_SERVICE_ROLE_KEY as a Worker secret so the server can safely read Admin → Wallet Connect Config. Saving keys only in the admin panel is not enough for anonymous visitors unless the Worker has SB_SERVICE_ROLE_KEY.`,
+    )}\n\nThis deployment (self-hosted Cloudflare Worker) has none of the required server secrets bound. Lovable-stored secrets are NOT copied into a self-hosted Worker — they must be added to the Worker itself:\n\n  npx wrangler secret put SB_SERVICE_ROLE_KEY\n  # or, to skip the DB read entirely:\n  npx wrangler secret put XAMAN_API_KEY\n  npx wrangler secret put XAMAN_API_SECRET\n\n(Or Cloudflare dashboard → Workers & Pages → your Worker → Settings → Variables and Secrets → Add secret.) Then redeploy. Saving keys only in Admin → Wallet Connect Config is not enough for anonymous visitors, because that row is admin-only under RLS.`,
   );
 }
 
