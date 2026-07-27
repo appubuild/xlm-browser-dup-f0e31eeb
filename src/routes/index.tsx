@@ -23,17 +23,31 @@ function Home() {
     return m;
   }, [landingSections]);
 
+  const [promoted, setPromoted] = useState<Record<string, string[]>>({});
+  useEffect(() => {
+    void fetchActivePromotions()
+      .then((rows) => {
+        const m: Record<string, string[]> = {};
+        for (const r of rows) (m[r.slot] ||= []).push(r.projectSlug);
+        setPromoted(m);
+      })
+      .catch(() => undefined);
+  }, []);
+
   const pickProjects = (key: string, fallback: Project[]): Project[] => {
     const s = sectionsByKey[key];
     const slugs = (s?.config?.projectSlugs as string[] | undefined) ?? [];
-    if (slugs.length > 0) {
-      const map = new Map(approved.map((p) => [p.slug, p]));
-      return slugs.map((slug) => map.get(slug)).filter((p): p is Project => !!p);
-    }
-    return fallback;
+    const map = new Map(approved.map((p) => [p.slug, p]));
+    const base = slugs.length > 0
+      ? slugs.map((slug) => map.get(slug)).filter((p): p is Project => !!p)
+      : fallback;
+    // Paid promotions are pinned to the top of their section.
+    const paid = (promoted[key] ?? []).map((slug) => map.get(slug)).filter((p): p is Project => !!p);
+    const seen = new Set(paid.map((p) => p.slug));
+    return [...paid, ...base.filter((p) => !seen.has(p.slug))];
   };
 
-  const featured = pickProjects("featured", approved.filter((p) => p.featured).slice(0, 6));
+  const featured = pickProjects("home", approved.filter((p) => p.featured).slice(0, 6));
   const trending = pickProjects("trending", approved.slice(0, 6));
   const popular = pickProjects("popular", [...approved].sort((a, b) => b.visits - a.visits).slice(0, 6));
 
