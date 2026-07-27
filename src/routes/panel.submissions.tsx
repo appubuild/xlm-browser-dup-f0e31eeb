@@ -6,6 +6,7 @@ import { PanelShell } from "@/components/panel-shell";
 import { useApp, type Project } from "@/lib/app-store";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { callXamanProxy, formatXamanConnectError, shouldUseXamanProxy, type XamanPaymentPayload, type XamanStatusPayload } from "@/lib/xaman-client";
 
 export const Route = createFileRoute("/panel/submissions")({ component: Submissions });
 
@@ -77,9 +78,16 @@ function PayDialog({ project, onClose, onPaid }: { project: Project | null; onCl
     setError(null);
     setCreating(true);
     try {
-      const res = await pay({ data: { amountXrp: siteSettings.listingFeeXrp, memo: `XRPBrowser listing: ${project.name}` } });
-      if (!res.ok) { setError(res.error); return; }
-      setPayload({ uuid: res.data.uuid, qrPng: res.data.qrPng, deeplink: res.data.deeplink, destination: res.data.destination });
+      const request = { amountXrp: siteSettings.listingFeeXrp, memo: `XRPBrowser listing: ${project.name}` };
+      const res = await pay({ data: request });
+      let next: XamanPaymentPayload | null = null;
+      if (res.ok) next = res.data;
+      else if (shouldUseXamanProxy(res.error)) {
+        const fallback = await callXamanProxy<XamanPaymentPayload>({ action: "pay", ...request });
+        if (fallback.ok) next = fallback.data;
+        else { setError(formatXamanConnectError(res.error, fallback.error)); return; }
+      } else { setError(res.error); return; }
+      setPayload({ uuid: next.uuid, qrPng: next.qrPng, deeplink: next.deeplink, destination: next.destination });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not create the payment request");
     } finally {
@@ -95,8 +103,12 @@ function PayDialog({ project, onClose, onPaid }: { project: Project | null; onCl
       void (async () => {
         try {
           const res = await status({ data: { uuid: payload.uuid } });
-          if (stop || !res.ok) return;
-          const s = res.data;
+          let s: XamanStatusPayload | null = res.ok ? res.data : null;
+          if (!s && !res.ok && shouldUseXamanProxy(res.error)) {
+            const fallback = await callXamanProxy<XamanStatusPayload>({ action: "status", uuid: payload.uuid });
+            if (fallback.ok) s = fallback.data;
+          }
+          if (stop || !s) return;
           if (s.signed && s.txid) { clearInterval(t); await onPaid(project, s.txid); return; }
           if (s.cancelled || (s.resolved && !s.signed)) { clearInterval(t); setError("Payment was rejected in Xaman."); setPayload(null); }
           else if (s.expired) { clearInterval(t); setError("The payment request expired."); setPayload(null); }

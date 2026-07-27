@@ -1,1 +1,4 @@
 project_id = "unhzdlkzuwcgdbmanirb"
+
+[functions.xaman-proxy]
+verify_jwt = false
