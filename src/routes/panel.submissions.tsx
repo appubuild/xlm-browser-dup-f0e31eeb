@@ -124,14 +124,14 @@ function PromoteDialog({ project, onClose }: { project: Project | null; onClose:
         amountXrp={picked?.priceXrp ?? 0}
         memo={`XRPBrowser promotion ${project.slug}`}
         onClose={() => setPicked(null)}
-        onPaid={async (txHash) => {
+        onPaid={async (txHash, account) => {
           if (!user || !picked) return;
           try {
             await createPromotion({
-              userId: user.id, projectSlug: project.slug, slot: picked.slot,
-              durationDays: picked.durationDays, amountXrp: picked.priceXrp, txHash,
+              userId: user.id, projectSlug: project.slug, projectName: project.name,
+              pkg: picked, txHash, account, autoVerify: true,
             });
-            toast.success("Payment received — promotion is pending admin verification");
+            toast.success("Payment confirmed — your promotion is live");
             setPicked(null);
             onClose();
           } catch (e) {
