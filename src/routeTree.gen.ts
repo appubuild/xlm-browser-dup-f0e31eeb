@@ -57,6 +57,7 @@ import { Route as AdminPagesIdRouteImport } from './routes/admin.pages.$id'
 import { Route as AdminBlogNewRouteImport } from './routes/admin.blog.new'
 import { Route as AdminBlogIdRouteImport } from './routes/admin.blog.$id'
 import { Route as ApiPublicXamanWebhookRouteImport } from './routes/api/public/xaman/webhook'
+import { Route as ApiPublicXamanDiagRouteImport } from './routes/api/public/xaman/diag'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -299,6 +300,11 @@ const ApiPublicXamanWebhookRoute = ApiPublicXamanWebhookRouteImport.update({
   path: '/api/public/xaman/webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicXamanDiagRoute = ApiPublicXamanDiagRouteImport.update({
+  id: '/api/public/xaman/diag',
+  path: '/api/public/xaman/diag',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -348,6 +354,7 @@ export interface FileRoutesByFullPath {
   '/admin/projects/pending': typeof AdminProjectsPendingRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
   '/admin/pages/': typeof AdminPagesIndexRoute
+  '/api/public/xaman/diag': typeof ApiPublicXamanDiagRoute
   '/api/public/xaman/webhook': typeof ApiPublicXamanWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -398,6 +405,7 @@ export interface FileRoutesByTo {
   '/admin/projects/pending': typeof AdminProjectsPendingRoute
   '/admin/blog': typeof AdminBlogIndexRoute
   '/admin/pages': typeof AdminPagesIndexRoute
+  '/api/public/xaman/diag': typeof ApiPublicXamanDiagRoute
   '/api/public/xaman/webhook': typeof ApiPublicXamanWebhookRoute
 }
 export interface FileRoutesById {
@@ -449,6 +457,7 @@ export interface FileRoutesById {
   '/admin/projects/pending': typeof AdminProjectsPendingRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
   '/admin/pages/': typeof AdminPagesIndexRoute
+  '/api/public/xaman/diag': typeof ApiPublicXamanDiagRoute
   '/api/public/xaman/webhook': typeof ApiPublicXamanWebhookRoute
 }
 export interface FileRouteTypes {
@@ -501,6 +510,7 @@ export interface FileRouteTypes {
     | '/admin/projects/pending'
     | '/admin/blog/'
     | '/admin/pages/'
+    | '/api/public/xaman/diag'
     | '/api/public/xaman/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -551,6 +561,7 @@ export interface FileRouteTypes {
     | '/admin/projects/pending'
     | '/admin/blog'
     | '/admin/pages'
+    | '/api/public/xaman/diag'
     | '/api/public/xaman/webhook'
   id:
     | '__root__'
@@ -601,6 +612,7 @@ export interface FileRouteTypes {
     | '/admin/projects/pending'
     | '/admin/blog/'
     | '/admin/pages/'
+    | '/api/public/xaman/diag'
     | '/api/public/xaman/webhook'
   fileRoutesById: FileRoutesById
 }
@@ -650,6 +662,7 @@ export interface RootRouteChildren {
   AdminPagesNewRoute: typeof AdminPagesNewRoute
   AdminBlogIndexRoute: typeof AdminBlogIndexRoute
   AdminPagesIndexRoute: typeof AdminPagesIndexRoute
+  ApiPublicXamanDiagRoute: typeof ApiPublicXamanDiagRoute
   ApiPublicXamanWebhookRoute: typeof ApiPublicXamanWebhookRoute
 }
 
@@ -991,6 +1004,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicXamanWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/xaman/diag': {
+      id: '/api/public/xaman/diag'
+      path: '/api/public/xaman/diag'
+      fullPath: '/api/public/xaman/diag'
+      preLoaderRoute: typeof ApiPublicXamanDiagRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1064,8 +1084,19 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPagesNewRoute: AdminPagesNewRoute,
   AdminBlogIndexRoute: AdminBlogIndexRoute,
   AdminPagesIndexRoute: AdminPagesIndexRoute,
+  ApiPublicXamanDiagRoute: ApiPublicXamanDiagRoute,
   ApiPublicXamanWebhookRoute: ApiPublicXamanWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
