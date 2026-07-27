@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { fetchActivePromotions } from "@/lib/monetization";
 import { Search, ArrowRight, ShieldCheck, Globe, Lock, Rocket } from "lucide-react";
 import { PublicShell } from "@/components/public-shell";
 import { useApp, type Project, type LandingSection } from "@/lib/app-store";
