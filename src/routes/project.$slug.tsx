@@ -5,6 +5,7 @@ import { useApp } from "@/lib/app-store";
 import { useViewport } from "@/components/browser-viewport";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ProjectAiChat, ProjectFaq } from "@/components/project-ai";
+import { ProjectCompanyCard } from "@/components/project-company-card";
 import { toast } from "sonner";
 import { trackProjectEvent } from "@/lib/analytics";
 
@@ -110,6 +111,7 @@ function ProjectPage() {
             )}
           </div>
           <aside className="space-y-4">
+            <ProjectCompanyCard ownerId={project.submitterId} />
             <div className="soft-card p-4 text-sm">
               <div className="mb-2 font-semibold">Stats</div>
               <div className="space-y-1">

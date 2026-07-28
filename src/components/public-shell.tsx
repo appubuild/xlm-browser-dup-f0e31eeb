@@ -39,7 +39,7 @@ function useWalletBalance(account: string | undefined, network: "Mainnet" | "Tes
 }
 
 export function PublicShell({ children }: { children: ReactNode }) {
-  const { theme, toggleTheme, user, logout, connectWallet, disconnectWallet, projects, xrpPrice, ledgerIndex, siteSettings, sidebarItems, isAdmin, walletConfig } = useApp();
+  const { theme, setTheme, toggleTheme, user, logout, connectWallet, disconnectWallet, projects, xrpPrice, ledgerIndex, siteSettings, sidebarItems, isAdmin, walletConfig } = useApp();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const [walletOpen, setWalletOpen] = useState(false);
@@ -82,9 +82,24 @@ export function PublicShell({ children }: { children: ReactNode }) {
           {/* Right-aligned actions */}
           <div className="ml-auto flex items-center gap-2">
             {/* Desktop actions */}
-            <button onClick={toggleTheme} className={`hidden sm:inline-flex ${isRetro ? "retro-btn" : "rounded-md border p-2 hover:bg-muted"}`} title={themeTitle}>
-              {themeIcon}
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className={`hidden sm:inline-flex ${isRetro ? "retro-btn" : "rounded-md border p-2 hover:bg-muted"}`} title="Change theme" aria-label="Change theme">
+                  {themeIcon}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setTheme("light")}>
+                  <Sun className="mr-2 h-4 w-4" /> Light {theme === "light" && <span className="ml-auto text-xs opacity-60">✓</span>}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("dark")}>
+                  <Moon className="mr-2 h-4 w-4" /> Dark {theme === "dark" && <span className="ml-auto text-xs opacity-60">✓</span>}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("retro")}>
+                  <Terminal className="mr-2 h-4 w-4" /> 1999 {theme === "retro" && <span className="ml-auto text-xs opacity-60">✓</span>}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <button onClick={() => setWalletOpen(true)} className={`hidden sm:inline-flex ${isRetro ? "retro-btn" : "items-center gap-1.5 rounded-md border px-3 py-2 text-sm hover:bg-muted"}`}>
               <Wallet className="h-4 w-4" />
               {user?.walletAddress ? (
