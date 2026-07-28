@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { fetchActivePromotions } from "@/lib/monetization";
-import { Search, ArrowRight, ShieldCheck, Globe, Lock, Rocket } from "lucide-react";
+import { fetchActivePromotions, fetchFeaturedCompanies, type AuthorProfile } from "@/lib/monetization";
+import { Search, ArrowRight, ShieldCheck, Globe, Lock, Rocket, BadgeCheck } from "lucide-react";
 import { PublicShell } from "@/components/public-shell";
 import { useApp, type Project, type LandingSection } from "@/lib/app-store";
 import { useViewport } from "@/components/browser-viewport";
@@ -23,6 +23,11 @@ function Home() {
     for (const s of landingSections) m[s.sectionKey] = s;
     return m;
   }, [landingSections]);
+
+  const [companies, setCompanies] = useState<AuthorProfile[]>([]);
+  useEffect(() => {
+    void fetchFeaturedCompanies(6).then(setCompanies).catch(() => undefined);
+  }, []);
 
   const [promoted, setPromoted] = useState<Record<string, string[]>>({});
   useEffect(() => {
@@ -170,6 +175,38 @@ function Home() {
                 <div className="text-xs text-muted-foreground uppercase">{p.category}</div>
                 <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{p.tagline}</p>
                 <div className="mt-2 text-xs text-muted-foreground">{p.visits.toLocaleString()} visits</div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Verified Companies */}
+      {isVisible("verified_companies") && companies.length > 0 && (
+        <section className="mx-auto max-w-6xl px-6 py-10">
+          <div className="mb-4">
+            <h2 className="text-2xl font-bold">{sectionsByKey.verified_companies?.title || "Verified Companies"}</h2>
+            <p className="text-sm text-muted-foreground">{sectionsByKey.verified_companies?.subtitle || "Trusted teams building on the XRP Ledger"}</p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {companies.map((c) => (
+              <Link key={c.id} to="/company/$key" params={{ key: c.slug || c.id }} className="soft-card group p-5">
+                <div className="flex items-center gap-3">
+                  <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-xl bg-muted text-2xl">
+                    {c.logo?.startsWith("http")
+                      ? <img src={c.logo} alt={`${c.companyName} logo`} className="h-full w-full object-cover" loading="lazy" />
+                      : (c.logo || "🏢")}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="truncate font-semibold">{c.companyName}</span>
+                      <BadgeCheck className="h-4 w-4 shrink-0 text-primary" />
+                    </div>
+                    <div className="text-xs uppercase tracking-wider text-muted-foreground">Verified company</div>
+                  </div>
+                </div>
+                {c.bio && <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">{c.bio}</p>}
+                <div className="mt-4 text-sm text-primary group-hover:underline">View profile →</div>
               </Link>
             ))}
           </div>
