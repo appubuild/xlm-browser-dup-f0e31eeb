@@ -51,6 +51,7 @@ export type Database = {
           bio: string | null
           company_name: string
           created_at: string
+          featured: boolean
           id: string
           logo: string | null
           official_email: string | null
@@ -67,6 +68,7 @@ export type Database = {
           bio?: string | null
           company_name: string
           created_at?: string
+          featured?: boolean
           id?: string
           logo?: string | null
           official_email?: string | null
@@ -83,6 +85,7 @@ export type Database = {
           bio?: string | null
           company_name?: string
           created_at?: string
+          featured?: boolean
           id?: string
           logo?: string | null
           official_email?: string | null
