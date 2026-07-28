@@ -17,6 +17,7 @@ export interface AuthorProfile {
   badgeTier: string | null;
   badgeSince: string | null;
   verified: boolean;
+  featured: boolean;
 }
 
 export interface BadgeTier {
@@ -107,6 +108,7 @@ export const mapProfile = (r: any): AuthorProfile => ({
   badgeTier: r.badge_tier ?? null,
   badgeSince: r.badge_since ?? null,
   verified: !!r.verified,
+  featured: !!r.featured,
 });
 
 const mapTier = (r: any): BadgeTier => ({
@@ -208,6 +210,53 @@ export async function fetchAllAuthorProfiles(): Promise<AuthorProfile[]> {
   const { data, error } = await db().from("author_profiles").select("*").order("created_at", { ascending: false });
   if (error) throw new Error(error.message);
   return (data ?? []).map(mapProfile);
+}
+
+/** Public: verified companies chosen by an admin for the landing page. */
+export async function fetchFeaturedCompanies(limit = 6): Promise<AuthorProfile[]> {
+  const { data, error } = await db().from("author_profiles")
+    .select("*").eq("featured", true).eq("verified", true)
+    .order("badge_since", { ascending: false }).limit(limit);
+  if (error) throw new Error(error.message);
+  return (data ?? []).map(mapProfile);
+}
+
+export async function setCompanyFeatured(id: string, featured: boolean) {
+  const { error } = await db().from("author_profiles").update({ featured }).eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+/** Public: one company by profile id, slug, or owner id. */
+export async function fetchCompanyProfile(key: string): Promise<AuthorProfile | null> {
+  const isUuid = /^[0-9a-f-]{36}$/i.test(key);
+  const filter = isUuid ? `id.eq.${key},user_id.eq.${key}` : `slug.eq.${key}`;
+  const { data, error } = await db().from("author_profiles").select("*").or(filter).limit(1);
+  if (error) throw new Error(error.message);
+  return data && data[0] ? mapProfile(data[0]) : null;
+}
+
+export async function fetchCompanyByOwner(userId: string): Promise<AuthorProfile | null> {
+  const { data, error } = await db().from("author_profiles").select("*").eq("user_id", userId).maybeSingle();
+  if (error) throw new Error(error.message);
+  return data ? mapProfile(data) : null;
+}
+
+export type DuplicateField = "name" | "email";
+
+/** Returns which unique field is already taken by *another* company, if any. */
+export async function findCompanyConflict(
+  userId: string, companyName: string, officialEmail: string,
+): Promise<DuplicateField | null> {
+  const { data, error } = await db().from("author_profiles").select("user_id, company_name, official_email");
+  if (error) throw new Error(error.message);
+  const name = companyName.trim().toLowerCase();
+  const email = officialEmail.trim().toLowerCase();
+  for (const r of data ?? []) {
+    if (r.user_id === userId) continue;
+    if (name && (r.company_name ?? "").trim().toLowerCase() === name) return "name";
+    if (email && (r.official_email ?? "").trim().toLowerCase() === email) return "email";
+  }
+  return null;
 }
 
 export async function upsertAuthorProfile(userId: string, p: Partial<AuthorProfile>): Promise<AuthorProfile> {
