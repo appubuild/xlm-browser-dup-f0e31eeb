@@ -6,7 +6,7 @@ import {
   fetchBadgeTiers, saveBadgeTier, createBadgeTier, deleteBadgeTier,
   fetchPromotionPackages, savePromotionPackage, createPromotionPackage, deletePromotionPackage,
   fetchAllPromotions, setPromotionStatus, extendPromotion,
-  fetchAllAuthorProfiles, setAuthorBadge, fetchAllTransactions,
+  fetchAllAuthorProfiles, setAuthorBadge, fetchAllTransactions, setCompanyFeatured,
   SLOT_LABEL, type BadgeTier, type PromotionPackage, type ProjectPromotion,
   type AuthorProfile, type TxRecord, type PromoSlot,
 } from "@/lib/monetization";
@@ -215,7 +215,7 @@ function BadgesTab() {
     <Panel title={`Author profiles & badges (${profiles.length})`}>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="text-left text-xs opacity-70"><tr><th className="pb-2">Company</th><th className="pb-2">Email</th><th className="pb-2">Badge</th><th className="pb-2">Since</th><th></th></tr></thead>
+          <thead className="text-left text-xs opacity-70"><tr><th className="pb-2">Company</th><th className="pb-2">Email</th><th className="pb-2">Badge</th><th className="pb-2">Since</th><th className="pb-2">Landing page</th><th></th></tr></thead>
           <tbody>
             {profiles.map((p) => (
               <tr key={p.id} className="border-t border-current/10">
@@ -236,12 +236,26 @@ function BadgesTab() {
                   </select>
                 </td>
                 <td className="py-2 text-xs opacity-70">{p.badgeSince ? new Date(p.badgeSince).toLocaleDateString() : "—"}</td>
+                <td className="py-2">
+                  <label className="flex items-center gap-2 text-xs">
+                    <input
+                      type="checkbox"
+                      checked={p.featured}
+                      disabled={!p.verified}
+                      onChange={async (e) => {
+                        try { await setCompanyFeatured(p.id, e.target.checked); toast.success(e.target.checked ? "Shown in Verified Companies" : "Removed from Verified Companies"); await load(); }
+                        catch (err) { toast.error(err instanceof Error ? err.message : "Failed"); }
+                      }}
+                    />
+                    {p.verified ? "Featured" : "Needs badge"}
+                  </label>
+                </td>
                 <td className="py-2 text-right">
                   {p.badgeTier && <button onClick={async () => { try { await setAuthorBadge(p.userId, null); await load(); } catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); } }} className="rounded border border-rose-500/50 px-2 py-1 text-xs text-rose-400">Revoke</button>}
                 </td>
               </tr>
             ))}
-            {profiles.length === 0 && <tr><td colSpan={5} className="py-6 text-center text-sm opacity-60">No author profiles yet.</td></tr>}
+            {profiles.length === 0 && <tr><td colSpan={6} className="py-6 text-center text-sm opacity-60">No author profiles yet.</td></tr>}
           </tbody>
         </table>
       </div>

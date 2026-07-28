@@ -5,9 +5,11 @@ import { useApp } from "@/lib/app-store";
 import { toast } from "sonner";
 import { XamanPayDialog } from "@/components/xaman-pay-dialog";
 import {
-  fetchBadgeTiers, fetchMyAuthorProfile, upsertAuthorProfile, purchaseBadge,
-  type AuthorProfile, type BadgeTier, type SocialLink,
+  fetchBadgeTiers, fetchMyAuthorProfile, upsertAuthorProfile, purchaseBadge, findCompanyConflict,
+  type AuthorProfile, type BadgeTier, type SocialLink, type DuplicateField,
 } from "@/lib/monetization";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/panel/company")({
   component: CompanyProfilePage,
@@ -38,6 +40,7 @@ function CompanyProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [buying, setBuying] = useState<BadgeTier | null>(null);
+  const [duplicate, setDuplicate] = useState<DuplicateField | null>(null);
 
   const [form, setForm] = useState({
     companyName: "", logo: "", bio: "", officialEmail: "", website: "",
@@ -70,6 +73,8 @@ function CompanyProfilePage() {
     if (form.socials.some((s) => !s.url.trim())) return toast.error("Every social link needs a URL");
     setSaving(true);
     try {
+      const conflict = await findCompanyConflict(user.id, form.companyName, form.officialEmail);
+      if (conflict) { setDuplicate(conflict); return; }
       const next = await upsertAuthorProfile(user.id, {
         companyName: form.companyName.trim(),
         logo: form.logo.trim(),
@@ -81,7 +86,12 @@ function CompanyProfilePage() {
       setProfile(next);
       toast.success("Company profile saved");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Save failed");
+      const msg = e instanceof Error ? e.message : "Save failed";
+      if (/duplicate key|unique constraint/i.test(msg)) {
+        setDuplicate(/official_email/i.test(msg) ? "email" : "name");
+      } else {
+        toast.error(msg);
+      }
     } finally {
       setSaving(false);
     }
@@ -176,6 +186,22 @@ function CompanyProfilePage() {
           </>
         )}
       </div>
+
+      <Dialog open={!!duplicate} onOpenChange={(o) => !o && setDuplicate(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Company already registered</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            This company profile already exists in our system
+            {duplicate === "email" ? " with that support email" : " under that company name"}.
+            Please try another {duplicate === "email" ? "email" : "name"} — or log in with the account that owns this
+            company to join it.
+          </p>
+          <DialogFooter>
+            <Link to="/login" className="rounded border px-4 py-2 text-sm hover:bg-accent">Log in to join</Link>
+            <button onClick={() => setDuplicate(null)} className="rounded bg-primary px-4 py-2 text-sm text-primary-foreground">Try another</button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <XamanPayDialog
         open={!!buying}
