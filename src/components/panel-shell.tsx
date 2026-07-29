@@ -1,7 +1,8 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { type ReactNode } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { useApp } from "@/lib/app-store";
 import { PublicShell } from "./public-shell";
+import { listMenus, type MenuItem } from "@/lib/menus";
 
 const PANEL_NAV = [
   { to: "/panel", label: "Dashboard", icon: "📊" },
@@ -19,6 +20,23 @@ export function PanelShell({ children }: { children: ReactNode }) {
   const { user } = useApp();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const nav = useNavigate();
+  const [dynamic, setDynamic] = useState<MenuItem[] | null>(null);
+
+  useEffect(() => {
+    let stop = false;
+    void listMenus("panel")
+      .then((items) => {
+        const visible = items.filter((i) => i.visible && !i.parentId);
+        if (!stop && visible.length > 0) setDynamic(visible);
+      })
+      .catch(() => {});
+    return () => { stop = true; };
+  }, []);
+
+  const navItems = dynamic
+    ? dynamic.map((m) => ({ to: m.path, label: m.label, icon: m.icon || "•" }))
+    : PANEL_NAV.map((n) => ({ to: n.to as string, label: n.label, icon: n.icon }));
+
 
   if (!user) {
     // Soft gate: show login prompt
