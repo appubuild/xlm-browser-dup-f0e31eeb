@@ -54,6 +54,7 @@ import { Route as AdminLandingRouteImport } from './routes/admin.landing'
 import { Route as AdminFooterRouteImport } from './routes/admin.footer'
 import { Route as AdminContactRouteImport } from './routes/admin.contact'
 import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
+import { Route as AdminAuthSetupRouteImport } from './routes/admin.auth-setup'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminPagesIndexRouteImport } from './routes/admin.pages.index'
 import { Route as AdminBlogIndexRouteImport } from './routes/admin.blog.index'
@@ -291,6 +292,11 @@ const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   path: '/admin/categories',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminAuthSetupRoute = AdminAuthSetupRouteImport.update({
+  id: '/admin/auth-setup',
+  path: '/admin/auth-setup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
   id: '/admin/analytics',
   path: '/admin/analytics',
@@ -356,6 +362,7 @@ export interface FileRoutesByFullPath {
   '/submit': typeof SubmitRoute
   '/terms': typeof TermsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/auth-setup': typeof AdminAuthSetupRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/footer': typeof AdminFooterRoute
@@ -413,6 +420,7 @@ export interface FileRoutesByTo {
   '/submit': typeof SubmitRoute
   '/terms': typeof TermsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/auth-setup': typeof AdminAuthSetupRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/footer': typeof AdminFooterRoute
@@ -471,6 +479,7 @@ export interface FileRoutesById {
   '/submit': typeof SubmitRoute
   '/terms': typeof TermsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/auth-setup': typeof AdminAuthSetupRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/footer': typeof AdminFooterRoute
@@ -530,6 +539,7 @@ export interface FileRouteTypes {
     | '/submit'
     | '/terms'
     | '/admin/analytics'
+    | '/admin/auth-setup'
     | '/admin/categories'
     | '/admin/contact'
     | '/admin/footer'
@@ -587,6 +597,7 @@ export interface FileRouteTypes {
     | '/submit'
     | '/terms'
     | '/admin/analytics'
+    | '/admin/auth-setup'
     | '/admin/categories'
     | '/admin/contact'
     | '/admin/footer'
@@ -644,6 +655,7 @@ export interface FileRouteTypes {
     | '/submit'
     | '/terms'
     | '/admin/analytics'
+    | '/admin/auth-setup'
     | '/admin/categories'
     | '/admin/contact'
     | '/admin/footer'
@@ -702,6 +714,7 @@ export interface RootRouteChildren {
   SubmitRoute: typeof SubmitRoute
   TermsRoute: typeof TermsRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminAuthSetupRoute: typeof AdminAuthSetupRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminContactRoute: typeof AdminContactRoute
   AdminFooterRoute: typeof AdminFooterRoute
@@ -1061,6 +1074,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/auth-setup': {
+      id: '/admin/auth-setup'
+      path: '/admin/auth-setup'
+      fullPath: '/admin/auth-setup'
+      preLoaderRoute: typeof AdminAuthSetupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/analytics': {
       id: '/admin/analytics'
       path: '/admin/analytics'
@@ -1172,6 +1192,7 @@ const rootRouteChildren: RootRouteChildren = {
   SubmitRoute: SubmitRoute,
   TermsRoute: TermsRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminAuthSetupRoute: AdminAuthSetupRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminContactRoute: AdminContactRoute,
   AdminFooterRoute: AdminFooterRoute,

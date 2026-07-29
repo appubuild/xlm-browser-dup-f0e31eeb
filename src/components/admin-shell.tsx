@@ -5,25 +5,53 @@ import { Bell, LogOut, ExternalLink, Sun, Moon } from "lucide-react";
 import { toast } from "sonner";
 
 
-const ADMIN_NAV = [
-  { to: "/admin", label: "Dashboard", icon: "📊" },
-  { to: "/admin/analytics", label: "Analytics", icon: "📈" },
-  { to: "/admin/projects", label: "Projects", icon: "📦" },
-  { to: "/admin/projects/pending", label: "Moderation Queue", icon: "🛡️" },
-  { to: "/admin/users", label: "Users", icon: "👥" },
-  { to: "/admin/categories", label: "Categories", icon: "🏷️" },
-  { to: "/admin/pages", label: "Pages", icon: "📄" },
-  { to: "/admin/landing", label: "Landing Page", icon: "🎨" },
-  { to: "/admin/blog", label: "News / Blog", icon: "📰" },
-  { to: "/admin/tickers", label: "Tickers", icon: "📡" },
-  { to: "/admin/sidebar", label: "Sidebar Menu", icon: "🧭" },
-  { to: "/admin/footer", label: "Footer", icon: "🔗" },
-  { to: "/admin/contact", label: "Contact & Support", icon: "💬" },
-  { to: "/admin/notifications", label: "Notifications", icon: "🔔" },
-  { to: "/admin/wallet-connect-config", label: "Wallet Config", icon: "👛" },
-  { to: "/admin/monetization", label: "Monetization", icon: "💎" },
-  { to: "/admin/site-settings", label: "Site Settings", icon: "⚙️" },
+const ADMIN_GROUPS = [
+  {
+    label: "Overview",
+    items: [
+      { to: "/admin", label: "Dashboard", icon: "📊" },
+      { to: "/admin/analytics", label: "Analytics", icon: "📈" },
+    ],
+  },
+  {
+    label: "Users & Projects",
+    items: [
+      { to: "/admin/projects", label: "Projects", icon: "📦" },
+      { to: "/admin/projects/pending", label: "Moderation Queue", icon: "🛡️" },
+      { to: "/admin/users", label: "Users", icon: "👥" },
+      { to: "/admin/categories", label: "Categories", icon: "🏷️" },
+    ],
+  },
+  {
+    label: "Content & Pages",
+    items: [
+      { to: "/admin/pages", label: "Pages", icon: "📄" },
+      { to: "/admin/landing", label: "Landing Page", icon: "🎨" },
+      { to: "/admin/blog", label: "News / Blog", icon: "📰" },
+      { to: "/admin/tickers", label: "Tickers", icon: "📡" },
+    ],
+  },
+  {
+    label: "Navigation & Menus",
+    items: [
+      { to: "/admin/menus", label: "Menu Builder", icon: "🧱" },
+      { to: "/admin/sidebar", label: "Sidebar Menu", icon: "🧭" },
+      { to: "/admin/footer", label: "Footer", icon: "🔗" },
+    ],
+  },
+  {
+    label: "Settings & Integrations",
+    items: [
+      { to: "/admin/contact", label: "Contact & Support", icon: "💬" },
+      { to: "/admin/notifications", label: "Notifications", icon: "🔔" },
+      { to: "/admin/auth-setup", label: "Social Login Setup", icon: "🔐" },
+      { to: "/admin/wallet-connect-config", label: "Wallet Config", icon: "👛" },
+      { to: "/admin/monetization", label: "Monetization", icon: "💎" },
+      { to: "/admin/site-settings", label: "Site Settings", icon: "⚙️" },
+    ],
+  },
 ] as const;
+
 
 type AdminTheme = "light" | "dark";
 
