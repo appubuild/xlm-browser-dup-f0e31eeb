@@ -6,6 +6,7 @@ import { useViewport } from "@/components/browser-viewport";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ProjectAiChat, ProjectFaq } from "@/components/project-ai";
 import { ProjectCompanyCard } from "@/components/project-company-card";
+import { ProjectDiscussion } from "@/components/project-comments";
 import { toast } from "sonner";
 import { trackProjectEvent } from "@/lib/analytics";
 
@@ -29,7 +30,7 @@ function ProjectPage() {
     <PublicShell>
       <div className="mx-auto max-w-6xl px-6 py-8">
         <nav className="text-xs text-muted-foreground">
-          <Link to="/ecosystem">Ecosystem</Link> / <Link to="/directory/$category" params={{ category: project.category }} className="capitalize hover:underline">{project.category}</Link> / <span>{project.name}</span>
+          <Link to="/ecosystem">Ecosystem</Link> / <Link to="/category/$slug" params={{ slug: project.category }} className="capitalize hover:underline">{project.category}</Link> / <span>{project.name}</span>
         </nav>
 
         <header className="mt-4 flex flex-wrap items-start gap-4">
@@ -124,6 +125,8 @@ function ProjectPage() {
             {tab !== "ai" && <ProjectAiChat project={project} />}
           </aside>
         </div>
+
+        <ProjectDiscussion projectSlug={project.slug} />
       </div>
 
       <Dialog open={reportOpen} onOpenChange={setReportOpen}>

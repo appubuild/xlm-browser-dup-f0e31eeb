@@ -1,7 +1,8 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { type ReactNode } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { useApp } from "@/lib/app-store";
 import { PublicShell } from "./public-shell";
+import { listMenus, type MenuItem } from "@/lib/menus";
 
 const PANEL_NAV = [
   { to: "/panel", label: "Dashboard", icon: "📊" },
@@ -19,6 +20,23 @@ export function PanelShell({ children }: { children: ReactNode }) {
   const { user } = useApp();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const nav = useNavigate();
+  const [dynamic, setDynamic] = useState<MenuItem[] | null>(null);
+
+  useEffect(() => {
+    let stop = false;
+    void listMenus("panel")
+      .then((items) => {
+        const visible = items.filter((i) => i.visible && !i.parentId);
+        if (!stop && visible.length > 0) setDynamic(visible);
+      })
+      .catch(() => {});
+    return () => { stop = true; };
+  }, []);
+
+  const navItems = dynamic
+    ? dynamic.map((m) => ({ to: m.path, label: m.label, icon: m.icon || "•" }))
+    : PANEL_NAV.map((n) => ({ to: n.to as string, label: n.label, icon: n.icon }));
+
 
   if (!user) {
     // Soft gate: show login prompt
@@ -42,7 +60,7 @@ export function PanelShell({ children }: { children: ReactNode }) {
             <div className="text-xs text-muted-foreground">{user.email}</div>
           </div>
           <nav className="space-y-0.5">
-            {PANEL_NAV.map((n) => {
+            {navItems.map((n) => {
               const active = path === n.to;
               return (
                 <Link key={n.to} to={n.to} className={`flex items-center gap-2 rounded-md px-2.5 py-2 text-sm ${active ? "bg-primary text-primary-foreground" : "hover:bg-accent"}`}>
@@ -50,6 +68,7 @@ export function PanelShell({ children }: { children: ReactNode }) {
                 </Link>
               );
             })}
+
           </nav>
         </aside>
         <div className="min-w-0 flex-1 overflow-y-auto">{children}</div>

@@ -39,6 +39,7 @@ import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 import { Route as DirectoryCategoryRouteImport } from './routes/directory.$category'
 import { Route as DevelopersApiRouteImport } from './routes/developers.api'
 import { Route as CompanyKeyRouteImport } from './routes/company.$key'
+import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as AdminWalletConnectConfigRouteImport } from './routes/admin.wallet-connect-config'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminTickersRouteImport } from './routes/admin.tickers'
@@ -47,11 +48,13 @@ import { Route as AdminSidebarRouteImport } from './routes/admin.sidebar'
 import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
 import { Route as AdminNotificationsRouteImport } from './routes/admin.notifications'
 import { Route as AdminMonetizationRouteImport } from './routes/admin.monetization'
+import { Route as AdminMenusRouteImport } from './routes/admin.menus'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminLandingRouteImport } from './routes/admin.landing'
 import { Route as AdminFooterRouteImport } from './routes/admin.footer'
 import { Route as AdminContactRouteImport } from './routes/admin.contact'
 import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
+import { Route as AdminAuthSetupRouteImport } from './routes/admin.auth-setup'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminPagesIndexRouteImport } from './routes/admin.pages.index'
 import { Route as AdminBlogIndexRouteImport } from './routes/admin.blog.index'
@@ -213,6 +216,11 @@ const CompanyKeyRoute = CompanyKeyRouteImport.update({
   path: '/company/$key',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CategorySlugRoute = CategorySlugRouteImport.update({
+  id: '/category/$slug',
+  path: '/category/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminWalletConnectConfigRoute =
   AdminWalletConnectConfigRouteImport.update({
     id: '/admin/wallet-connect-config',
@@ -254,6 +262,11 @@ const AdminMonetizationRoute = AdminMonetizationRouteImport.update({
   path: '/admin/monetization',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminMenusRoute = AdminMenusRouteImport.update({
+  id: '/admin/menus',
+  path: '/admin/menus',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
@@ -277,6 +290,11 @@ const AdminContactRoute = AdminContactRouteImport.update({
 const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   id: '/admin/categories',
   path: '/admin/categories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAuthSetupRoute = AdminAuthSetupRouteImport.update({
+  id: '/admin/auth-setup',
+  path: '/admin/auth-setup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
@@ -344,11 +362,13 @@ export interface FileRoutesByFullPath {
   '/submit': typeof SubmitRoute
   '/terms': typeof TermsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/auth-setup': typeof AdminAuthSetupRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/footer': typeof AdminFooterRoute
   '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/menus': typeof AdminMenusRoute
   '/admin/monetization': typeof AdminMonetizationRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/projects': typeof AdminProjectsRouteWithChildren
@@ -357,6 +377,7 @@ export interface FileRoutesByFullPath {
   '/admin/tickers': typeof AdminTickersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/wallet-connect-config': typeof AdminWalletConnectConfigRoute
+  '/category/$slug': typeof CategorySlugRoute
   '/company/$key': typeof CompanyKeyRoute
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
@@ -399,11 +420,13 @@ export interface FileRoutesByTo {
   '/submit': typeof SubmitRoute
   '/terms': typeof TermsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/auth-setup': typeof AdminAuthSetupRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/footer': typeof AdminFooterRoute
   '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/menus': typeof AdminMenusRoute
   '/admin/monetization': typeof AdminMonetizationRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/projects': typeof AdminProjectsRouteWithChildren
@@ -412,6 +435,7 @@ export interface FileRoutesByTo {
   '/admin/tickers': typeof AdminTickersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/wallet-connect-config': typeof AdminWalletConnectConfigRoute
+  '/category/$slug': typeof CategorySlugRoute
   '/company/$key': typeof CompanyKeyRoute
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
@@ -455,11 +479,13 @@ export interface FileRoutesById {
   '/submit': typeof SubmitRoute
   '/terms': typeof TermsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/auth-setup': typeof AdminAuthSetupRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/footer': typeof AdminFooterRoute
   '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/menus': typeof AdminMenusRoute
   '/admin/monetization': typeof AdminMonetizationRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/projects': typeof AdminProjectsRouteWithChildren
@@ -468,6 +494,7 @@ export interface FileRoutesById {
   '/admin/tickers': typeof AdminTickersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/wallet-connect-config': typeof AdminWalletConnectConfigRoute
+  '/category/$slug': typeof CategorySlugRoute
   '/company/$key': typeof CompanyKeyRoute
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
@@ -512,11 +539,13 @@ export interface FileRouteTypes {
     | '/submit'
     | '/terms'
     | '/admin/analytics'
+    | '/admin/auth-setup'
     | '/admin/categories'
     | '/admin/contact'
     | '/admin/footer'
     | '/admin/landing'
     | '/admin/login'
+    | '/admin/menus'
     | '/admin/monetization'
     | '/admin/notifications'
     | '/admin/projects'
@@ -525,6 +554,7 @@ export interface FileRouteTypes {
     | '/admin/tickers'
     | '/admin/users'
     | '/admin/wallet-connect-config'
+    | '/category/$slug'
     | '/company/$key'
     | '/developers/api'
     | '/directory/$category'
@@ -567,11 +597,13 @@ export interface FileRouteTypes {
     | '/submit'
     | '/terms'
     | '/admin/analytics'
+    | '/admin/auth-setup'
     | '/admin/categories'
     | '/admin/contact'
     | '/admin/footer'
     | '/admin/landing'
     | '/admin/login'
+    | '/admin/menus'
     | '/admin/monetization'
     | '/admin/notifications'
     | '/admin/projects'
@@ -580,6 +612,7 @@ export interface FileRouteTypes {
     | '/admin/tickers'
     | '/admin/users'
     | '/admin/wallet-connect-config'
+    | '/category/$slug'
     | '/company/$key'
     | '/developers/api'
     | '/directory/$category'
@@ -622,11 +655,13 @@ export interface FileRouteTypes {
     | '/submit'
     | '/terms'
     | '/admin/analytics'
+    | '/admin/auth-setup'
     | '/admin/categories'
     | '/admin/contact'
     | '/admin/footer'
     | '/admin/landing'
     | '/admin/login'
+    | '/admin/menus'
     | '/admin/monetization'
     | '/admin/notifications'
     | '/admin/projects'
@@ -635,6 +670,7 @@ export interface FileRouteTypes {
     | '/admin/tickers'
     | '/admin/users'
     | '/admin/wallet-connect-config'
+    | '/category/$slug'
     | '/company/$key'
     | '/developers/api'
     | '/directory/$category'
@@ -678,11 +714,13 @@ export interface RootRouteChildren {
   SubmitRoute: typeof SubmitRoute
   TermsRoute: typeof TermsRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminAuthSetupRoute: typeof AdminAuthSetupRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminContactRoute: typeof AdminContactRoute
   AdminFooterRoute: typeof AdminFooterRoute
   AdminLandingRoute: typeof AdminLandingRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminMenusRoute: typeof AdminMenusRoute
   AdminMonetizationRoute: typeof AdminMonetizationRoute
   AdminNotificationsRoute: typeof AdminNotificationsRoute
   AdminProjectsRoute: typeof AdminProjectsRouteWithChildren
@@ -691,6 +729,7 @@ export interface RootRouteChildren {
   AdminTickersRoute: typeof AdminTickersRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminWalletConnectConfigRoute: typeof AdminWalletConnectConfigRoute
+  CategorySlugRoute: typeof CategorySlugRoute
   CompanyKeyRoute: typeof CompanyKeyRoute
   DirectoryCategoryRoute: typeof DirectoryCategoryRoute
   NewsSlugRoute: typeof NewsSlugRoute
@@ -930,6 +969,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompanyKeyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/category/$slug': {
+      id: '/category/$slug'
+      path: '/category/$slug'
+      fullPath: '/category/$slug'
+      preLoaderRoute: typeof CategorySlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/wallet-connect-config': {
       id: '/admin/wallet-connect-config'
       path: '/admin/wallet-connect-config'
@@ -986,6 +1032,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMonetizationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/menus': {
+      id: '/admin/menus'
+      path: '/admin/menus'
+      fullPath: '/admin/menus'
+      preLoaderRoute: typeof AdminMenusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/admin/login'
@@ -1019,6 +1072,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/categories'
       fullPath: '/admin/categories'
       preLoaderRoute: typeof AdminCategoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/auth-setup': {
+      id: '/admin/auth-setup'
+      path: '/admin/auth-setup'
+      fullPath: '/admin/auth-setup'
+      preLoaderRoute: typeof AdminAuthSetupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/analytics': {
@@ -1132,11 +1192,13 @@ const rootRouteChildren: RootRouteChildren = {
   SubmitRoute: SubmitRoute,
   TermsRoute: TermsRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminAuthSetupRoute: AdminAuthSetupRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminContactRoute: AdminContactRoute,
   AdminFooterRoute: AdminFooterRoute,
   AdminLandingRoute: AdminLandingRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminMenusRoute: AdminMenusRoute,
   AdminMonetizationRoute: AdminMonetizationRoute,
   AdminNotificationsRoute: AdminNotificationsRoute,
   AdminProjectsRoute: AdminProjectsRouteWithChildren,
@@ -1145,6 +1207,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminTickersRoute: AdminTickersRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminWalletConnectConfigRoute: AdminWalletConnectConfigRoute,
+  CategorySlugRoute: CategorySlugRoute,
   CompanyKeyRoute: CompanyKeyRoute,
   DirectoryCategoryRoute: DirectoryCategoryRoute,
   NewsSlugRoute: NewsSlugRoute,

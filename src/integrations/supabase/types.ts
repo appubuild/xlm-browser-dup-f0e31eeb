@@ -260,6 +260,38 @@ export type Database = {
         }
         Relationships: []
       }
+      comment_votes: {
+        Row: {
+          comment_id: string
+          created_at: string
+          id: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_votes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "project_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_messages: {
         Row: {
           created_at: string
@@ -522,6 +554,59 @@ export type Database = {
         }
         Relationships: []
       }
+      nav_menus: {
+        Row: {
+          created_at: string
+          external: boolean
+          icon: string | null
+          id: string
+          label: string
+          location: string
+          parent_id: string | null
+          path: string
+          requires_auth: boolean
+          sort_order: number
+          updated_at: string
+          visible: boolean
+        }
+        Insert: {
+          created_at?: string
+          external?: boolean
+          icon?: string | null
+          id?: string
+          label: string
+          location?: string
+          parent_id?: string | null
+          path?: string
+          requires_auth?: boolean
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Update: {
+          created_at?: string
+          external?: boolean
+          icon?: string | null
+          id?: string
+          label?: string
+          location?: string
+          parent_id?: string | null
+          path?: string
+          requires_auth?: boolean
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nav_menus_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "nav_menus"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       news: {
         Row: {
           author: string
@@ -688,6 +773,50 @@ export type Database = {
           wallet_address?: string | null
         }
         Relationships: []
+      }
+      project_comments: {
+        Row: {
+          body: string
+          created_at: string
+          deleted: boolean
+          id: string
+          mentions: string[]
+          parent_id: string | null
+          project_slug: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          deleted?: boolean
+          id?: string
+          mentions?: string[]
+          parent_id?: string | null
+          project_slug: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          deleted?: boolean
+          id?: string
+          mentions?: string[]
+          parent_id?: string | null
+          project_slug?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "project_comments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       project_events: {
         Row: {

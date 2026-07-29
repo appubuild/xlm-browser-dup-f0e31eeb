@@ -37,9 +37,12 @@ function Ecosystem() {
         <h2 className="mt-8 text-xl font-bold">Categories</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {categories.filter((c) => c.visible).map((c) => {
-            const count = approved.filter((p) => p.category === c.id).length;
+            const count = approved.filter((p) => {
+              const key = (p.category ?? "").toLowerCase();
+              return key === c.slug.toLowerCase() || key === c.id;
+            }).length;
             return (
-              <Link key={c.id} to="/directory/$category" params={{ category: c.id }} className="soft-card group p-5 transition hover:border-primary">
+              <Link key={c.id} to="/category/$slug" params={{ slug: c.slug }} className="soft-card group p-5 transition hover:border-primary">
                 <div className="text-3xl">{c.icon}</div>
                 <div className="mt-3 font-semibold">{c.name} <span className="text-muted-foreground">({count})</span></div>
                 <p className="mt-1 text-sm text-muted-foreground">{c.description}</p>
