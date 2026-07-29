@@ -83,10 +83,10 @@ function Home() {
           </form>
           <div className="mx-auto mt-6 flex max-w-3xl flex-wrap justify-center gap-2">
             {[
-              { l: "Explore dApps", to: "/directory/dapps" },
-              { l: "Find Tokens", to: "/directory/tokens" },
+              { l: "Explore dApps", to: "/category/dapps" },
+              { l: "Find Tokens", to: "/category/tokens" },
               { l: "XRPL Network", to: "/ecosystem" },
-              { l: "NFT Marketplace", to: "/directory/nfts" },
+              { l: "NFT Marketplace", to: "/category/nfts" },
               { l: "XRP News", to: "/news" },
             ].map((p) => (
               <Link key={p.l} to={p.to} className={isRetro ? "retro-btn text-xs" : "rounded-full border bg-card px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground"}>

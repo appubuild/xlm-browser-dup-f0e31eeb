@@ -6,6 +6,7 @@ import { useViewport } from "@/components/browser-viewport";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ProjectAiChat, ProjectFaq } from "@/components/project-ai";
 import { ProjectCompanyCard } from "@/components/project-company-card";
+import { ProjectDiscussion } from "@/components/project-comments";
 import { toast } from "sonner";
 import { trackProjectEvent } from "@/lib/analytics";
 
@@ -124,6 +125,8 @@ function ProjectPage() {
             {tab !== "ai" && <ProjectAiChat project={project} />}
           </aside>
         </div>
+
+        <ProjectDiscussion projectSlug={project.slug} />
       </div>
 
       <Dialog open={reportOpen} onOpenChange={setReportOpen}>
