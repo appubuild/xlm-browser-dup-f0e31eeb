@@ -60,7 +60,7 @@ export function PanelShell({ children }: { children: ReactNode }) {
             <div className="text-xs text-muted-foreground">{user.email}</div>
           </div>
           <nav className="space-y-0.5">
-            {PANEL_NAV.map((n) => {
+            {navItems.map((n) => {
               const active = path === n.to;
               return (
                 <Link key={n.to} to={n.to} className={`flex items-center gap-2 rounded-md px-2.5 py-2 text-sm ${active ? "bg-primary text-primary-foreground" : "hover:bg-accent"}`}>
@@ -68,6 +68,7 @@ export function PanelShell({ children }: { children: ReactNode }) {
                 </Link>
               );
             })}
+
           </nav>
         </aside>
         <div className="min-w-0 flex-1 overflow-y-auto">{children}</div>
