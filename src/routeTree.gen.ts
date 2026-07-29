@@ -48,6 +48,7 @@ import { Route as AdminSidebarRouteImport } from './routes/admin.sidebar'
 import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
 import { Route as AdminNotificationsRouteImport } from './routes/admin.notifications'
 import { Route as AdminMonetizationRouteImport } from './routes/admin.monetization'
+import { Route as AdminMenusRouteImport } from './routes/admin.menus'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminLandingRouteImport } from './routes/admin.landing'
 import { Route as AdminFooterRouteImport } from './routes/admin.footer'
@@ -260,6 +261,11 @@ const AdminMonetizationRoute = AdminMonetizationRouteImport.update({
   path: '/admin/monetization',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminMenusRoute = AdminMenusRouteImport.update({
+  id: '/admin/menus',
+  path: '/admin/menus',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
@@ -355,6 +361,7 @@ export interface FileRoutesByFullPath {
   '/admin/footer': typeof AdminFooterRoute
   '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/menus': typeof AdminMenusRoute
   '/admin/monetization': typeof AdminMonetizationRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/projects': typeof AdminProjectsRouteWithChildren
@@ -411,6 +418,7 @@ export interface FileRoutesByTo {
   '/admin/footer': typeof AdminFooterRoute
   '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/menus': typeof AdminMenusRoute
   '/admin/monetization': typeof AdminMonetizationRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/projects': typeof AdminProjectsRouteWithChildren
@@ -468,6 +476,7 @@ export interface FileRoutesById {
   '/admin/footer': typeof AdminFooterRoute
   '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/menus': typeof AdminMenusRoute
   '/admin/monetization': typeof AdminMonetizationRoute
   '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/projects': typeof AdminProjectsRouteWithChildren
@@ -526,6 +535,7 @@ export interface FileRouteTypes {
     | '/admin/footer'
     | '/admin/landing'
     | '/admin/login'
+    | '/admin/menus'
     | '/admin/monetization'
     | '/admin/notifications'
     | '/admin/projects'
@@ -582,6 +592,7 @@ export interface FileRouteTypes {
     | '/admin/footer'
     | '/admin/landing'
     | '/admin/login'
+    | '/admin/menus'
     | '/admin/monetization'
     | '/admin/notifications'
     | '/admin/projects'
@@ -638,6 +649,7 @@ export interface FileRouteTypes {
     | '/admin/footer'
     | '/admin/landing'
     | '/admin/login'
+    | '/admin/menus'
     | '/admin/monetization'
     | '/admin/notifications'
     | '/admin/projects'
@@ -695,6 +707,7 @@ export interface RootRouteChildren {
   AdminFooterRoute: typeof AdminFooterRoute
   AdminLandingRoute: typeof AdminLandingRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminMenusRoute: typeof AdminMenusRoute
   AdminMonetizationRoute: typeof AdminMonetizationRoute
   AdminNotificationsRoute: typeof AdminNotificationsRoute
   AdminProjectsRoute: typeof AdminProjectsRouteWithChildren
@@ -1006,6 +1019,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMonetizationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/menus': {
+      id: '/admin/menus'
+      path: '/admin/menus'
+      fullPath: '/admin/menus'
+      preLoaderRoute: typeof AdminMenusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/admin/login'
@@ -1157,6 +1177,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminFooterRoute: AdminFooterRoute,
   AdminLandingRoute: AdminLandingRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminMenusRoute: AdminMenusRoute,
   AdminMonetizationRoute: AdminMonetizationRoute,
   AdminNotificationsRoute: AdminNotificationsRoute,
   AdminProjectsRoute: AdminProjectsRouteWithChildren,
