@@ -39,6 +39,7 @@ import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 import { Route as DirectoryCategoryRouteImport } from './routes/directory.$category'
 import { Route as DevelopersApiRouteImport } from './routes/developers.api'
 import { Route as CompanyKeyRouteImport } from './routes/company.$key'
+import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as AdminWalletConnectConfigRouteImport } from './routes/admin.wallet-connect-config'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminTickersRouteImport } from './routes/admin.tickers'
@@ -213,6 +214,11 @@ const CompanyKeyRoute = CompanyKeyRouteImport.update({
   path: '/company/$key',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CategorySlugRoute = CategorySlugRouteImport.update({
+  id: '/category/$slug',
+  path: '/category/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminWalletConnectConfigRoute =
   AdminWalletConnectConfigRouteImport.update({
     id: '/admin/wallet-connect-config',
@@ -357,6 +363,7 @@ export interface FileRoutesByFullPath {
   '/admin/tickers': typeof AdminTickersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/wallet-connect-config': typeof AdminWalletConnectConfigRoute
+  '/category/$slug': typeof CategorySlugRoute
   '/company/$key': typeof CompanyKeyRoute
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
@@ -412,6 +419,7 @@ export interface FileRoutesByTo {
   '/admin/tickers': typeof AdminTickersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/wallet-connect-config': typeof AdminWalletConnectConfigRoute
+  '/category/$slug': typeof CategorySlugRoute
   '/company/$key': typeof CompanyKeyRoute
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
@@ -468,6 +476,7 @@ export interface FileRoutesById {
   '/admin/tickers': typeof AdminTickersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/wallet-connect-config': typeof AdminWalletConnectConfigRoute
+  '/category/$slug': typeof CategorySlugRoute
   '/company/$key': typeof CompanyKeyRoute
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
@@ -525,6 +534,7 @@ export interface FileRouteTypes {
     | '/admin/tickers'
     | '/admin/users'
     | '/admin/wallet-connect-config'
+    | '/category/$slug'
     | '/company/$key'
     | '/developers/api'
     | '/directory/$category'
@@ -580,6 +590,7 @@ export interface FileRouteTypes {
     | '/admin/tickers'
     | '/admin/users'
     | '/admin/wallet-connect-config'
+    | '/category/$slug'
     | '/company/$key'
     | '/developers/api'
     | '/directory/$category'
@@ -635,6 +646,7 @@ export interface FileRouteTypes {
     | '/admin/tickers'
     | '/admin/users'
     | '/admin/wallet-connect-config'
+    | '/category/$slug'
     | '/company/$key'
     | '/developers/api'
     | '/directory/$category'
@@ -691,6 +703,7 @@ export interface RootRouteChildren {
   AdminTickersRoute: typeof AdminTickersRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminWalletConnectConfigRoute: typeof AdminWalletConnectConfigRoute
+  CategorySlugRoute: typeof CategorySlugRoute
   CompanyKeyRoute: typeof CompanyKeyRoute
   DirectoryCategoryRoute: typeof DirectoryCategoryRoute
   NewsSlugRoute: typeof NewsSlugRoute
@@ -930,6 +943,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompanyKeyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/category/$slug': {
+      id: '/category/$slug'
+      path: '/category/$slug'
+      fullPath: '/category/$slug'
+      preLoaderRoute: typeof CategorySlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/wallet-connect-config': {
       id: '/admin/wallet-connect-config'
       path: '/admin/wallet-connect-config'
@@ -1145,6 +1165,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminTickersRoute: AdminTickersRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminWalletConnectConfigRoute: AdminWalletConnectConfigRoute,
+  CategorySlugRoute: CategorySlugRoute,
   CompanyKeyRoute: CompanyKeyRoute,
   DirectoryCategoryRoute: DirectoryCategoryRoute,
   NewsSlugRoute: NewsSlugRoute,
