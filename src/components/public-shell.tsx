@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { useViewport } from "@/components/browser-viewport";
 import { CryptoTicker } from "@/components/crypto-ticker";
 import { listPages, type SitePage } from "@/lib/cms";
+import { buildMenuTree, listMenus, type MenuItem } from "@/lib/menus";
 import { callXamanProxy, formatXamanConnectError, shouldUseXamanProxy, type XamanSignInPayload, type XamanStatusPayload } from "@/lib/xaman-client";
 
 
@@ -51,6 +52,9 @@ export function PublicShell({ children }: { children: ReactNode }) {
   const viewport = useViewport();
   const { balance: headerBalance } = useWalletBalance(user?.walletAddress, walletConfig.network);
   const hideSidebar = path.startsWith("/panel") || path.startsWith("/admin");
+  const isHome = path === "/";
+  const hideFooter = path.startsWith("/panel") || path.startsWith("/admin");
+  const headerMenu = useHeaderMenu(!!user);
   const featured = projects.filter((p) => p.featured && p.status === "approved" && p.isPublic).slice(0, 5);
   const nav = [...sidebarItems]
     .filter((s) => s.visible && (!s.requiresAuth || user))
@@ -78,6 +82,32 @@ export function PublicShell({ children }: { children: ReactNode }) {
             <div className={isRetro ? "grid h-7 w-7 place-items-center border-2 border-primary font-mono text-primary" : "grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-primary to-accent text-primary-foreground"}>X</div>
             <span className="text-lg font-bold tracking-tight">{siteSettings.siteName}</span>
           </Link>
+
+          {/* Dynamic header menu (admin-managed, supports drop-downs) */}
+          {headerMenu.length > 0 && (
+            <nav className="ml-4 hidden items-center gap-1 lg:flex">
+              {headerMenu.map((m) =>
+                m.children.length > 0 ? (
+                  <DropdownMenu key={m.id}>
+                    <DropdownMenuTrigger asChild>
+                      <button className="rounded-md px-3 py-2 text-sm hover:bg-muted">
+                        {m.icon && <span className="mr-1.5">{m.icon}</span>}{m.label} ▾
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start">
+                      {m.children.map((c) => (
+                        <DropdownMenuItem key={c.id} asChild>
+                          <MenuLink item={c} />
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <MenuLink key={m.id} item={m} className="rounded-md px-3 py-2 text-sm hover:bg-muted" />
+                ),
+              )}
+            </nav>
+          )}
 
           {/* Right-aligned actions */}
           <div className="ml-auto flex items-center gap-2">
@@ -211,13 +241,13 @@ export function PublicShell({ children }: { children: ReactNode }) {
         )}
 
         <main className="min-w-0 flex-1">
-          {!hideSidebar && <CryptoTicker />}
+          {isHome && <CryptoTicker />}
           {children}
         </main>
       </div>
 
 
-      <Footer />
+      {!hideFooter && <Footer />}
 
       {/* Wallet modal — Xaman only */}
       <Dialog open={walletOpen} onOpenChange={setWalletOpen}>
@@ -233,6 +263,34 @@ export function PublicShell({ children }: { children: ReactNode }) {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+function useHeaderMenu(signedIn: boolean) {
+  const [items, setItems] = useState<MenuItem[]>([]);
+  useEffect(() => {
+    let stop = false;
+    void listMenus("header")
+      .then((all) => { if (!stop) setItems(all); })
+      .catch(() => {});
+    return () => { stop = true; };
+  }, []);
+  const visible = items.filter((i) => i.visible && (!i.requiresAuth || signedIn));
+  return buildMenuTree(visible);
+}
+
+function MenuLink({ item, className }: { item: MenuItem; className?: string }) {
+  if (item.external || /^https?:\/\//.test(item.path)) {
+    return (
+      <a href={item.path} target="_blank" rel="noreferrer" className={className}>
+        {item.icon && <span className="mr-1.5">{item.icon}</span>}{item.label}
+      </a>
+    );
+  }
+  return (
+    <Link to={item.path} className={className}>
+      {item.icon && <span className="mr-1.5">{item.icon}</span>}{item.label}
+    </Link>
   );
 }
 
