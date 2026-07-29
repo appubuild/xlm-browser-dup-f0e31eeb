@@ -29,7 +29,7 @@ function ProjectPage() {
     <PublicShell>
       <div className="mx-auto max-w-6xl px-6 py-8">
         <nav className="text-xs text-muted-foreground">
-          <Link to="/ecosystem">Ecosystem</Link> / <Link to="/directory/$category" params={{ category: project.category }} className="capitalize hover:underline">{project.category}</Link> / <span>{project.name}</span>
+          <Link to="/ecosystem">Ecosystem</Link> / <Link to="/category/$slug" params={{ slug: project.category }} className="capitalize hover:underline">{project.category}</Link> / <span>{project.name}</span>
         </nav>
 
         <header className="mt-4 flex flex-wrap items-start gap-4">
