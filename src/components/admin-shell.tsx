@@ -118,19 +118,27 @@ export function AdminShell({ children }: { children: ReactNode }) {
             <div className={`text-[10px] uppercase tracking-wider ${c.subtle}`}>Admin</div>
           </div>
         </Link>
-        <nav className="space-y-0.5">
-          {ADMIN_NAV.map((n) => {
-            const active = path === n.to;
-            return (
-              <Link key={n.to} to={n.to} className={`flex items-center justify-between rounded-md px-2.5 py-2 text-sm ${active ? c.navActive : c.navHover}`}>
-                <span className="flex items-center gap-2"><span>{n.icon}</span> {n.label}</span>
-                {n.to === "/admin/projects/pending" && pending > 0 && (
-                  <span className="rounded-full bg-amber-500/20 px-1.5 text-[10px] text-amber-300">{pending}</span>
-                )}
-              </Link>
-            );
-          })}
+        <nav className="space-y-4">
+          {ADMIN_GROUPS.map((g) => (
+            <div key={g.label}>
+              <div className={`px-2.5 pb-1 text-[10px] font-semibold uppercase tracking-wider ${c.subtle}`}>{g.label}</div>
+              <div className="space-y-0.5">
+                {g.items.map((n) => {
+                  const active = path === n.to;
+                  return (
+                    <Link key={n.to} to={n.to} className={`flex items-center justify-between rounded-md px-2.5 py-2 text-sm ${active ? c.navActive : c.navHover}`}>
+                      <span className="flex items-center gap-2"><span>{n.icon}</span> {n.label}</span>
+                      {n.to === "/admin/projects/pending" && pending > 0 && (
+                        <span className="rounded-full bg-amber-500/20 px-1.5 text-[10px] text-amber-300">{pending}</span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
+
       </aside>
       <div className="flex h-full min-w-0 flex-1 flex-col overflow-hidden">
         <header className={`flex shrink-0 items-center gap-3 border-b px-4 py-2.5 ${c.header}`}>
