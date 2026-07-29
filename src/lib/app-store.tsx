@@ -77,6 +77,7 @@ interface AppState {
   signInEmail: (email: string, password: string) => Promise<{ error?: string }>;
   signUpEmail: (email: string, password: string, name?: string) => Promise<{ error?: string }>;
   signInGoogle: () => Promise<void>;
+  signInApple: () => Promise<void>;
   logout: () => Promise<void>;
   connectWallet: (name: string, address?: string) => Promise<void> | void;
   disconnectWallet: () => void;
@@ -209,6 +210,14 @@ function mapNews(r: any): NewsArticle {
     metaDescription: r.meta_description ?? "", seoKeywords: r.seo_keywords ?? "",
     tags: (r.tags as string[]) ?? [], gallery: (r.gallery as string[]) ?? [],
   };
+}
+
+async function signInOAuth(provider: "google" | "apple") {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider,
+    options: { redirectTo: `${window.location.origin}/` },
+  });
+  if (error) throw new Error(error.message);
 }
 
 export function AppProvider({ children }: { children: ReactNode }) {
@@ -371,7 +380,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return { error: error?.message };
   };
   const signInGoogle = async () => {
-    await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: `${window.location.origin}/` } });
+    await signInOAuth("google");
+  };
+  const signInApple = async () => {
+    await signInOAuth("apple");
   };
   const logout = async () => { await supabase.auth.signOut(); };
 
@@ -768,7 +780,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const value: AppState = useMemo(() => ({
     loading, theme, setTheme, toggleTheme,
-    session, user, signInEmail, signUpEmail, signInGoogle, logout, connectWallet, disconnectWallet,
+    session, user, signInEmail, signUpEmail, signInGoogle, signInApple, logout, connectWallet, disconnectWallet,
     isAdmin,
     projects, addProject, updateProject, deleteProject, markProjectPaid,
     news, addNews, updateNews, deleteNews,
