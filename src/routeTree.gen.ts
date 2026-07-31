@@ -14,6 +14,7 @@ import { Route as SubmitRouteImport } from './routes/submit'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as EcosystemRouteImport } from './routes/ecosystem'
@@ -89,6 +90,11 @@ const SearchRoute = SearchRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -356,6 +362,7 @@ export interface FileRoutesByFullPath {
   '/ecosystem': typeof EcosystemRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
+  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
   '/signup': typeof SignupRoute
@@ -414,6 +421,7 @@ export interface FileRoutesByTo {
   '/ecosystem': typeof EcosystemRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
+  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
   '/signup': typeof SignupRoute
@@ -473,6 +481,7 @@ export interface FileRoutesById {
   '/ecosystem': typeof EcosystemRoute
   '/help': typeof HelpRoute
   '/login': typeof LoginRoute
+  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
   '/signup': typeof SignupRoute
@@ -533,6 +542,7 @@ export interface FileRouteTypes {
     | '/ecosystem'
     | '/help'
     | '/login'
+    | '/pricing'
     | '/privacy'
     | '/search'
     | '/signup'
@@ -591,6 +601,7 @@ export interface FileRouteTypes {
     | '/ecosystem'
     | '/help'
     | '/login'
+    | '/pricing'
     | '/privacy'
     | '/search'
     | '/signup'
@@ -649,6 +660,7 @@ export interface FileRouteTypes {
     | '/ecosystem'
     | '/help'
     | '/login'
+    | '/pricing'
     | '/privacy'
     | '/search'
     | '/signup'
@@ -708,6 +720,7 @@ export interface RootRouteChildren {
   EcosystemRoute: typeof EcosystemRoute
   HelpRoute: typeof HelpRoute
   LoginRoute: typeof LoginRoute
+  PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   SearchRoute: typeof SearchRoute
   SignupRoute: typeof SignupRoute
@@ -792,6 +805,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -1186,6 +1206,7 @@ const rootRouteChildren: RootRouteChildren = {
   EcosystemRoute: EcosystemRoute,
   HelpRoute: HelpRoute,
   LoginRoute: LoginRoute,
+  PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   SearchRoute: SearchRoute,
   SignupRoute: SignupRoute,
