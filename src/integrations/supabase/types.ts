@@ -464,6 +464,45 @@ export type Database = {
           },
         ]
       }
+      founder_memberships: {
+        Row: {
+          account: string | null
+          amount_xrp: number
+          created_at: string
+          granted_at: string
+          id: string
+          revoked: boolean
+          source: string
+          tx_hash: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account?: string | null
+          amount_xrp?: number
+          created_at?: string
+          granted_at?: string
+          id?: string
+          revoked?: boolean
+          source?: string
+          tx_hash?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account?: string | null
+          amount_xrp?: number
+          created_at?: string
+          granted_at?: string
+          id?: string
+          revoked?: boolean
+          source?: string
+          tx_hash?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       history: {
         Row: {
           id: string
@@ -744,6 +783,54 @@ export type Database = {
           },
         ]
       }
+      pricing_tiers: {
+        Row: {
+          active: boolean
+          billing_period: string
+          created_at: string
+          duration_days: number | null
+          features: string[]
+          highlight: boolean
+          id: string
+          key: string
+          name: string
+          price_xrp: number
+          sort_order: number
+          tagline: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          billing_period?: string
+          created_at?: string
+          duration_days?: number | null
+          features?: string[]
+          highlight?: boolean
+          id?: string
+          key: string
+          name: string
+          price_xrp?: number
+          sort_order?: number
+          tagline?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          billing_period?: string
+          created_at?: string
+          duration_days?: number | null
+          features?: string[]
+          highlight?: boolean
+          id?: string
+          key?: string
+          name?: string
+          price_xrp?: number
+          sort_order?: number
+          tagline?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar: string | null
@@ -1016,6 +1103,33 @@ export type Database = {
         }
         Relationships: []
       }
+      promotional_settings: {
+        Row: {
+          claim_ends_at: string | null
+          claim_headline: string
+          claim_starts_at: string | null
+          free_founder_claim: boolean
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          claim_ends_at?: string | null
+          claim_headline?: string
+          claim_starts_at?: string | null
+          free_founder_claim?: boolean
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          claim_ends_at?: string | null
+          claim_headline?: string
+          claim_starts_at?: string | null
+          free_founder_claim?: boolean
+          id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       search_events: {
         Row: {
           clicked: boolean
@@ -1276,11 +1390,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_set_company_badge: {
+        Args: { _tier: string; _user_id: string }
+        Returns: boolean
+      }
+      admin_set_founder: {
+        Args: { _enabled: boolean; _user_id: string }
+        Returns: boolean
+      }
+      claim_free_founder: { Args: never; Returns: boolean }
+      free_founder_claim_open: { Args: never; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_founder: { Args: { _user_id: string }; Returns: boolean }
+      register_founder_payment: {
+        Args: { _account?: string; _amount: number; _tx_hash: string }
         Returns: boolean
       }
       xaman_public_config: {
@@ -1293,7 +1422,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "moderator" | "user"
+      app_role: "admin" | "moderator" | "user" | "founder"
       live_status: "Live" | "Beta" | "Coming Soon"
       news_status: "draft" | "published"
       project_status: "pending" | "approved" | "rejected"
@@ -1424,7 +1553,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "moderator", "user"],
+      app_role: ["admin", "moderator", "user", "founder"],
       live_status: ["Live", "Beta", "Coming Soon"],
       news_status: ["draft", "published"],
       project_status: ["pending", "approved", "rejected"],
