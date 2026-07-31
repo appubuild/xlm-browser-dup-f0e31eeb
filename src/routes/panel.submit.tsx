@@ -4,9 +4,49 @@ import { PanelShell } from "@/components/panel-shell";
 import { RichEditor } from "@/components/rich-editor";
 import { useApp } from "@/lib/app-store";
 import { uploadToCloudinary } from "@/lib/cloudinary";
+import { FounderCta } from "@/components/founder-gate";
+import { usePricing, useFounder, FOUNDER_KEY } from "@/lib/pricing";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/panel/submit")({ component: SubmitPage });
+export const Route = createFileRoute("/panel/submit")({ component: SubmitGate });
+
+/** Only Founder Members (and admins) may submit projects. */
+function SubmitGate() {
+  const { user, isAdmin } = useApp();
+  const { tiers, promo } = usePricing();
+  const { isFounder, loading, reload } = useFounder(user?.id, isAdmin);
+  const founderTier = tiers.find((t) => t.key === FOUNDER_KEY);
+
+  if (loading) {
+    return <PanelShell><div className="px-6 py-16 text-sm text-muted-foreground">Checking your membership…</div></PanelShell>;
+  }
+  if (isFounder) return <SubmitPage />;
+
+  return (
+    <PanelShell>
+      <div className="mx-auto max-w-xl px-6 py-14">
+        <div className="soft-card p-8 text-center">
+          <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-amber-400/15 text-3xl">★</div>
+          <h1 className="mt-4 text-2xl font-bold">Founder Membership required</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Submitting projects to XRPBrowser is reserved for Founder Members. Unlock it once and keep it forever —
+            you also get the Founder badge, full dashboard access and project analytics.
+          </p>
+          <ul className="mx-auto mt-4 max-w-sm space-y-1.5 text-left text-sm">
+            {(founderTier?.features ?? ["Submit unlimited projects", "Founder badge", "Dashboard & analytics"]).map((f) => (
+              <li key={f} className="flex gap-2"><span className="text-primary">✓</span><span>{f}</span></li>
+            ))}
+          </ul>
+          <div className="mx-auto mt-6 max-w-xs">
+            <FounderCta tier={founderTier} promo={promo} onGranted={reload} />
+          </div>
+          <Link to="/pricing" className="mt-4 inline-block text-xs text-muted-foreground underline">See all plans</Link>
+        </div>
+      </div>
+    </PanelShell>
+  );
+}
+
 
 type SocialPlatform =
   | "twitter" | "discord" | "telegram" | "github" | "facebook" | "instagram"
