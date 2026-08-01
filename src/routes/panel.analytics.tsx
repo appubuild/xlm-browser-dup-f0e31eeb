@@ -4,6 +4,7 @@ import { PanelShell } from "@/components/panel-shell";
 import { useApp } from "@/lib/app-store";
 import { useAnalytics, buildRows, PerformanceTable, RangePicker, Kpi, Sparkline, Bar, exportCsv } from "@/components/analytics-view";
 import { toast } from "sonner";
+import { FounderGuard } from "@/components/founder-guard";
 
 export const Route = createFileRoute("/panel/analytics")({ component: PanelAnalytics });
 
@@ -18,6 +19,7 @@ function PanelAnalytics() {
 
   return (
     <PanelShell>
+      <FounderGuard feature="Advanced analytics">
       <div className="p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>

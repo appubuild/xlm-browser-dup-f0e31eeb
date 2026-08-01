@@ -10,6 +10,7 @@ import {
 } from "@/lib/monetization";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Link } from "@tanstack/react-router";
+import { FounderGuard } from "@/components/founder-guard";
 
 export const Route = createFileRoute("/panel/company")({
   component: CompanyProfilePage,
@@ -101,6 +102,7 @@ function CompanyProfilePage() {
 
   return (
     <PanelShell>
+      <FounderGuard feature="The Author / Company Profile">
       <div className="max-w-4xl p-6">
         <h1 className="text-2xl font-bold">Author / Company Profile</h1>
         <p className="text-sm text-muted-foreground">One company profile owns all the projects you submit.</p>
@@ -186,6 +188,7 @@ function CompanyProfilePage() {
           </>
         )}
       </div>
+      </FounderGuard>
 
       <Dialog open={!!duplicate} onOpenChange={(o) => !o && setDuplicate(null)}>
         <DialogContent>
