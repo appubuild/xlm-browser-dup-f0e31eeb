@@ -983,6 +983,7 @@ export type Database = {
       projects: {
         Row: {
           ai_doc: string | null
+          badges: string[]
           category: string
           created_at: string
           date_added: string
@@ -1012,6 +1013,7 @@ export type Database = {
         }
         Insert: {
           ai_doc?: string | null
+          badges?: string[]
           category: string
           created_at?: string
           date_added?: string
@@ -1041,6 +1043,7 @@ export type Database = {
         }
         Update: {
           ai_doc?: string | null
+          badges?: string[]
           category?: string
           created_at?: string
           date_added?: string
