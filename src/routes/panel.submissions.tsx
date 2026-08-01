@@ -8,15 +8,19 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { callXamanProxy, formatXamanConnectError, shouldUseXamanProxy, type XamanPaymentPayload, type XamanStatusPayload } from "@/lib/xaman-client";
 import { XamanPayDialog } from "@/components/xaman-pay-dialog";
+import { ProjectFormDialog, ProjectDetailsDialog } from "@/components/project-form-dialog";
+import { ProjectBadges } from "@/components/project-badges";
 import { fetchPromotionPackages, createPromotion, SLOT_LABEL, type PromotionPackage, type PromoSlot } from "@/lib/monetization";
 
 export const Route = createFileRoute("/panel/submissions")({ component: Submissions });
 
 function Submissions() {
-  const { user, projects, siteSettings, markProjectPaid } = useApp();
+  const { user, projects, siteSettings, markProjectPaid, updateProject, deleteProject } = useApp();
   const mine = projects.filter((p) => p.submitterId === user?.id);
   const [payFor, setPayFor] = useState<Project | null>(null);
   const [promoteFor, setPromoteFor] = useState<Project | null>(null);
+  const [editFor, setEditFor] = useState<Project | null>(null);
+  const [detailsFor, setDetailsFor] = useState<Project | null>(null);
   return (
     <PanelShell>
       <div className="p-6">
@@ -37,19 +41,37 @@ function Submissions() {
                   const needsPay = p.status === "approved" && !p.isPublic && siteSettings.listingFeeXrp > 0;
                   return (
                     <tr key={p.id} className="border-b last:border-0">
-                      <td className="p-3 font-medium">{p.logo} {p.name}</td>
+                      <td className="p-3 font-medium">
+                        <div>{p.logo} {p.name}</div>
+                        <ProjectBadges badges={p.badges} size="xs" className="mt-1" />
+                      </td>
                       <td className="p-3 capitalize">{p.category}</td>
                       <td className="p-3"><StatusBadge status={p.status} /></td>
                       <td className="p-3">
-                        {p.isPublic ? <span className="rounded-full bg-success/20 px-2 py-0.5 text-xs text-success">Live</span>
+                        {p.status === "approved" && (p.isPublic || !needsPay) ? (
+                          <button
+                            onClick={async () => { await updateProject(p.id, { isPublic: !p.isPublic }); toast.success(p.isPublic ? "Project unpublished" : "Project published"); }}
+                            className={`rounded-full px-2 py-0.5 text-xs ${p.isPublic ? "bg-success/20 text-success" : "bg-muted text-muted-foreground"}`}
+                            title="Toggle published / draft"
+                          >
+                            {p.isPublic ? "Published" : "Draft (unlisted)"}
+                          </button>
+                        ) : p.isPublic ? <span className="rounded-full bg-success/20 px-2 py-0.5 text-xs text-success">Live</span>
                           : p.status === "approved" ? (needsPay ? <span className="rounded-full bg-warning/20 px-2 py-0.5 text-xs text-warning">Payment required</span> : <span className="text-xs text-muted-foreground">Publishing…</span>)
                           : <span className="text-xs text-muted-foreground">—</span>}
                       </td>
                       <td className="p-3 text-muted-foreground">{p.dateAdded}</td>
                       <td className="p-3">
-                        {needsPay && <button onClick={() => setPayFor(p)} className="rounded bg-primary px-2.5 py-1 text-xs text-primary-foreground">Pay {siteSettings.listingFeeXrp} XRP</button>}
-                        {p.isPublic && <button onClick={() => setPromoteFor(p)} className="ml-1 rounded border px-2.5 py-1 text-xs hover:bg-accent">🚀 Promote</button>}
-                        {p.status === "rejected" && <Link to="/panel/submit" className="text-primary hover:underline">Edit &amp; Resubmit</Link>}
+                        <div className="flex flex-wrap gap-1">
+                          {needsPay && <button onClick={() => setPayFor(p)} className="rounded bg-primary px-2.5 py-1 text-xs text-primary-foreground">Pay {siteSettings.listingFeeXrp} XRP</button>}
+                          {p.isPublic && <button onClick={() => setPromoteFor(p)} className="rounded border px-2.5 py-1 text-xs hover:bg-accent">🚀 Promote</button>}
+                          <button onClick={() => setEditFor(p)} className="rounded border px-2.5 py-1 text-xs hover:bg-accent">Edit</button>
+                          <button onClick={() => setDetailsFor(p)} className="rounded border px-2.5 py-1 text-xs hover:bg-accent">Details</button>
+                          <button
+                            onClick={async () => { if (!confirm(`Delete ${p.name}? This cannot be undone.`)) return; await deleteProject(p.id); toast("Project deleted"); }}
+                            className="rounded border border-destructive/40 px-2.5 py-1 text-xs text-destructive hover:bg-destructive/10"
+                          >Delete</button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -67,6 +89,8 @@ function Submissions() {
       }} />
 
       <PromoteDialog project={promoteFor} onClose={() => setPromoteFor(null)} />
+      <ProjectFormDialog project={editFor} mode="author" onClose={() => setEditFor(null)} />
+      <ProjectDetailsDialog project={detailsFor} onClose={() => setDetailsFor(null)} />
     </PanelShell>
   );
 }
