@@ -6,14 +6,18 @@ import {
   fetchBadgeTiers, saveBadgeTier, createBadgeTier, deleteBadgeTier,
   fetchPromotionPackages, savePromotionPackage, createPromotionPackage, deletePromotionPackage,
   fetchAllPromotions, setPromotionStatus, extendPromotion,
-  fetchAllAuthorProfiles, setAuthorBadge, fetchAllTransactions, setCompanyFeatured,
+  fetchAllAuthorProfiles, setAuthorBadge, fetchAllTransactions, setCompanyFeatured, setAuthorVerified,
   SLOT_LABEL, type BadgeTier, type PromotionPackage, type ProjectPromotion,
   type AuthorProfile, type TxRecord, type PromoSlot,
 } from "@/lib/monetization";
 
+import { AdminPricingCard } from "@/components/admin-pricing-card";
+import { useApp } from "@/lib/app-store";
+import { Link } from "@tanstack/react-router";
+
 export const Route = createFileRoute("/admin/monetization")({ component: Monetization });
 
-const TABS = ["Pricing", "Promotions", "Badges", "Transactions"] as const;
+const TABS = ["Pricing", "Promotions", "Badges", "Companies", "Transactions"] as const;
 type Tab = (typeof TABS)[number];
 
 function Monetization() {
@@ -34,6 +38,7 @@ function Monetization() {
         {tab === "Pricing" && <PricingTab />}
         {tab === "Promotions" && <PromotionsTab />}
         {tab === "Badges" && <BadgesTab />}
+        {tab === "Companies" && <CompaniesTab />}
         {tab === "Transactions" && <TransactionsTab />}
       </div>
     </AdminShell>
@@ -72,6 +77,7 @@ function PricingTab() {
 
   return (
     <div className="grid gap-4 xl:grid-cols-2">
+      <div className="xl:col-span-2"><AdminPricingCard /></div>
       <Panel title="Badge tiers (lifetime)" action={
         <button onClick={async () => {
           const key = prompt("Tier key (lowercase, unique)")?.trim();
@@ -297,6 +303,95 @@ function TransactionsTab() {
           </tbody>
         </table>
       </div>
+    </Panel>
+  );
+}
+
+/* ----------------------------------------------------------- companies */
+
+function CompaniesTab() {
+  const { projects } = useApp();
+  const [profiles, setProfiles] = useState<AuthorProfile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [view, setView] = useState<AuthorProfile | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try { setProfiles(await fetchAllAuthorProfiles()); }
+    catch (e) { toast.error(e instanceof Error ? e.message : "Load failed"); }
+    finally { setLoading(false); }
+  }, []);
+  useEffect(() => { void load(); }, [load]);
+
+  const countFor = (p: AuthorProfile) => projects.filter((x) => x.submitterId === p.userId).length;
+
+  if (loading) return <div className="text-sm opacity-70">Loading…</div>;
+
+  return (
+    <Panel title={`Company profiles (${profiles.length})`}>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="text-left text-xs opacity-70">
+            <tr>
+              <th className="pb-2">Company</th><th className="pb-2">Owner / email</th><th className="pb-2">Projects</th>
+              <th className="pb-2">Verified</th><th className="pb-2">Badge</th><th className="pb-2">Joined</th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {profiles.map((p) => (
+              <tr key={p.id} className="border-t border-current/10">
+                <td className="py-2 font-medium">{p.logo} {p.companyName}</td>
+                <td className="py-2 text-xs opacity-70">{p.officialEmail ?? "—"}<br />{p.userId.slice(0, 8)}…</td>
+                <td className="py-2">{countFor(p)}</td>
+                <td className="py-2">
+                  <button
+                    onClick={async () => {
+                      try { await setAuthorVerified(p.id, !p.verified); toast.success(p.verified ? "Verification removed" : "Company verified"); await load(); }
+                      catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); }
+                    }}
+                    className={`rounded-full px-2 py-0.5 text-xs ${p.verified ? "bg-emerald-500/20 text-emerald-400" : "border border-current/25 opacity-70"}`}
+                  >
+                    {p.verified ? "Verified" : "Unverified"}
+                  </button>
+                </td>
+                <td className="py-2 text-xs">{p.badgeTier ?? "—"}</td>
+                <td className="py-2 text-xs opacity-70">{new Date(p.createdAt).toLocaleDateString()}</td>
+                <td className="py-2 text-right whitespace-nowrap">
+                  <button onClick={() => setView(p)} className="rounded border border-current/25 px-2 py-1 text-xs">Details</button>
+                  <Link to="/company/$key" params={{ key: p.slug ?? p.id }} className="ml-1 rounded border border-current/25 px-2 py-1 text-xs">Public page</Link>
+                </td>
+              </tr>
+            ))}
+            {profiles.length === 0 && <tr><td colSpan={7} className="py-6 text-center text-sm opacity-60">No company profiles yet.</td></tr>}
+          </tbody>
+        </table>
+      </div>
+
+      {view && (
+        <div className="mt-4 rounded-lg border border-current/15 p-4 text-sm">
+          <div className="flex items-center justify-between">
+            <div className="font-semibold">{view.logo} {view.companyName}</div>
+            <button onClick={() => setView(null)} className="text-xs opacity-70">✕ close</button>
+          </div>
+          <div className="mt-2 grid gap-1 text-xs opacity-80">
+            <div><b>Owner id:</b> {view.userId}</div>
+            <div><b>Email:</b> {view.officialEmail ?? "—"}</div>
+            <div><b>Website:</b> {view.website ?? "—"}</div>
+            <div><b>Badge:</b> {view.badgeTier ?? "none"}{view.badgeSince ? ` · since ${new Date(view.badgeSince).toLocaleDateString()}` : ""}</div>
+            <div><b>Projects submitted:</b> {countFor(view)}</div>
+          </div>
+          {view.bio && <p className="mt-2 text-xs opacity-80">{view.bio}</p>}
+          <div className="mt-3">
+            <button
+              onClick={async () => {
+                try { await setCompanyFeatured(view.id, !view.featured); toast.success("Landing page placement updated"); await load(); setView(null); }
+                catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); }
+              }}
+              className="rounded border border-current/25 px-2.5 py-1 text-xs"
+            >{view.featured ? "Remove from landing page" : "Feature on landing page"}</button>
+          </div>
+        </div>
+      )}
     </Panel>
   );
 }

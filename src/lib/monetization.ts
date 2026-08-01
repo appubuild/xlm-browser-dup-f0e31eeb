@@ -409,3 +409,9 @@ export async function setAuthorBadge(userId: string, tierKey: string | null) {
   }).eq("user_id", userId);
   if (error) throw new Error(error.message);
 }
+
+/** Admin: flip a company's verified flag without touching its paid badge tier. */
+export async function setAuthorVerified(id: string, verified: boolean) {
+  const { error } = await db().from("author_profiles").update({ verified }).eq("id", id);
+  if (error) throw new Error(error.message);
+}
