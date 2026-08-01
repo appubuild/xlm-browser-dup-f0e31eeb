@@ -18,6 +18,7 @@ export interface AuthorProfile {
   badgeSince: string | null;
   verified: boolean;
   featured: boolean;
+  createdAt: string;
 }
 
 export interface BadgeTier {
@@ -109,6 +110,7 @@ export const mapProfile = (r: any): AuthorProfile => ({
   badgeSince: r.badge_since ?? null,
   verified: !!r.verified,
   featured: !!r.featured,
+  createdAt: r.created_at ?? new Date().toISOString(),
 });
 
 const mapTier = (r: any): BadgeTier => ({
