@@ -76,6 +76,7 @@ function PanelAnalytics() {
           </>
         )}
       </div>
+      </FounderGuard>
     </PanelShell>
   );
 }
