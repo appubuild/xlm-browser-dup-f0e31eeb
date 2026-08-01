@@ -30,6 +30,7 @@ export interface Project {
   aiDoc?: string;
   supportEmail?: string;
   isPublic: boolean;
+  badges: string[];
   paymentTx?: string | null;
   paymentAmount?: number | null;
 }
@@ -184,7 +185,7 @@ type ProjectRow = {
   description: string | null; url: string; screenshots: string[] | null; socials: unknown;
   verified: boolean; status: ProjectStatus; featured: boolean; date_added: string; visits: number;
   live_status: LiveStatusVal; submitter_name: string | null; submitter_email: string | null; submitter_id: string | null;
-  ai_doc?: string | null; support_email?: string | null; is_public?: boolean;
+  ai_doc?: string | null; support_email?: string | null; is_public?: boolean; badges?: string[] | null;
   payment_tx?: string | null; payment_amount?: number | null;
 };
 
@@ -197,7 +198,7 @@ function mapProject(r: ProjectRow): Project {
     visits: r.visits, liveStatus: r.live_status,
     submitterName: r.submitter_name ?? undefined, submitterEmail: r.submitter_email ?? undefined, submitterId: r.submitter_id,
     aiDoc: r.ai_doc ?? "", supportEmail: r.support_email ?? undefined,
-    isPublic: !!r.is_public, paymentTx: r.payment_tx ?? null, paymentAmount: r.payment_amount ?? null,
+    isPublic: !!r.is_public, badges: r.badges ?? [], paymentTx: r.payment_tx ?? null, paymentAmount: r.payment_amount ?? null,
   };
 }
 
@@ -441,6 +442,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.aiDoc !== undefined) dbPatch.ai_doc = patch.aiDoc;
     if (patch.supportEmail !== undefined) dbPatch.support_email = patch.supportEmail;
     if (patch.isPublic !== undefined) dbPatch.is_public = patch.isPublic;
+    if (patch.badges !== undefined) dbPatch.badges = patch.badges;
 
     // Auto-publish on approval when listing fee is zero (free listings).
     const feeIsZero = !siteSettings.listingFeeXrp || siteSettings.listingFeeXrp <= 0;
