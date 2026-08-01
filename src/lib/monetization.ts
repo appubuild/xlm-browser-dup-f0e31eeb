@@ -18,6 +18,7 @@ export interface AuthorProfile {
   badgeSince: string | null;
   verified: boolean;
   featured: boolean;
+  createdAt: string;
 }
 
 export interface BadgeTier {
@@ -109,6 +110,7 @@ export const mapProfile = (r: any): AuthorProfile => ({
   badgeSince: r.badge_since ?? null,
   verified: !!r.verified,
   featured: !!r.featured,
+  createdAt: r.created_at ?? new Date().toISOString(),
 });
 
 const mapTier = (r: any): BadgeTier => ({
@@ -407,5 +409,11 @@ export async function setAuthorBadge(userId: string, tierKey: string | null) {
     badge_since: tierKey ? new Date().toISOString() : null,
     verified: !!tierKey,
   }).eq("user_id", userId);
+  if (error) throw new Error(error.message);
+}
+
+/** Admin: flip a company's verified flag without touching its paid badge tier. */
+export async function setAuthorVerified(id: string, verified: boolean) {
+  const { error } = await db().from("author_profiles").update({ verified }).eq("id", id);
   if (error) throw new Error(error.message);
 }

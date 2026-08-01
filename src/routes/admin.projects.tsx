@@ -4,6 +4,9 @@ import { AdminShell } from "@/components/admin-shell";
 import { useApp } from "@/lib/app-store";
 import { toast } from "sonner";
 import { CATEGORIES } from "@/lib/mock-data";
+import { ProjectFormDialog } from "@/components/project-form-dialog";
+import { ProjectBadges } from "@/components/project-badges";
+import type { Project } from "@/lib/app-store";
 
 export const Route = createFileRoute("/admin/projects")({ component: AdminProjects });
 
@@ -13,6 +16,7 @@ function AdminProjects() {
   const [cat, setCat] = useState("all");
   const [status, setStatus] = useState("all");
   const [sel, setSel] = useState<string[]>([]);
+  const [editFor, setEditFor] = useState<Project | null>(null);
 
   const items = projects.filter((p) =>
     (cat === "all" || p.category === cat) &&
@@ -61,7 +65,10 @@ function AdminProjects() {
             <tr key={p.id} className="border-b border-slate-800/60">
               <td className="p-2"><input type="checkbox" checked={sel.includes(p.id)} onChange={() => toggleSel(p.id)} /></td>
               <td className="p-2 text-xl">{p.logo}</td>
-              <td className="p-2 font-medium">{p.name}</td>
+              <td className="p-2 font-medium">
+                <div>{p.name}</div>
+                <ProjectBadges badges={p.badges} size="xs" className="mt-1" />
+              </td>
               <td className="p-2 capitalize">{p.category}</td>
               <td className="p-2"><span className="rounded-full bg-slate-800 px-2 py-0.5 text-xs capitalize">{p.status}</span></td>
               <td className="p-2 text-slate-400">{p.dateAdded}</td>
@@ -70,6 +77,8 @@ function AdminProjects() {
               <td className="p-2">
                 <div className="flex gap-2 text-xs">
                   <Link to="/project/$slug" params={{ slug: p.slug }} className="text-sky-400 hover:underline">View</Link>
+                  <button onClick={() => setEditFor(p)} className="text-sky-300 hover:underline">Edit</button>
+                  <button onClick={() => { updateProject(p.id, { isPublic: !p.isPublic }); toast(p.isPublic ? "Unpublished" : "Published"); }} className="text-amber-300 hover:underline">{p.isPublic ? "Unpublish" : "Publish"}</button>
                   {p.status === "pending" && <button onClick={() => { updateProject(p.id, { status: "approved" }); toast.success("Approved"); }} className="text-green-400 hover:underline">Approve</button>}
                   <button onClick={() => { if (confirm(`Delete ${p.name}?`)) { deleteProject(p.id); toast("Deleted"); } }} className="text-rose-400 hover:underline">Delete</button>
                 </div>
@@ -78,6 +87,7 @@ function AdminProjects() {
           ))}
         </tbody>
       </table>
+      <ProjectFormDialog project={editFor} mode="admin" onClose={() => setEditFor(null)} />
     </AdminShell>
   );
 }

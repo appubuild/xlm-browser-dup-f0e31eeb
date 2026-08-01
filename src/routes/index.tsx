@@ -1,3 +1,4 @@
+import { ProjectBadges } from "@/components/project-badges";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { fetchActivePromotions, fetchFeaturedCompanies, type AuthorProfile } from "@/lib/monetization";
@@ -126,6 +127,7 @@ function Home() {
                 <div className="flex items-start justify-between">
                   <div className="text-3xl">{p.logo}</div>
                   {p.verified && <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">✓ Verified</span>}
+                  <ProjectBadges badges={p.badges} size="xs" />
                 </div>
                 <div className="mt-3 font-semibold">{p.name}</div>
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">{p.category}</div>

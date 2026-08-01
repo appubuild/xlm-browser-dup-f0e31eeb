@@ -1,3 +1,4 @@
+import { ProjectBadges } from "@/components/project-badges";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PublicShell } from "@/components/public-shell";
@@ -39,6 +40,7 @@ function ProjectPage() {
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-3xl font-bold">{project.name}</h1>
               {project.verified && <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">✓ Verified</span>}
+              <ProjectBadges badges={project.badges} />
               <span className="rounded-full bg-secondary px-2 py-0.5 text-xs capitalize">{project.category}</span>
               <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs ${project.liveStatus === "Live" ? "bg-success/10 text-success" : "bg-warning/10 text-warning"}`}>
                 <span className="h-1.5 w-1.5 rounded-full bg-current" /> {project.liveStatus}
