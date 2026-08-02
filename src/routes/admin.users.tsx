@@ -69,18 +69,16 @@ function AdminUsers() {
                       disabled={isSelf}
                       title={isSelf ? "You cannot change your own role" : undefined}
                       onChange={(e) => {
-                        const next = e.target.value as "user" | "moderator" | "admin";
+                        const next = e.target.value as "user" | "admin";
                         void act(async () => {
-                          if (u.role !== "user") await adminSetUserRole(u.id, u.role as "moderator" | "admin", false);
-                          if (next !== "user") await adminSetUserRole(u.id, next, true);
-                          else await adminSetUserRole(u.id, "user", true);
+                          await adminSetUserRole(u.id, "user", true);
+                          await adminSetUserRole(u.id, "admin", next === "admin");
                           updateUser(u.id, { role: next });
                         }, "Role updated");
                       }}
                       className={`${inp} w-32 disabled:opacity-40`}
                     >
                       <option value="user">Standard user</option>
-                      <option value="moderator">Moderator</option>
                       <option value="admin">Admin</option>
                     </select>
                   </td>
