@@ -1,3 +1,4 @@
+import { UserAvatar } from "@/components/user-avatar";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";

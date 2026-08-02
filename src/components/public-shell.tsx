@@ -1,3 +1,4 @@
+import { UserAvatar } from "@/components/user-avatar";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useServerFn } from "@tanstack/react-start";
