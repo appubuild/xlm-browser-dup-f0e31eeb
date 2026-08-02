@@ -108,67 +108,91 @@ export function AdminShell({ children }: { children: ReactNode }) {
     );
   }
 
+  const sidebar = (
+    <>
+      <Link to="/admin" onClick={() => setDrawer(false)} className="mb-4 flex items-center gap-2 px-2 py-2">
+        <div className="grid h-8 w-8 place-items-center rounded-md bg-gradient-to-br from-sky-500 to-indigo-500 font-bold text-white">X</div>
+        <div>
+          <div className="text-sm font-semibold">XRPBrowser</div>
+          <div className={`text-[10px] uppercase tracking-wider ${c.subtle}`}>Admin</div>
+        </div>
+      </Link>
+      <nav className="space-y-4">
+        {ADMIN_GROUPS.map((g) => (
+          <div key={g.label}>
+            <div className={`px-2.5 pb-1 text-[10px] font-semibold uppercase tracking-wider ${c.subtle}`}>{g.label}</div>
+            <div className="space-y-0.5">
+              {g.items.map((n) => {
+                const active = path === n.to;
+                return (
+                  <Link key={n.to} to={n.to} onClick={() => setDrawer(false)} className={`flex items-center justify-between rounded-md px-2.5 py-2 text-sm ${active ? c.navActive : c.navHover}`}>
+                    <span className="flex min-w-0 items-center gap-2"><span>{n.icon}</span> <span className="truncate">{n.label}</span></span>
+                    {n.to === "/admin/projects/pending" && pending > 0 && (
+                      <span className="shrink-0 rounded-full bg-amber-500/20 px-1.5 text-[10px] text-amber-300">{pending}</span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </nav>
+    </>
+  );
+
   return (
     <div className={`flex h-screen overflow-hidden ${c.root}`}>
-      <aside className={`flex h-full w-60 shrink-0 flex-col overflow-y-auto border-r p-3 ${c.aside}`}>
-        <Link to="/admin" className="mb-4 flex items-center gap-2 px-2 py-2">
-          <div className="grid h-8 w-8 place-items-center rounded-md bg-gradient-to-br from-sky-500 to-indigo-500 font-bold text-white">X</div>
-          <div>
-            <div className="text-sm font-semibold">XRPBrowser</div>
-            <div className={`text-[10px] uppercase tracking-wider ${c.subtle}`}>Admin</div>
-          </div>
-        </Link>
-        <nav className="space-y-4">
-          {ADMIN_GROUPS.map((g) => (
-            <div key={g.label}>
-              <div className={`px-2.5 pb-1 text-[10px] font-semibold uppercase tracking-wider ${c.subtle}`}>{g.label}</div>
-              <div className="space-y-0.5">
-                {g.items.map((n) => {
-                  const active = path === n.to;
-                  return (
-                    <Link key={n.to} to={n.to} className={`flex items-center justify-between rounded-md px-2.5 py-2 text-sm ${active ? c.navActive : c.navHover}`}>
-                      <span className="flex items-center gap-2"><span>{n.icon}</span> {n.label}</span>
-                      {n.to === "/admin/projects/pending" && pending > 0 && (
-                        <span className="rounded-full bg-amber-500/20 px-1.5 text-[10px] text-amber-300">{pending}</span>
-                      )}
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </nav>
+      {/* Desktop sidebar */}
+      <aside className={`hidden h-full w-60 shrink-0 flex-col overflow-y-auto border-r p-3 lg:flex ${c.aside}`}>{sidebar}</aside>
 
-      </aside>
+      {/* Mobile drawer */}
+      {drawer && (
+        <>
+          <button aria-label="Close menu" onClick={() => setDrawer(false)} className="fixed inset-0 z-40 bg-black/50 lg:hidden" />
+          <aside className={`fixed inset-y-0 left-0 z-50 w-64 overflow-y-auto border-r p-3 shadow-xl transition-transform lg:hidden ${c.aside}`}>
+            <div className="mb-1 flex justify-end">
+              <button onClick={() => setDrawer(false)} className={`rounded-md p-1.5 ${c.iconBtn}`} aria-label="Close menu"><X className="h-4 w-4" /></button>
+            </div>
+            {sidebar}
+          </aside>
+        </>
+      )}
+
       <div className="flex h-full min-w-0 flex-1 flex-col overflow-hidden">
-        <header className={`flex shrink-0 items-center gap-3 border-b px-4 py-2.5 ${c.header}`}>
+        <header className={`flex shrink-0 items-center gap-2 border-b px-3 py-2.5 sm:px-4 ${c.header}`}>
+          <button onClick={() => setDrawer(true)} className={`rounded-md p-2 lg:hidden ${c.iconBtn}`} aria-label="Open menu">
+            <Menu className="h-5 w-5" />
+          </button>
           <div className={`text-sm font-medium ${dark ? "text-slate-300" : "text-slate-600"}`}>Admin</div>
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-1.5 sm:gap-3">
             <button
               onClick={() => setAdminTheme(dark ? "light" : "dark")}
               className={`inline-flex items-center gap-1 rounded-md border px-2 py-1.5 text-xs ${c.btn}`}
               title={dark ? "Switch to light mode" : "Switch to dark mode"}
             >
               {dark ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
-              {dark ? "Light" : "Dark"}
+              <span className="hidden sm:inline">{dark ? "Light" : "Dark"}</span>
             </button>
             <Link to="/" className={`inline-flex items-center gap-1 rounded-md border px-2 py-1.5 text-xs ${c.btn}`}>
-              <ExternalLink className="h-3.5 w-3.5" /> Back to site
+              <ExternalLink className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Back to site</span>
             </Link>
-            <button className={`relative rounded-md p-2 ${c.iconBtn}`}>
+            <button className={`relative hidden rounded-md p-2 sm:block ${c.iconBtn}`}>
               <Bell className="h-4 w-4" />
               {notifications.filter((n) => !n.read).length > 0 && (
                 <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-rose-500" />
               )}
             </button>
-            <div className={`grid h-8 w-8 place-items-center rounded-full ${c.avatar}`}>🧑‍💻</div>
+            <div className={`grid h-8 w-8 place-items-center overflow-hidden rounded-full ${c.avatar}`}>
+              <UserAvatar avatar={user?.avatar} name={user?.name} size={32} />
+            </div>
             <button onClick={() => { adminLogout(); toast("Signed out"); nav({ to: "/" }); }} className={`inline-flex items-center gap-1 rounded-md border px-2 py-1.5 text-xs ${c.btn}`}>
-              <LogOut className="h-3.5 w-3.5" /> Log out
+              <LogOut className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Log out</span>
             </button>
           </div>
         </header>
-        <main className="min-h-0 flex-1 overflow-y-auto p-6">{children}</main>
+        <main className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">{children}</main>
       </div>
     </div>
   );
 }
+
