@@ -18,7 +18,6 @@ const ADMIN_GROUPS = [
     label: "Users & Projects",
     items: [
       { to: "/admin/projects", label: "Projects", icon: "📦" },
-      { to: "/admin/projects/pending", label: "Moderation Queue", icon: "🛡️" },
       { to: "/admin/users", label: "Users", icon: "👥" },
       { to: "/admin/categories", label: "Categories", icon: "🏷️" },
     ],
