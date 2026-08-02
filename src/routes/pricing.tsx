@@ -12,9 +12,10 @@ export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
       { title: "Pricing & Plans — XRPBrowser" },
-      { name: "description", content: "Founder Membership, verified company badges, listing boosts and homepage spotlights for XRPL projects — all payable in XRP." },
+      { name: "description", content: "Founder Membership, verified company badges, Pro & Enterprise plans and promotion packages for XRPL projects — all payable in XRP." },
       { property: "og:title", content: "Pricing & Plans — XRPBrowser" },
-      { property: "og:description", content: "Founder Membership, verified badges, boosts and spotlights for XRPL projects, priced in XRP." },
+      { property: "og:description", content: "Founder Membership, verified badges, Pro & Enterprise plans and promotion packages for XRPL projects, priced in XRP." },
+
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
