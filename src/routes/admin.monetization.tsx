@@ -17,15 +17,15 @@ import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/monetization")({ component: Monetization });
 
-const TABS = ["Pricing", "Promotions", "Badges", "Companies", "Transactions"] as const;
+const TABS = ["Pricing", "Promotions", "Companies", "Transactions"] as const;
 type Tab = (typeof TABS)[number];
 
 function Monetization() {
   const [tab, setTab] = useState<Tab>("Pricing");
   return (
     <AdminShell>
-      <h1 className="text-2xl font-semibold">Monetization</h1>
-      <p className="text-sm opacity-70">Badge tier pricing, promotion packages, approvals and payment logs.</p>
+      <h1 className="text-xl font-semibold sm:text-2xl">Monetization</h1>
+      <p className="text-sm opacity-70">One place for package pricing, promotions, company badges and payment logs.</p>
       <div className="mt-4 flex flex-wrap gap-2">
         {TABS.map((t) => (
           <button key={t} onClick={() => setTab(t)}
@@ -37,7 +37,6 @@ function Monetization() {
       <div className="mt-4">
         {tab === "Pricing" && <PricingTab />}
         {tab === "Promotions" && <PromotionsTab />}
-        {tab === "Badges" && <BadgesTab />}
         {tab === "Companies" && <CompaniesTab />}
         {tab === "Transactions" && <TransactionsTab />}
       </div>
