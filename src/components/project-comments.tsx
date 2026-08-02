@@ -113,7 +113,7 @@ function CommentBox({
               onMouseDown={(e) => { e.preventDefault(); apply(s); }}
               className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
             >
-              <span>{s.icon}</span>
+              <UserAvatar avatar={s.icon} name={s.handle} size={18} />
               <span className="font-medium">@{s.handle}</span>
               <span className="ml-auto truncate text-xs text-muted-foreground">{s.label}</span>
             </button>
