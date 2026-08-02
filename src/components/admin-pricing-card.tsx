@@ -6,11 +6,13 @@ import {
 } from "@/lib/pricing";
 
 /** Admin controls for the dynamic pricing engine + free Founder claim mode. */
-export function AdminPricingCard() {
-  const { tiers, promo, loading, reload } = usePricing();
+export function AdminPricingCard({ onlyKeys, title = "Pricing & Founder Membership" }: { onlyKeys?: string[]; title?: string }) {
+  const { tiers: allTiers, promo, loading, reload } = usePricing();
+  const tiers = onlyKeys ? allTiers.filter((t) => onlyKeys.includes(t.key)) : allTiers;
   const [draft, setDraft] = useState<Record<string, PricingTier>>({});
   const [promoDraft, setPromoDraft] = useState<PromoSettings | null>(null);
   const p = promoDraft ?? promo;
+
 
   const patchPromo = (patch: Partial<PromoSettings>) =>
     setPromoDraft({ ...(p ?? { freeFounderClaim: false, claimStartsAt: null, claimEndsAt: null, claimHeadline: "" }), ...patch });
