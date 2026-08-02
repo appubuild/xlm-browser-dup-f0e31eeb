@@ -77,10 +77,9 @@ function useAdminTheme(): [AdminTheme, (t: AdminTheme) => void] {
 }
 
 export function AdminShell({ children }: { children: ReactNode }) {
-  const { isAdmin, adminLogout, notifications, projects, user } = useApp();
+  const { isAdmin, adminLogout, notifications, user } = useApp();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const nav = useNavigate();
-  const pending = projects.filter((p) => p.status === "pending").length;
   const [adminTheme, setAdminTheme] = useAdminTheme();
   const [drawer, setDrawer] = useState(false);
   const dark = adminTheme === "dark";
