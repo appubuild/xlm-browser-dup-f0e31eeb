@@ -223,7 +223,7 @@ function CommentNode({
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-            <span className="text-base">{node.author.avatar}</span>
+            <UserAvatar avatar={node.author.avatar} name={node.author.name} size={22} />
             <span className="font-medium text-foreground">{node.author.name}</span>
             <span>· {timeAgo(node.createdAt)}</span>
           </div>

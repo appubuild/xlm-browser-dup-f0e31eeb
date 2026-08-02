@@ -156,9 +156,10 @@ export function PublicShell({ children }: { children: ReactNode }) {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className={isRetro ? "retro-btn" : "grid h-9 w-9 place-items-center rounded-full bg-muted hover:bg-accent hover:text-accent-foreground"}>
-                    <span>{user.avatar}</span>
+                  <button className={isRetro ? "retro-btn" : "grid h-9 w-9 place-items-center overflow-hidden rounded-full bg-muted hover:bg-accent hover:text-accent-foreground"}>
+                    <UserAvatar avatar={user.avatar} name={user.name} size={isRetro ? 20 : 36} />
                   </button>
+
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <div className="px-2 py-1.5 text-xs text-muted-foreground sm:hidden">{user.name}</div>
