@@ -18,7 +18,6 @@ const ADMIN_GROUPS = [
     label: "Users & Projects",
     items: [
       { to: "/admin/projects", label: "Projects", icon: "📦" },
-      { to: "/admin/projects/pending", label: "Moderation Queue", icon: "🛡️" },
       { to: "/admin/users", label: "Users", icon: "👥" },
       { to: "/admin/categories", label: "Categories", icon: "🏷️" },
     ],
@@ -78,10 +77,9 @@ function useAdminTheme(): [AdminTheme, (t: AdminTheme) => void] {
 }
 
 export function AdminShell({ children }: { children: ReactNode }) {
-  const { isAdmin, adminLogout, notifications, projects, user } = useApp();
+  const { isAdmin, adminLogout, notifications, user } = useApp();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const nav = useNavigate();
-  const pending = projects.filter((p) => p.status === "pending").length;
   const [adminTheme, setAdminTheme] = useAdminTheme();
   const [drawer, setDrawer] = useState(false);
   const dark = adminTheme === "dark";
@@ -130,9 +128,6 @@ export function AdminShell({ children }: { children: ReactNode }) {
                 return (
                   <Link key={n.to} to={n.to} onClick={() => setDrawer(false)} className={`flex items-center justify-between rounded-md px-2.5 py-2 text-sm ${active ? c.navActive : c.navHover}`}>
                     <span className="flex min-w-0 items-center gap-2"><span>{n.icon}</span> <span className="truncate">{n.label}</span></span>
-                    {n.to === "/admin/projects/pending" && pending > 0 && (
-                      <span className="shrink-0 rounded-full bg-amber-500/20 px-1.5 text-[10px] text-amber-300">{pending}</span>
-                    )}
                   </Link>
                 );
               })}
