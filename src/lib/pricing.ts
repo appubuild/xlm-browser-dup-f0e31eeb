@@ -188,3 +188,9 @@ export function useFounder(userId: string | null | undefined, isAdmin = false) {
   const isFounder = isAdmin || (!!membership && !membership.revoked);
   return { membership, isFounder, loading, reload };
 }
+
+/** Change a user's app role. The DB function blocks admins from changing their own role. */
+export async function adminSetUserRole(userId: string, role: "user" | "moderator" | "admin" | "founder") {
+  const { error } = await db().rpc("admin_set_user_role" as never, { _user_id: userId, _role: role } as never);
+  if (error) throw new Error(error.message);
+}
