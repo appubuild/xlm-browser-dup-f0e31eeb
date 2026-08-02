@@ -128,9 +128,6 @@ export function AdminShell({ children }: { children: ReactNode }) {
                 return (
                   <Link key={n.to} to={n.to} onClick={() => setDrawer(false)} className={`flex items-center justify-between rounded-md px-2.5 py-2 text-sm ${active ? c.navActive : c.navHover}`}>
                     <span className="flex min-w-0 items-center gap-2"><span>{n.icon}</span> <span className="truncate">{n.label}</span></span>
-                    {n.to === "/admin/projects/pending" && pending > 0 && (
-                      <span className="shrink-0 rounded-full bg-amber-500/20 px-1.5 text-[10px] text-amber-300">{pending}</span>
-                    )}
                   </Link>
                 );
               })}
