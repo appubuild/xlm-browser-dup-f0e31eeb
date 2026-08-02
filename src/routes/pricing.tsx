@@ -1,8 +1,11 @@
+import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PublicShell } from "@/components/public-shell";
 import { useApp } from "@/lib/app-store";
 import { FounderCta, FounderBadge } from "@/components/founder-gate";
 import { usePricing, useFounder, priceLabel, FOUNDER_KEY } from "@/lib/pricing";
+import { fetchPromotionPackages, SLOT_LABEL, type PromotionPackage } from "@/lib/monetization";
+
 
 export const Route = createFileRoute("/pricing")({
   component: PricingPage,
