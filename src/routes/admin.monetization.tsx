@@ -198,7 +198,6 @@ function PromotionsTab() {
   if (loading) return <div className="text-sm opacity-70">Loading…</div>;
   return (
     <div className="space-y-4">
-    <PackagesPanel />
     <Panel title={`Project promotions (${rows.length})`}>
       <div className="-mx-4 overflow-x-auto px-4">
         <table className="w-full min-w-[760px] text-sm">
