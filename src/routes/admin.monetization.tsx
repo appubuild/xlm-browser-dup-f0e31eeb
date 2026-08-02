@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { AdminShell } from "@/components/admin-shell";
 import { toast } from "sonner";
 import {
-  fetchBadgeTiers,
+  fetchBadgeTiers, saveBadgeTier, createBadgeTier, deleteBadgeTier,
   fetchPromotionPackages, savePromotionPackage, createPromotionPackage, deletePromotionPackage,
   fetchAllPromotions, setPromotionStatus, extendPromotion,
   fetchAllAuthorProfiles, setAuthorBadge, fetchAllTransactions, setCompanyFeatured, setAuthorVerified,
@@ -60,14 +60,70 @@ const inp = "rounded border border-current/25 bg-transparent px-2 py-1.5 text-sm
 function PricingTab() {
   return (
     <div className="space-y-4">
-      <AdminPricingCard />
+      <AdminPricingCard onlyKeys={["founder"]} title="Founder Membership & free claim" />
+      <BadgeTiersPanel />
+      <PackagesPanel />
       <p className="text-xs opacity-60">
-        This is the only place package prices are configured. Every change here is used instantly on the public pricing
-        page, checkout dialogs and promotional banners.
+        Prices set here are used instantly on the public pricing page, checkout dialogs and promotional banners.
       </p>
     </div>
   );
 }
+
+function BadgeTiersPanel() {
+  const [tiers, setTiers] = useState<BadgeTier[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try { setTiers(await fetchBadgeTiers(true)); }
+    catch (e) { toast.error(e instanceof Error ? e.message : "Load failed"); }
+    finally { setLoading(false); }
+  }, []);
+  useEffect(() => { void load(); }, [load]);
+
+  const patch = (id: string, x: Partial<BadgeTier>) =>
+    setTiers((s) => s.map((t) => (t.id === id ? { ...t, ...x } : t)));
+
+  return (
+    <Panel title="Verification badge tiers" action={
+      <button onClick={async () => {
+        try {
+          await createBadgeTier({
+            key: `tier_${Date.now()}`, name: "New tier", priceXrp: 0, color: "#38bdf8",
+            benefits: [], sortOrder: tiers.length + 1, active: true,
+          });
+          await load();
+        } catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); }
+      }} className="rounded border border-current/25 px-2 py-1 text-xs">+ Add tier</button>
+    }>
+      {loading ? <div className="text-sm opacity-70">Loading…</div> : (
+        <div className="space-y-2">
+          {tiers.map((t) => (
+            <div key={t.id} className="rounded-lg border border-current/10 p-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <input value={t.name} onChange={(e) => patch(t.id, { name: e.target.value })} className={`${inp} min-w-40 flex-1`} />
+                <input type="number" step="0.1" value={t.priceXrp} onChange={(e) => patch(t.id, { priceXrp: parseFloat(e.target.value) || 0 })} className={`${inp} w-24`} />
+                <span className="text-xs opacity-60">XRP lifetime</span>
+                <input type="color" value={t.color} onChange={(e) => patch(t.id, { color: e.target.value })} className="h-8 w-10 rounded border border-current/25 bg-transparent" />
+                <label className="flex items-center gap-1 text-xs opacity-70">
+                  <input type="checkbox" checked={t.active} onChange={(e) => patch(t.id, { active: e.target.checked })} /> Active
+                </label>
+                <button onClick={async () => { try { await saveBadgeTier(t); toast.success("Saved"); } catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); } }} className="rounded bg-sky-500 px-3 py-1.5 text-xs text-white">Save</button>
+                <button onClick={async () => { if (!confirm("Delete tier?")) return; try { await deleteBadgeTier(t.id); await load(); } catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); } }} className="rounded border border-rose-500/50 px-2 py-1.5 text-xs text-rose-400">Del</button>
+              </div>
+              <textarea value={t.benefits.join("\n")} placeholder="One benefit per line"
+                onChange={(e) => patch(t.id, { benefits: e.target.value.split("\n").filter(Boolean) })}
+                className={`${inp} mt-2 min-h-20 w-full text-xs`} />
+            </div>
+          ))}
+          {tiers.length === 0 && <div className="text-sm opacity-60">No badge tiers yet.</div>}
+        </div>
+      )}
+    </Panel>
+  );
+}
+
 
 function PackagesPanel() {
   const [pkgs, setPkgs] = useState<PromotionPackage[]>([]);
@@ -142,7 +198,6 @@ function PromotionsTab() {
   if (loading) return <div className="text-sm opacity-70">Loading…</div>;
   return (
     <div className="space-y-4">
-    <PackagesPanel />
     <Panel title={`Project promotions (${rows.length})`}>
       <div className="-mx-4 overflow-x-auto px-4">
         <table className="w-full min-w-[760px] text-sm">
