@@ -1,7 +1,8 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { type ReactNode, useEffect, useState } from "react";
 import { useApp } from "@/lib/app-store";
-import { Bell, LogOut, ExternalLink, Sun, Moon } from "lucide-react";
+import { UserAvatar } from "@/components/user-avatar";
+import { Bell, LogOut, ExternalLink, Sun, Moon, Menu, X } from "lucide-react";
 import { toast } from "sonner";
 
 
@@ -77,11 +78,12 @@ function useAdminTheme(): [AdminTheme, (t: AdminTheme) => void] {
 }
 
 export function AdminShell({ children }: { children: ReactNode }) {
-  const { isAdmin, adminLogout, notifications, projects } = useApp();
+  const { isAdmin, adminLogout, notifications, projects, user } = useApp();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const nav = useNavigate();
   const pending = projects.filter((p) => p.status === "pending").length;
   const [adminTheme, setAdminTheme] = useAdminTheme();
+  const [drawer, setDrawer] = useState(false);
   const dark = adminTheme === "dark";
 
   const c = {
