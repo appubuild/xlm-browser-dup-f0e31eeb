@@ -7,7 +7,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/signup")({ component: SignupPage });
 
 function SignupPage() {
-  const { signUpEmail, signInGoogle, signInApple, session, loading: authLoading, isAdmin } = useApp();
+  const { signUpEmail, signInGoogle, signInApple, session, loading: authLoading, isAdmin, siteSettings } = useApp();
   const nav = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -48,11 +48,15 @@ function SignupPage() {
           <input value={pw} onChange={(e) => setPw(e.target.value)} type="password" placeholder="Password (min 6 chars)" minLength={6} className="w-full rounded border bg-background px-3 py-2 text-sm" required />
           <button disabled={loading} className="w-full rounded bg-primary py-2 text-sm text-primary-foreground disabled:opacity-50">{loading ? "Creating…" : "Create account"}</button>
         </form>
+        {(siteSettings.enableGoogleLogin || siteSettings.enableAppleLogin) && (
+          <>
         <div className="my-4 text-center text-xs text-muted-foreground">OR</div>
         <div className="space-y-2">
-          <button onClick={() => { void signInGoogle().catch((e) => toast.error(e instanceof Error ? e.message : "Google sign-in failed")); }} className="w-full rounded border py-2 text-sm hover:bg-accent">Continue with Google</button>
-          <button onClick={() => { void signInApple().catch((e) => toast.error(e instanceof Error ? e.message : "Apple sign-in failed")); }} className="w-full rounded border py-2 text-sm hover:bg-accent"> Continue with Apple</button>
+          {siteSettings.enableGoogleLogin && <button onClick={() => { void signInGoogle().catch((e) => toast.error(e instanceof Error ? e.message : "Google sign-in failed")); }} className="w-full rounded border py-2 text-sm hover:bg-accent">Continue with Google</button>}
+          {siteSettings.enableAppleLogin && <button onClick={() => { void signInApple().catch((e) => toast.error(e instanceof Error ? e.message : "Apple sign-in failed")); }} className="w-full rounded border py-2 text-sm hover:bg-accent"> Continue with Apple</button>}
         </div>
+          </>
+        )}
         <div className="mt-6 text-center text-xs text-muted-foreground">Have an account? <Link to="/login" className="text-primary hover:underline">Sign in</Link></div>
       </div>
     </PublicShell>

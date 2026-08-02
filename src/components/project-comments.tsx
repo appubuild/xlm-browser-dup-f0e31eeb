@@ -1,3 +1,4 @@
+import { UserAvatar } from "@/components/user-avatar";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -112,7 +113,7 @@ function CommentBox({
               onMouseDown={(e) => { e.preventDefault(); apply(s); }}
               className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
             >
-              <span>{s.icon}</span>
+              <UserAvatar avatar={s.icon} name={s.handle} size={18} />
               <span className="font-medium">@{s.handle}</span>
               <span className="ml-auto truncate text-xs text-muted-foreground">{s.label}</span>
             </button>
@@ -223,7 +224,7 @@ function CommentNode({
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-            <span className="text-base">{node.author.avatar}</span>
+            <UserAvatar avatar={node.author.avatar} name={node.author.name} size={22} />
             <span className="font-medium text-foreground">{node.author.name}</span>
             <span>· {timeAgo(node.createdAt)}</span>
           </div>

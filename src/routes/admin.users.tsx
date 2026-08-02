@@ -1,15 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AdminShell } from "@/components/admin-shell";
+import { UserAvatar } from "@/components/user-avatar";
 import { useApp } from "@/lib/app-store";
 import { toast } from "sonner";
 import { useCallback, useEffect, useState } from "react";
-import { adminSetCompanyBadge, adminSetFounder, fetchFounderUserIds } from "@/lib/pricing";
+import { adminSetCompanyBadge, adminSetFounder, adminSetUserRole, fetchFounderUserIds } from "@/lib/pricing";
 import { fetchAllAuthorProfiles, fetchBadgeTiers, type AuthorProfile, type BadgeTier } from "@/lib/monetization";
 
 export const Route = createFileRoute("/admin/users")({ component: AdminUsers });
 
+const inp = "rounded border border-current/25 bg-transparent px-2 py-1 text-xs";
+
 function AdminUsers() {
-  const { users, updateUser, deleteUser } = useApp();
+  const { users, updateUser, deleteUser, user: me } = useApp();
   const [q, setQ] = useState("");
   const [founders, setFounders] = useState<Set<string>>(new Set());
   const [profiles, setProfiles] = useState<AuthorProfile[]>([]);
@@ -25,63 +28,90 @@ function AdminUsers() {
 
   const badgeOf = (uid: string) => profiles.find((p) => p.userId === uid)?.badgeTier ?? "";
 
-  const toggleFounder = async (uid: string, on: boolean) => {
-    try { await adminSetFounder(uid, on); toast.success(on ? "Founder granted" : "Founder revoked"); await load(); }
-    catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); }
-  };
-  const setBadge = async (uid: string, tier: string) => {
-    try { await adminSetCompanyBadge(uid, tier || null); toast.success("Badge updated"); await load(); }
+  const act = async (fn: () => Promise<unknown>, msg: string) => {
+    try { await fn(); toast.success(msg); await load(); }
     catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); }
   };
 
   const items = users.filter((u) => !q || u.name.toLowerCase().includes(q.toLowerCase()) || u.email.includes(q));
+
   return (
     <AdminShell>
-      <h1 className="text-2xl font-semibold">Users</h1>
-      <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search users..." className="mt-4 rounded border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm" />
-      <div className="overflow-x-auto">
-      <table className="mt-4 w-full min-w-[900px] text-sm">
-        <thead className="border-b border-slate-800 text-left text-slate-400"><tr>
-          <th className="p-2">Avatar</th><th className="p-2">Name</th><th className="p-2">Email</th><th className="p-2">Join Date</th><th className="p-2">Role</th><th className="p-2">Founder</th><th className="p-2">Company badge</th><th className="p-2">Status</th><th className="p-2">Actions</th>
-        </tr></thead>
-        <tbody>
-          {items.map((u) => {
-            const isFounder = founders.has(u.id);
-            const hasProfile = profiles.some((p) => p.userId === u.id);
-            return (
-              <tr key={u.id} className="border-b border-slate-800/60">
-                <td className="p-2 text-xl">{u.avatar}</td>
-                <td className="p-2 font-medium">{u.name}</td>
-                <td className="p-2 text-slate-400">{u.email}</td>
-                <td className="p-2 text-slate-400">{u.joinDate}</td>
-                <td className="p-2 capitalize">{u.role}</td>
-                <td className="p-2">
-                  <button onClick={() => toggleFounder(u.id, !isFounder)}
-                    className={`rounded-full px-2 py-0.5 text-xs ${isFounder ? "bg-amber-400/20 text-amber-300" : "bg-slate-800 text-slate-400"}`}>
-                    {isFounder ? "★ Founder" : "Grant"}
-                  </button>
-                </td>
-                <td className="p-2">
-                  <select value={badgeOf(u.id)} disabled={!hasProfile}
-                    onChange={(e) => setBadge(u.id, e.target.value)}
-                    className="rounded border border-slate-700 bg-slate-900 px-2 py-1 text-xs disabled:opacity-40">
-                    <option value="">{hasProfile ? "None" : "No company"}</option>
-                    {tiers.map((t) => <option key={t.key} value={t.key}>{t.name}</option>)}
-                  </select>
-                </td>
-                <td className="p-2"><span className={`rounded-full px-2 py-0.5 text-xs ${u.status === "active" ? "bg-green-500/20 text-green-300" : "bg-rose-500/20 text-rose-300"}`}>{u.status}</span></td>
-                <td className="p-2 text-xs">
-                  <button onClick={() => { updateUser(u.id, { status: u.status === "active" ? "suspended" : "active" }); toast(`User ${u.status === "active" ? "suspended" : "reactivated"}`); }} className="text-amber-400 hover:underline">{u.status === "active" ? "Suspend" : "Activate"}</button>
-                  {" · "}
-                  <button onClick={() => { updateUser(u.id, { role: u.role === "admin" ? "user" : "admin" }); toast("Role updated"); }} className="text-sky-400 hover:underline">{u.role === "admin" ? "Demote" : "Promote"}</button>
-                  {" · "}
-                  <button onClick={() => { if (confirm("Delete user?")) { deleteUser(u.id); toast("Deleted"); } }} className="text-rose-400 hover:underline">Delete</button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <h1 className="text-xl font-semibold sm:text-2xl">Users</h1>
+      <p className="text-sm opacity-70">Manage roles, Founder access and company badges. You cannot change your own admin role.</p>
+      <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search users..."
+        className="mt-4 w-full max-w-xs rounded border border-current/25 bg-transparent px-3 py-1.5 text-sm" />
+      <div className="-mx-4 mt-4 overflow-x-auto px-4">
+        <table className="w-full min-w-[900px] text-sm">
+          <thead className="border-b border-current/15 text-left text-xs opacity-70"><tr>
+            <th className="p-2">User</th><th className="p-2">Email</th><th className="p-2">Joined</th>
+            <th className="p-2">Role</th><th className="p-2">Founder</th><th className="p-2">Company badge</th>
+            <th className="p-2">Status</th><th className="p-2">Actions</th>
+          </tr></thead>
+          <tbody>
+            {items.map((u) => {
+              const isFounder = founders.has(u.id);
+              const hasProfile = profiles.some((p) => p.userId === u.id);
+              const isSelf = me?.id === u.id;
+              return (
+                <tr key={u.id} className="border-b border-current/10">
+                  <td className="p-2">
+                    <span className="flex min-w-0 items-center gap-2">
+                      <UserAvatar avatar={u.avatar} name={u.name} size={28} />
+                      <span className="truncate font-medium">{u.name}{isSelf && <span className="ml-1 text-[10px] opacity-60">(you)</span>}</span>
+                    </span>
+                  </td>
+                  <td className="p-2 text-xs opacity-70">{u.email}</td>
+                  <td className="p-2 text-xs opacity-70">{u.joinDate}</td>
+                  <td className="p-2">
+                    <select
+                      value={u.role}
+                      disabled={isSelf}
+                      title={isSelf ? "You cannot change your own role" : undefined}
+                      onChange={(e) => {
+                        const next = e.target.value as "user" | "admin";
+                        void act(async () => {
+                          await adminSetUserRole(u.id, "user", true);
+                          await adminSetUserRole(u.id, "admin", next === "admin");
+                          updateUser(u.id, { role: next });
+                        }, "Role updated");
+                      }}
+                      className={`${inp} w-32 disabled:opacity-40`}
+                    >
+                      <option value="user">Standard user</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </td>
+                  <td className="p-2">
+                    <button onClick={() => act(() => adminSetFounder(u.id, !isFounder), isFounder ? "Founder revoked" : "Founder granted")}
+                      className={`rounded-full px-2 py-0.5 text-xs ${isFounder ? "bg-amber-400/20 text-amber-400" : "border border-current/25 opacity-70"}`}>
+                      {isFounder ? "★ Founder" : "Grant Founder"}
+                    </button>
+                  </td>
+                  <td className="p-2">
+                    <select value={badgeOf(u.id)} disabled={!hasProfile}
+                      onChange={(e) => act(() => adminSetCompanyBadge(u.id, e.target.value || null), "Badge updated")}
+                      className={`${inp} w-36 disabled:opacity-40`}>
+                      <option value="">{hasProfile ? "None" : "No company"}</option>
+                      {tiers.map((t) => <option key={t.key} value={t.key}>{t.name}</option>)}
+                    </select>
+                  </td>
+                  <td className="p-2"><span className={`rounded-full px-2 py-0.5 text-xs ${u.status === "active" ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-400"}`}>{u.status}</span></td>
+                  <td className="p-2 whitespace-nowrap text-xs">
+                    <button disabled={isSelf}
+                      onClick={() => { updateUser(u.id, { status: u.status === "active" ? "suspended" : "active" }); toast(`User ${u.status === "active" ? "suspended" : "reactivated"}`); }}
+                      className="text-amber-400 hover:underline disabled:opacity-40 disabled:no-underline">{u.status === "active" ? "Suspend" : "Activate"}</button>
+                    {" · "}
+                    <button disabled={isSelf}
+                      onClick={() => { if (confirm("Delete user?")) { deleteUser(u.id); toast("Deleted"); } }}
+                      className="text-rose-400 hover:underline disabled:opacity-40 disabled:no-underline">Delete</button>
+                  </td>
+                </tr>
+              );
+            })}
+            {items.length === 0 && <tr><td colSpan={8} className="py-6 text-center text-sm opacity-60">No users found.</td></tr>}
+          </tbody>
+        </table>
       </div>
     </AdminShell>
   );

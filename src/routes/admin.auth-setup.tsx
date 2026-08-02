@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { AdminShell } from "@/components/admin-shell";
+import { useApp } from "@/lib/app-store";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/auth-setup")({
@@ -45,6 +46,7 @@ function Field({ label, value }: { label: string; value: string }) {
 
 function AdminAuthSetup() {
   const [tab, setTab] = useState<"google" | "apple" | "urls">("google");
+  const { siteSettings, updateSiteSettings } = useApp();
   const siteUrl = typeof window !== "undefined" ? window.location.origin : "https://xrpbrowser.com";
 
   return (
@@ -56,7 +58,24 @@ function AdminAuthSetup() {
           soon as the provider is enabled in Supabase with the credentials below.
         </p>
 
-        <div className="mt-4 flex gap-2">
+        <div className="admin-card mt-4 rounded-xl border p-5">
+          <h2 className="text-base font-semibold">Provider availability</h2>
+          <p className="mt-1 text-xs opacity-70">Turn a provider off to hide its button on the sign-in and sign-up pages immediately.</p>
+          <div className="mt-3 space-y-2 text-sm">
+            <label className="flex items-center gap-2">
+              <input type="checkbox" checked={siteSettings.enableGoogleLogin !== false}
+                onChange={(e) => { void updateSiteSettings({ enableGoogleLogin: e.target.checked }).then(() => toast.success(e.target.checked ? "Google login enabled" : "Google login hidden")); }} />
+              Enable Google login
+            </label>
+            <label className="flex items-center gap-2">
+              <input type="checkbox" checked={siteSettings.enableAppleLogin !== false}
+                onChange={(e) => { void updateSiteSettings({ enableAppleLogin: e.target.checked }).then(() => toast.success(e.target.checked ? "Apple login enabled" : "Apple login hidden")); }} />
+              Enable Apple login
+            </label>
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
           {([["google", "Google"], ["apple", "Apple"], ["urls", "Redirect URLs"]] as const).map(([k, l]) => (
             <button key={k} onClick={() => setTab(k)} className={`rounded-md border px-3 py-1.5 text-sm ${tab === k ? "bg-sky-500 text-white" : "opacity-80"}`}>{l}</button>
           ))}

@@ -188,3 +188,13 @@ export function useFounder(userId: string | null | undefined, isAdmin = false) {
   const isFounder = isAdmin || (!!membership && !membership.revoked);
   return { membership, isFounder, loading, reload };
 }
+
+/** Grant or revoke a role for a user. The DB function blocks admins from changing their own admin role. */
+export async function adminSetUserRole(
+  userId: string,
+  role: "user" | "moderator" | "admin" | "founder",
+  enabled: boolean,
+) {
+  const { error } = await db().rpc("admin_set_user_role", { _user_id: userId, _role: role, _enabled: enabled });
+  if (error) throw new Error(error.message);
+}

@@ -65,6 +65,8 @@ interface SiteSettings {
   cloudinaryCloudName: string;
   cloudinaryUploadPreset: string;
   aiDefaultInstruction: string;
+  enableGoogleLogin: boolean;
+  enableAppleLogin: boolean;
 }
 
 interface AppState {
@@ -178,6 +180,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   listingFeeXrp: 0, listingPaymentAddress: "",
   cloudinaryCloudName: "", cloudinaryUploadPreset: "",
   aiDefaultInstruction: "You are a helpful writer for XRPBrowser, an XRP Ledger discovery portal. Write clear, accurate, upbeat posts.",
+  enableGoogleLogin: true, enableAppleLogin: true,
 };
 
 type ProjectRow = {
@@ -325,11 +328,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
         cloudinaryCloudName: (s.cloudinary_cloud_name as string | null) ?? "",
         cloudinaryUploadPreset: (s.cloudinary_upload_preset as string | null) ?? "",
         aiDefaultInstruction: (s.ai_default_instruction as string | null) ?? DEFAULT_SETTINGS.aiDefaultInstruction,
+        enableGoogleLogin: (s.enable_google_login as boolean | null) ?? true,
+        enableAppleLogin: (s.enable_apple_login as boolean | null) ?? true,
       });
     }
   }, []);
 
-  const loadUserData = useCallback(async (uid: string) => {
+  const loadUserData = useCallback(async (uid: string, meta?: Record<string, unknown> | null) => {
     const [bm, hs, nt, rl, pf] = await Promise.all([
       supabase.from("bookmarks").select("project_slug").eq("user_id", uid),
       supabase.from("history").select("project_slug,visited_at").eq("user_id", uid).order("visited_at", { ascending: false }).limit(100),
@@ -342,7 +347,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (nt.data) setNotifications(nt.data.map((r) => ({ id: r.id, message: r.message, ts: new Date(r.created_at).getTime(), read: r.read, userId: r.user_id })));
     setIsAdmin(!!rl.data?.some((r) => r.role === "admin"));
     if (pf.data) {
-      setUser({ id: uid, name: pf.data.name || "User", email: pf.data.email ?? "", avatar: pf.data.avatar ?? "🧑", walletAddress: pf.data.wallet_address ?? undefined });
+      // OAuth (Google/Apple) photo lives in auth user_metadata — keep the profile row in sync
+      const photo = (meta?.["avatar_url"] as string | undefined) || (meta?.["picture"] as string | undefined) || null;
+      let avatar = pf.data.avatar ?? "🧑";
+      if (photo && avatar !== photo) {
+        avatar = photo;
+        void supabase.from("profiles").update({ avatar: photo }).eq("id", uid);
+      }
+      setUser({ id: uid, name: pf.data.name || "User", email: pf.data.email ?? "", avatar, walletAddress: pf.data.wallet_address ?? undefined });
     }
   }, []);
 
@@ -354,7 +366,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const { data: { session: s } } = await supabase.auth.getSession();
       if (!mounted) return;
       setSession(s);
-      if (s?.user) await loadUserData(s.user.id);
+      if (s?.user) await loadUserData(s.user.id, s.user.user_metadata as Record<string, unknown>);
       setLoading(false);
     })();
     const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
@@ -362,7 +374,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (event === "SIGNED_OUT") {
         setUser(null); setIsAdmin(false); setBookmarks([]); setHistory([]); setNotifications([]);
       } else if (s?.user) {
-        setTimeout(() => { loadUserData(s.user!.id); }, 0);
+        setTimeout(() => { loadUserData(s.user!.id, s.user!.user_metadata as Record<string, unknown>); }, 0);
       }
     });
     return () => { mounted = false; sub.subscription.unsubscribe(); };
@@ -730,6 +742,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.cloudinaryCloudName !== undefined) dbPatch.cloudinary_cloud_name = patch.cloudinaryCloudName;
     if (patch.cloudinaryUploadPreset !== undefined) dbPatch.cloudinary_upload_preset = patch.cloudinaryUploadPreset;
     if (patch.aiDefaultInstruction !== undefined) (dbPatch as any).ai_default_instruction = patch.aiDefaultInstruction;
+    if (patch.enableGoogleLogin !== undefined) (dbPatch as any).enable_google_login = patch.enableGoogleLogin;
+    if (patch.enableAppleLogin !== undefined) (dbPatch as any).enable_apple_login = patch.enableAppleLogin;
     await supabase.from("site_settings").update(dbPatch as never).eq("id", 1);
     setSiteSettings((s) => ({ ...s, ...patch }));
   };

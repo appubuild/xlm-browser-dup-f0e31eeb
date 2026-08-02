@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { AdminShell } from "@/components/admin-shell";
 import { toast } from "sonner";
 import {
-  fetchBadgeTiers, saveBadgeTier, createBadgeTier, deleteBadgeTier,
+  fetchBadgeTiers,
   fetchPromotionPackages, savePromotionPackage, createPromotionPackage, deletePromotionPackage,
   fetchAllPromotions, setPromotionStatus, extendPromotion,
   fetchAllAuthorProfiles, setAuthorBadge, fetchAllTransactions, setCompanyFeatured, setAuthorVerified,
@@ -17,15 +17,15 @@ import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/monetization")({ component: Monetization });
 
-const TABS = ["Pricing", "Promotions", "Badges", "Companies", "Transactions"] as const;
+const TABS = ["Pricing", "Promotions", "Companies", "Transactions"] as const;
 type Tab = (typeof TABS)[number];
 
 function Monetization() {
   const [tab, setTab] = useState<Tab>("Pricing");
   return (
     <AdminShell>
-      <h1 className="text-2xl font-semibold">Monetization</h1>
-      <p className="text-sm opacity-70">Badge tier pricing, promotion packages, approvals and payment logs.</p>
+      <h1 className="text-xl font-semibold sm:text-2xl">Monetization</h1>
+      <p className="text-sm opacity-70">One place for package pricing, promotions, company badges and payment logs.</p>
       <div className="mt-4 flex flex-wrap gap-2">
         {TABS.map((t) => (
           <button key={t} onClick={() => setTab(t)}
@@ -37,7 +37,6 @@ function Monetization() {
       <div className="mt-4">
         {tab === "Pricing" && <PricingTab />}
         {tab === "Promotions" && <PromotionsTab />}
-        {tab === "Badges" && <BadgesTab />}
         {tab === "Companies" && <CompaniesTab />}
         {tab === "Transactions" && <TransactionsTab />}
       </div>
@@ -59,95 +58,68 @@ const inp = "rounded border border-current/25 bg-transparent px-2 py-1.5 text-sm
 /* ------------------------------------------------------------- pricing */
 
 function PricingTab() {
-  const [tiers, setTiers] = useState<BadgeTier[]>([]);
+  return (
+    <div className="space-y-4">
+      <AdminPricingCard />
+      <p className="text-xs opacity-60">
+        This is the only place package prices are configured. Every change here is used instantly on the public pricing
+        page, checkout dialogs and promotional banners.
+      </p>
+    </div>
+  );
+}
+
+function PackagesPanel() {
   const [pkgs, setPkgs] = useState<PromotionPackage[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     setLoading(true);
-    try {
-      const [t, p] = await Promise.all([fetchBadgeTiers(true), fetchPromotionPackages(true)]);
-      setTiers(t); setPkgs(p);
-    } catch (e) { toast.error(e instanceof Error ? e.message : "Load failed"); }
+    try { setPkgs(await fetchPromotionPackages(true)); }
+    catch (e) { toast.error(e instanceof Error ? e.message : "Load failed"); }
     finally { setLoading(false); }
   }, []);
   useEffect(() => { void load(); }, [load]);
 
-  if (loading) return <div className="text-sm opacity-70">Loading…</div>;
-
   return (
-    <div className="grid gap-4 xl:grid-cols-2">
-      <div className="xl:col-span-2"><AdminPricingCard /></div>
-      <Panel title="Badge tiers (lifetime)" action={
-        <button onClick={async () => {
-          const key = prompt("Tier key (lowercase, unique)")?.trim();
-          if (!key) return;
-          try {
-            await createBadgeTier({ key, name: key, priceXrp: 0, color: "sky", benefits: [], sortOrder: tiers.length + 1, active: true });
-            await load(); toast.success("Tier created");
-          } catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); }
-        }} className="rounded border border-current/25 px-2 py-1 text-xs">+ Add tier</button>
-      }>
-        <div className="space-y-3">
-          {tiers.map((t) => (
-            <div key={t.id} className="rounded border border-current/15 p-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <input value={t.name} onChange={(e) => setTiers((s) => s.map((x) => x.id === t.id ? { ...x, name: e.target.value } : x))} className={`${inp} w-36`} />
-                <input type="number" step="0.1" value={t.priceXrp} onChange={(e) => setTiers((s) => s.map((x) => x.id === t.id ? { ...x, priceXrp: parseFloat(e.target.value) || 0 } : x))} className={`${inp} w-28`} />
-                <span className="text-xs opacity-70">XRP</span>
-                <select value={t.color} onChange={(e) => setTiers((s) => s.map((x) => x.id === t.id ? { ...x, color: e.target.value } : x))} className={`${inp} w-28`}>
-                  <option value="sky">sky</option><option value="violet">violet</option><option value="amber">amber</option>
-                </select>
-                <label className="flex items-center gap-1 text-xs"><input type="checkbox" checked={t.active} onChange={(e) => setTiers((s) => s.map((x) => x.id === t.id ? { ...x, active: e.target.checked } : x))} /> active</label>
-              </div>
-              <textarea
-                value={t.benefits.join("\n")}
-                onChange={(e) => setTiers((s) => s.map((x) => x.id === t.id ? { ...x, benefits: e.target.value.split("\n") } : x))}
-                placeholder="One benefit per line"
-                className={`${inp} mt-2 min-h-20 w-full`}
-              />
-              <div className="mt-2 flex gap-2">
-                <button onClick={async () => { try { await saveBadgeTier(t); toast.success("Saved"); } catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); } }} className="rounded bg-sky-500 px-2.5 py-1 text-xs text-white">Save</button>
-                <button onClick={async () => { if (!confirm(`Delete tier ${t.name}?`)) return; try { await deleteBadgeTier(t.id); await load(); } catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); } }} className="rounded border border-rose-500/50 px-2.5 py-1 text-xs text-rose-400">Delete</button>
-              </div>
-            </div>
-          ))}
+    <Panel title="Promotion packages" action={
+      <button onClick={async () => {
+        try {
+          await createPromotionPackage({ slot: "home", durationDays: 7, priceXrp: 0, active: true, sortOrder: pkgs.length + 1 });
+          await load();
+        } catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); }
+      }} className="rounded border border-current/25 px-2 py-1 text-xs">+ Add package</button>
+    }>
+      {loading ? <div className="text-sm opacity-70">Loading…</div> : (
+        <div className="-mx-4 overflow-x-auto px-4">
+          <table className="w-full min-w-[520px] text-sm">
+            <thead className="text-left text-xs opacity-70"><tr><th className="pb-2">Section</th><th className="pb-2">Days</th><th className="pb-2">XRP</th><th className="pb-2">Active</th><th></th></tr></thead>
+            <tbody>
+              {pkgs.map((p) => (
+                <tr key={p.id} className="border-t border-current/10">
+                  <td className="py-2 pr-2">
+                    <select value={p.slot} onChange={(e) => setPkgs((s) => s.map((x) => x.id === p.id ? { ...x, slot: e.target.value as PromoSlot } : x))} className={`${inp} w-40`}>
+                      {(Object.keys(SLOT_LABEL) as PromoSlot[]).map((k) => <option key={k} value={k}>{SLOT_LABEL[k]}</option>)}
+                    </select>
+                  </td>
+                  <td className="py-2 pr-2"><input type="number" value={p.durationDays} onChange={(e) => setPkgs((s) => s.map((x) => x.id === p.id ? { ...x, durationDays: parseInt(e.target.value) || 1 } : x))} className={`${inp} w-20`} /></td>
+                  <td className="py-2 pr-2"><input type="number" step="0.1" value={p.priceXrp} onChange={(e) => setPkgs((s) => s.map((x) => x.id === p.id ? { ...x, priceXrp: parseFloat(e.target.value) || 0 } : x))} className={`${inp} w-24`} /></td>
+                  <td className="py-2 pr-2"><input type="checkbox" checked={p.active} onChange={(e) => setPkgs((s) => s.map((x) => x.id === p.id ? { ...x, active: e.target.checked } : x))} /></td>
+                  <td className="py-2 whitespace-nowrap text-right">
+                    <button onClick={async () => { try { await savePromotionPackage(p); toast.success("Saved"); } catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); } }} className="rounded bg-sky-500 px-2 py-1 text-xs text-white">Save</button>
+                    <button onClick={async () => { if (!confirm("Delete package?")) return; try { await deletePromotionPackage(p.id); await load(); } catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); } }} className="ml-1 rounded border border-rose-500/50 px-2 py-1 text-xs text-rose-400">Del</button>
+                  </td>
+                </tr>
+              ))}
+              {pkgs.length === 0 && <tr><td colSpan={5} className="py-6 text-center text-sm opacity-60">No packages yet.</td></tr>}
+            </tbody>
+          </table>
         </div>
-      </Panel>
-
-      <Panel title="Promotion packages" action={
-        <button onClick={async () => {
-          try {
-            await createPromotionPackage({ slot: "home", durationDays: 7, priceXrp: 0, active: true, sortOrder: pkgs.length + 1 });
-            await load();
-          } catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); }
-        }} className="rounded border border-current/25 px-2 py-1 text-xs">+ Add package</button>
-      }>
-        <table className="w-full text-sm">
-          <thead className="text-left text-xs opacity-70"><tr><th className="pb-2">Section</th><th className="pb-2">Days</th><th className="pb-2">XRP</th><th className="pb-2">Active</th><th></th></tr></thead>
-          <tbody>
-            {pkgs.map((p) => (
-              <tr key={p.id} className="border-t border-current/10">
-                <td className="py-2 pr-2">
-                  <select value={p.slot} onChange={(e) => setPkgs((s) => s.map((x) => x.id === p.id ? { ...x, slot: e.target.value as PromoSlot } : x))} className={`${inp} w-40`}>
-                    {(Object.keys(SLOT_LABEL) as PromoSlot[]).map((k) => <option key={k} value={k}>{SLOT_LABEL[k]}</option>)}
-                  </select>
-                </td>
-                <td className="py-2 pr-2"><input type="number" value={p.durationDays} onChange={(e) => setPkgs((s) => s.map((x) => x.id === p.id ? { ...x, durationDays: parseInt(e.target.value) || 1 } : x))} className={`${inp} w-20`} /></td>
-                <td className="py-2 pr-2"><input type="number" step="0.1" value={p.priceXrp} onChange={(e) => setPkgs((s) => s.map((x) => x.id === p.id ? { ...x, priceXrp: parseFloat(e.target.value) || 0 } : x))} className={`${inp} w-24`} /></td>
-                <td className="py-2 pr-2"><input type="checkbox" checked={p.active} onChange={(e) => setPkgs((s) => s.map((x) => x.id === p.id ? { ...x, active: e.target.checked } : x))} /></td>
-                <td className="py-2 text-right">
-                  <button onClick={async () => { try { await savePromotionPackage(p); toast.success("Saved"); } catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); } }} className="rounded bg-sky-500 px-2 py-1 text-xs text-white">Save</button>
-                  <button onClick={async () => { if (!confirm("Delete package?")) return; try { await deletePromotionPackage(p.id); await load(); } catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); } }} className="ml-1 rounded border border-rose-500/50 px-2 py-1 text-xs text-rose-400">Del</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Panel>
-    </div>
+      )}
+    </Panel>
   );
 }
+
 
 /* ---------------------------------------------------------- promotions */
 
@@ -169,9 +141,11 @@ function PromotionsTab() {
 
   if (loading) return <div className="text-sm opacity-70">Loading…</div>;
   return (
+    <div className="space-y-4">
+    <PackagesPanel />
     <Panel title={`Project promotions (${rows.length})`}>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+      <div className="-mx-4 overflow-x-auto px-4">
+        <table className="w-full min-w-[760px] text-sm">
           <thead className="text-left text-xs opacity-70">
             <tr><th className="pb-2">Project</th><th className="pb-2">Section</th><th className="pb-2">Days</th><th className="pb-2">Paid</th><th className="pb-2">Tx</th><th className="pb-2">Status</th><th className="pb-2">Ends</th><th></th></tr>
           </thead>
@@ -197,75 +171,7 @@ function PromotionsTab() {
         </table>
       </div>
     </Panel>
-  );
-}
-
-/* -------------------------------------------------------------- badges */
-
-function BadgesTab() {
-  const [profiles, setProfiles] = useState<AuthorProfile[]>([]);
-  const [tiers, setTiers] = useState<BadgeTier[]>([]);
-  const [loading, setLoading] = useState(true);
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const [p, t] = await Promise.all([fetchAllAuthorProfiles(), fetchBadgeTiers(true)]);
-      setProfiles(p); setTiers(t);
-    } catch (e) { toast.error(e instanceof Error ? e.message : "Load failed"); }
-    finally { setLoading(false); }
-  }, []);
-  useEffect(() => { void load(); }, [load]);
-
-  if (loading) return <div className="text-sm opacity-70">Loading…</div>;
-  return (
-    <Panel title={`Author profiles & badges (${profiles.length})`}>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="text-left text-xs opacity-70"><tr><th className="pb-2">Company</th><th className="pb-2">Email</th><th className="pb-2">Badge</th><th className="pb-2">Since</th><th className="pb-2">Landing page</th><th></th></tr></thead>
-          <tbody>
-            {profiles.map((p) => (
-              <tr key={p.id} className="border-t border-current/10">
-                <td className="py-2 font-medium">{p.logo} {p.companyName}</td>
-                <td className="py-2 text-xs opacity-70">{p.officialEmail ?? "—"}</td>
-                <td className="py-2">
-                  <select
-                    value={p.badgeTier ?? ""}
-                    onChange={async (e) => {
-                      const v = e.target.value || null;
-                      try { await setAuthorBadge(p.userId, v); toast.success(v ? "Badge granted" : "Badge revoked"); await load(); }
-                      catch (err) { toast.error(err instanceof Error ? err.message : "Failed"); }
-                    }}
-                    className={`${inp} w-40`}
-                  >
-                    <option value="">No badge</option>
-                    {tiers.map((t) => <option key={t.key} value={t.key}>{t.name}</option>)}
-                  </select>
-                </td>
-                <td className="py-2 text-xs opacity-70">{p.badgeSince ? new Date(p.badgeSince).toLocaleDateString() : "—"}</td>
-                <td className="py-2">
-                  <label className="flex items-center gap-2 text-xs">
-                    <input
-                      type="checkbox"
-                      checked={p.featured}
-                      disabled={!p.verified}
-                      onChange={async (e) => {
-                        try { await setCompanyFeatured(p.id, e.target.checked); toast.success(e.target.checked ? "Shown in Verified Companies" : "Removed from Verified Companies"); await load(); }
-                        catch (err) { toast.error(err instanceof Error ? err.message : "Failed"); }
-                      }}
-                    />
-                    {p.verified ? "Featured" : "Needs badge"}
-                  </label>
-                </td>
-                <td className="py-2 text-right">
-                  {p.badgeTier && <button onClick={async () => { try { await setAuthorBadge(p.userId, null); await load(); } catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); } }} className="rounded border border-rose-500/50 px-2 py-1 text-xs text-rose-400">Revoke</button>}
-                </td>
-              </tr>
-            ))}
-            {profiles.length === 0 && <tr><td colSpan={6} className="py-6 text-center text-sm opacity-60">No author profiles yet.</td></tr>}
-          </tbody>
-        </table>
-      </div>
-    </Panel>
+    </div>
   );
 }
 
@@ -312,29 +218,37 @@ function TransactionsTab() {
 function CompaniesTab() {
   const { projects } = useApp();
   const [profiles, setProfiles] = useState<AuthorProfile[]>([]);
+  const [tiers, setTiers] = useState<BadgeTier[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<AuthorProfile | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
-    try { setProfiles(await fetchAllAuthorProfiles()); }
-    catch (e) { toast.error(e instanceof Error ? e.message : "Load failed"); }
+    try {
+      const [p, t] = await Promise.all([fetchAllAuthorProfiles(), fetchBadgeTiers(true)]);
+      setProfiles(p); setTiers(t);
+    } catch (e) { toast.error(e instanceof Error ? e.message : "Load failed"); }
     finally { setLoading(false); }
   }, []);
   useEffect(() => { void load(); }, [load]);
 
   const countFor = (p: AuthorProfile) => projects.filter((x) => x.submitterId === p.userId).length;
+  const act = async (fn: () => Promise<unknown>, msg: string) => {
+    try { await fn(); toast.success(msg); await load(); }
+    catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); }
+  };
 
   if (loading) return <div className="text-sm opacity-70">Loading…</div>;
 
   return (
-    <Panel title={`Company profiles (${profiles.length})`}>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+    <Panel title={`Companies & badges (${profiles.length})`}>
+      <div className="-mx-4 overflow-x-auto px-4">
+        <table className="w-full min-w-[900px] text-sm">
           <thead className="text-left text-xs opacity-70">
             <tr>
               <th className="pb-2">Company</th><th className="pb-2">Owner / email</th><th className="pb-2">Projects</th>
-              <th className="pb-2">Verified</th><th className="pb-2">Badge</th><th className="pb-2">Joined</th><th></th>
+              <th className="pb-2">Verified</th><th className="pb-2">Visual badge</th><th className="pb-2">Landing page</th>
+              <th className="pb-2">Joined</th><th></th>
             </tr>
           </thead>
           <tbody>
@@ -345,24 +259,42 @@ function CompaniesTab() {
                 <td className="py-2">{countFor(p)}</td>
                 <td className="py-2">
                   <button
-                    onClick={async () => {
-                      try { await setAuthorVerified(p.id, !p.verified); toast.success(p.verified ? "Verification removed" : "Company verified"); await load(); }
-                      catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); }
-                    }}
+                    onClick={() => act(() => setAuthorVerified(p.id, !p.verified), p.verified ? "Verification removed" : "Company verified")}
                     className={`rounded-full px-2 py-0.5 text-xs ${p.verified ? "bg-emerald-500/20 text-emerald-400" : "border border-current/25 opacity-70"}`}
                   >
                     {p.verified ? "Verified" : "Unverified"}
                   </button>
                 </td>
-                <td className="py-2 text-xs">{p.badgeTier ?? "—"}</td>
+                <td className="py-2">
+                  <select
+                    value={p.badgeTier ?? ""}
+                    onChange={(e) => { const v = e.target.value || null; void act(() => setAuthorBadge(p.userId, v), v ? "Badge granted" : "Badge revoked"); }}
+                    className={`${inp} w-40`}
+                  >
+                    <option value="">No badge</option>
+                    {tiers.map((t) => <option key={t.key} value={t.key}>{t.name}</option>)}
+                  </select>
+                  {p.badgeSince && <div className="mt-1 text-[10px] opacity-60">since {new Date(p.badgeSince).toLocaleDateString()}</div>}
+                </td>
+                <td className="py-2">
+                  <label className="flex items-center gap-2 text-xs">
+                    <input
+                      type="checkbox"
+                      checked={p.featured}
+                      disabled={!p.verified}
+                      onChange={(e) => void act(() => setCompanyFeatured(p.id, e.target.checked), e.target.checked ? "Shown in Verified Companies" : "Removed from Verified Companies")}
+                    />
+                    {p.verified ? "Featured" : "Needs badge"}
+                  </label>
+                </td>
                 <td className="py-2 text-xs opacity-70">{new Date(p.createdAt).toLocaleDateString()}</td>
-                <td className="py-2 text-right whitespace-nowrap">
+                <td className="py-2 whitespace-nowrap text-right">
                   <button onClick={() => setView(p)} className="rounded border border-current/25 px-2 py-1 text-xs">Details</button>
                   <Link to="/company/$key" params={{ key: p.slug ?? p.id }} className="ml-1 rounded border border-current/25 px-2 py-1 text-xs">Public page</Link>
                 </td>
               </tr>
             ))}
-            {profiles.length === 0 && <tr><td colSpan={7} className="py-6 text-center text-sm opacity-60">No company profiles yet.</td></tr>}
+            {profiles.length === 0 && <tr><td colSpan={8} className="py-6 text-center text-sm opacity-60">No company profiles yet.</td></tr>}
           </tbody>
         </table>
       </div>
@@ -383,10 +315,7 @@ function CompaniesTab() {
           {view.bio && <p className="mt-2 text-xs opacity-80">{view.bio}</p>}
           <div className="mt-3">
             <button
-              onClick={async () => {
-                try { await setCompanyFeatured(view.id, !view.featured); toast.success("Landing page placement updated"); await load(); setView(null); }
-                catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); }
-              }}
+              onClick={() => { void act(() => setCompanyFeatured(view.id, !view.featured), "Landing page placement updated"); setView(null); }}
               className="rounded border border-current/25 px-2.5 py-1 text-xs"
             >{view.featured ? "Remove from landing page" : "Feature on landing page"}</button>
           </div>

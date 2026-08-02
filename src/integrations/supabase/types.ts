@@ -1213,6 +1213,8 @@ export type Database = {
           contact_email: string | null
           contact_location: string | null
           default_theme: string
+          enable_apple_login: boolean
+          enable_google_login: boolean
           enable_iframe: boolean
           enable_submissions: boolean
           id: number
@@ -1233,6 +1235,8 @@ export type Database = {
           contact_email?: string | null
           contact_location?: string | null
           default_theme?: string
+          enable_apple_login?: boolean
+          enable_google_login?: boolean
           enable_iframe?: boolean
           enable_submissions?: boolean
           id?: number
@@ -1253,6 +1257,8 @@ export type Database = {
           contact_email?: string | null
           contact_location?: string | null
           default_theme?: string
+          enable_apple_login?: boolean
+          enable_google_login?: boolean
           enable_iframe?: boolean
           enable_submissions?: boolean
           id?: number
@@ -1399,6 +1405,14 @@ export type Database = {
       }
       admin_set_founder: {
         Args: { _enabled: boolean; _user_id: string }
+        Returns: boolean
+      }
+      admin_set_user_role: {
+        Args: {
+          _enabled: boolean
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
         Returns: boolean
       }
       claim_free_founder: { Args: never; Returns: boolean }
