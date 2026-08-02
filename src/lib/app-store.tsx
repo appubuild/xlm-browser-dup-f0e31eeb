@@ -334,7 +334,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const loadUserData = useCallback(async (uid: string) => {
+  const loadUserData = useCallback(async (uid: string, meta?: Record<string, unknown> | null) => {
     const [bm, hs, nt, rl, pf] = await Promise.all([
       supabase.from("bookmarks").select("project_slug").eq("user_id", uid),
       supabase.from("history").select("project_slug,visited_at").eq("user_id", uid).order("visited_at", { ascending: false }).limit(100),
@@ -347,7 +347,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (nt.data) setNotifications(nt.data.map((r) => ({ id: r.id, message: r.message, ts: new Date(r.created_at).getTime(), read: r.read, userId: r.user_id })));
     setIsAdmin(!!rl.data?.some((r) => r.role === "admin"));
     if (pf.data) {
-      setUser({ id: uid, name: pf.data.name || "User", email: pf.data.email ?? "", avatar: pf.data.avatar ?? "🧑", walletAddress: pf.data.wallet_address ?? undefined });
+      // OAuth (Google/Apple) photo lives in auth user_metadata — keep the profile row in sync
+      const photo = (meta?.["avatar_url"] as string | undefined) || (meta?.["picture"] as string | undefined) || null;
+      let avatar = pf.data.avatar ?? "🧑";
+      if (photo && avatar !== photo) {
+        avatar = photo;
+        void supabase.from("profiles").update({ avatar: photo }).eq("id", uid);
+      }
+      setUser({ id: uid, name: pf.data.name || "User", email: pf.data.email ?? "", avatar, walletAddress: pf.data.wallet_address ?? undefined });
     }
   }, []);
 
