@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { AdminShell } from "@/components/admin-shell";
 import { toast } from "sonner";
 import {
-  fetchBadgeTiers, saveBadgeTier, createBadgeTier, deleteBadgeTier,
+  fetchBadgeTiers,
   fetchPromotionPackages, savePromotionPackage, createPromotionPackage, deletePromotionPackage,
   fetchAllPromotions, setPromotionStatus, extendPromotion,
   fetchAllAuthorProfiles, setAuthorBadge, fetchAllTransactions, setCompanyFeatured, setAuthorVerified,
@@ -141,9 +141,11 @@ function PromotionsTab() {
 
   if (loading) return <div className="text-sm opacity-70">Loading…</div>;
   return (
+    <div className="space-y-4">
+    <PackagesPanel />
     <Panel title={`Project promotions (${rows.length})`}>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+      <div className="-mx-4 overflow-x-auto px-4">
+        <table className="w-full min-w-[760px] text-sm">
           <thead className="text-left text-xs opacity-70">
             <tr><th className="pb-2">Project</th><th className="pb-2">Section</th><th className="pb-2">Days</th><th className="pb-2">Paid</th><th className="pb-2">Tx</th><th className="pb-2">Status</th><th className="pb-2">Ends</th><th></th></tr>
           </thead>
@@ -169,6 +171,7 @@ function PromotionsTab() {
         </table>
       </div>
     </Panel>
+    </div>
   );
 }
 
