@@ -65,6 +65,8 @@ interface SiteSettings {
   cloudinaryCloudName: string;
   cloudinaryUploadPreset: string;
   aiDefaultInstruction: string;
+  enableGoogleLogin: boolean;
+  enableAppleLogin: boolean;
 }
 
 interface AppState {
@@ -178,6 +180,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   listingFeeXrp: 0, listingPaymentAddress: "",
   cloudinaryCloudName: "", cloudinaryUploadPreset: "",
   aiDefaultInstruction: "You are a helpful writer for XRPBrowser, an XRP Ledger discovery portal. Write clear, accurate, upbeat posts.",
+  enableGoogleLogin: true, enableAppleLogin: true,
 };
 
 type ProjectRow = {
@@ -325,6 +328,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         cloudinaryCloudName: (s.cloudinary_cloud_name as string | null) ?? "",
         cloudinaryUploadPreset: (s.cloudinary_upload_preset as string | null) ?? "",
         aiDefaultInstruction: (s.ai_default_instruction as string | null) ?? DEFAULT_SETTINGS.aiDefaultInstruction,
+        enableGoogleLogin: (s.enable_google_login as boolean | null) ?? true,
+        enableAppleLogin: (s.enable_apple_login as boolean | null) ?? true,
       });
     }
   }, []);
@@ -730,6 +735,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.cloudinaryCloudName !== undefined) dbPatch.cloudinary_cloud_name = patch.cloudinaryCloudName;
     if (patch.cloudinaryUploadPreset !== undefined) dbPatch.cloudinary_upload_preset = patch.cloudinaryUploadPreset;
     if (patch.aiDefaultInstruction !== undefined) (dbPatch as any).ai_default_instruction = patch.aiDefaultInstruction;
+    if (patch.enableGoogleLogin !== undefined) (dbPatch as any).enable_google_login = patch.enableGoogleLogin;
+    if (patch.enableAppleLogin !== undefined) (dbPatch as any).enable_apple_login = patch.enableAppleLogin;
     await supabase.from("site_settings").update(dbPatch as never).eq("id", 1);
     setSiteSettings((s) => ({ ...s, ...patch }));
   };
