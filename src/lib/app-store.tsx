@@ -366,7 +366,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const { data: { session: s } } = await supabase.auth.getSession();
       if (!mounted) return;
       setSession(s);
-      if (s?.user) await loadUserData(s.user.id);
+      if (s?.user) await loadUserData(s.user.id, s.user.user_metadata as Record<string, unknown>);
       setLoading(false);
     })();
     const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
@@ -374,7 +374,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (event === "SIGNED_OUT") {
         setUser(null); setIsAdmin(false); setBookmarks([]); setHistory([]); setNotifications([]);
       } else if (s?.user) {
-        setTimeout(() => { loadUserData(s.user!.id); }, 0);
+        setTimeout(() => { loadUserData(s.user!.id, s.user!.user_metadata as Record<string, unknown>); }, 0);
       }
     });
     return () => { mounted = false; sub.subscription.unsubscribe(); };
