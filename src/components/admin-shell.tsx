@@ -85,6 +85,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const [adminTheme, setAdminTheme] = useAdminTheme();
   const [drawer, setDrawer] = useState(false);
   const dark = adminTheme === "dark";
+  useEffect(() => { setDrawer(false); }, [path]);
 
   const c = {
     root: dark ? "bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-900",
