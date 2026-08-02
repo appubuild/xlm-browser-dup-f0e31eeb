@@ -33,7 +33,7 @@ export function AdminPricingCard({ onlyKeys, title = "Pricing & Founder Membersh
 
   return (
     <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
-      <div className="mb-3 text-sm font-semibold">Pricing & Founder Membership</div>
+      <div className="mb-3 text-sm font-semibold">{title}</div>
 
       <div className="mb-4 rounded-lg border border-slate-800 bg-slate-950 p-3">
         <label className="flex items-center gap-2 text-sm">
