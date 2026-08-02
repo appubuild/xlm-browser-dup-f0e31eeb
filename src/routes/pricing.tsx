@@ -1,17 +1,21 @@
+import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PublicShell } from "@/components/public-shell";
 import { useApp } from "@/lib/app-store";
 import { FounderCta, FounderBadge } from "@/components/founder-gate";
 import { usePricing, useFounder, priceLabel, FOUNDER_KEY } from "@/lib/pricing";
+import { fetchPromotionPackages, SLOT_LABEL, type PromotionPackage } from "@/lib/monetization";
+
 
 export const Route = createFileRoute("/pricing")({
   component: PricingPage,
   head: () => ({
     meta: [
       { title: "Pricing & Plans — XRPBrowser" },
-      { name: "description", content: "Founder Membership, verified company badges, listing boosts and homepage spotlights for XRPL projects — all payable in XRP." },
+      { name: "description", content: "Founder Membership, verified company badges, Pro & Enterprise plans and promotion packages for XRPL projects — all payable in XRP." },
       { property: "og:title", content: "Pricing & Plans — XRPBrowser" },
-      { property: "og:description", content: "Founder Membership, verified badges, boosts and spotlights for XRPL projects, priced in XRP." },
+      { property: "og:description", content: "Founder Membership, verified badges, Pro & Enterprise plans and promotion packages for XRPL projects, priced in XRP." },
+
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -78,10 +82,6 @@ function PricingPage() {
                     <Link to="/panel/company" className="block w-full rounded bg-primary px-3 py-2 text-center text-sm text-primary-foreground">
                       Get verified
                     </Link>
-                  ) : t.key === "boost" || t.key === "spotlight" ? (
-                    <Link to="/panel/submissions" className="block w-full rounded bg-primary px-3 py-2 text-center text-sm text-primary-foreground">
-                      Promote a project
-                    </Link>
                   ) : (
                     <Link to="/contact" className="block w-full rounded border px-3 py-2 text-center text-sm">
                       Contact us
@@ -92,7 +92,65 @@ function PricingPage() {
             ))}
           </div>
         )}
+
+        <PromotionPackagesSection />
       </div>
     </PublicShell>
   );
 }
+
+/** Date/duration-wise promotion packages, grouped by the slot they boost. */
+function PromotionPackagesSection() {
+  const [pkgs, setPkgs] = useState<PromotionPackage[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    void fetchPromotionPackages()
+      .then(setPkgs)
+      .catch(() => setPkgs([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading || pkgs.length === 0) return null;
+
+  return (
+    <section className="mt-14">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold sm:text-3xl">Promotion Packages</h2>
+        <p className="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground">
+          Give any of your approved projects extra visibility for a fixed number of days. Pick a package,
+          then choose the project you want to promote.
+        </p>
+      </div>
+
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {pkgs.map((p) => (
+          <div key={p.id} className="soft-card flex flex-col p-5">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-base font-semibold">{SLOT_LABEL[p.slot]}</h3>
+              <span className="rounded-full border px-2 py-0.5 text-xs text-muted-foreground">
+                {p.durationDays} days
+              </span>
+            </div>
+            <div className="mt-3 text-2xl font-bold">
+              {p.priceXrp} <span className="text-sm font-normal text-muted-foreground">XRP</span>
+            </div>
+            <div className="text-xs text-muted-foreground">
+              {p.priceXrp} XRP / {p.durationDays} days
+            </div>
+            <ul className="mt-4 flex-1 space-y-1.5 text-sm">
+              <li className="flex gap-2"><span className="text-primary">✓</span><span>{SLOT_LABEL[p.slot]} placement</span></li>
+              <li className="flex gap-2"><span className="text-primary">✓</span><span>Runs for {p.durationDays} days from activation</span></li>
+              <li className="flex gap-2"><span className="text-primary">✓</span><span>Paid on-ledger in XRP via Xaman</span></li>
+            </ul>
+            <Link to="/panel/submissions"
+              className="mt-5 block w-full rounded bg-primary px-3 py-2 text-center text-sm text-primary-foreground">
+              Promote a project
+            </Link>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
