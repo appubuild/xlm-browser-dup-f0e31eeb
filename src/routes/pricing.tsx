@@ -134,7 +134,7 @@ function PromotionPackagesSection() {
               </span>
             </div>
             <div className="mt-3 text-2xl font-bold">
-              {p.priceXlm} <span className="text-sm font-normal text-muted-foreground">XLM</span>
+              <XlmAmount xlm={p.priceXlm} />
             </div>
             <div className="text-xs text-muted-foreground">
               {p.priceXlm} XLM / {p.durationDays} days
