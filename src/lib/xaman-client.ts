@@ -15,7 +15,7 @@ export type XamanPaymentPayload = {
   qrPng: string;
   deeplink: string;
   destination: string;
-  amountXrp: number;
+  amountXlm: number;
 };
 
 export type XamanStatusPayload = {

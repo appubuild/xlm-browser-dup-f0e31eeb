@@ -25,7 +25,7 @@ export interface BadgeTier {
   id: string;
   key: string;
   name: string;
-  priceXrp: number;
+  priceXlm: number;
   color: string;
   benefits: string[];
   sortOrder: number;
@@ -44,7 +44,7 @@ export interface PromotionPackage {
   id: string;
   slot: PromoSlot;
   durationDays: number;
-  priceXrp: number;
+  priceXlm: number;
   active: boolean;
   sortOrder: number;
 }
@@ -57,7 +57,7 @@ export interface ProjectPromotion {
   userId: string;
   slot: PromoSlot;
   durationDays: number;
-  amountXrp: number;
+  amountXlm: number;
   txHash: string | null;
   status: string;
   startsAt: string | null;
@@ -69,7 +69,7 @@ export interface BadgePurchase {
   id: string;
   userId: string;
   tierKey: string;
-  amountXrp: number;
+  amountXlm: number;
   txHash: string | null;
   status: string;
   createdAt: string;
@@ -81,7 +81,7 @@ export interface TxRecord {
   kind: string;
   description: string | null;
   referenceId: string | null;
-  amountXrp: number;
+  amountXlm: number;
   txHash: string | null;
   account: string | null;
   status: string;
@@ -114,29 +114,29 @@ export const mapProfile = (r: any): AuthorProfile => ({
 });
 
 const mapTier = (r: any): BadgeTier => ({
-  id: r.id, key: r.key, name: r.name, priceXrp: num(r.price_xrp), color: r.color ?? "sky",
+  id: r.id, key: r.key, name: r.name, priceXlm: num(r.price_xrp), color: r.color ?? "sky",
   benefits: r.benefits ?? [], sortOrder: r.sort_order ?? 0, active: r.active !== false,
 });
 
 const mapPkg = (r: any): PromotionPackage => ({
   id: r.id, slot: r.slot as PromoSlot, durationDays: r.duration_days,
-  priceXrp: num(r.price_xrp), active: r.active !== false, sortOrder: r.sort_order ?? 0,
+  priceXlm: num(r.price_xrp), active: r.active !== false, sortOrder: r.sort_order ?? 0,
 });
 
 const mapPromo = (r: any): ProjectPromotion => ({
   id: r.id, projectSlug: r.project_slug, userId: r.user_id, slot: r.slot as PromoSlot,
-  durationDays: r.duration_days, amountXrp: num(r.amount_xrp), txHash: r.tx_hash ?? null,
+  durationDays: r.duration_days, amountXlm: num(r.amount_xrp), txHash: r.tx_hash ?? null,
   status: r.status, startsAt: r.starts_at ?? null, endsAt: r.ends_at ?? null, createdAt: r.created_at,
 });
 
 const mapBadgeBuy = (r: any): BadgePurchase => ({
-  id: r.id, userId: r.user_id, tierKey: r.tier_key, amountXrp: num(r.amount_xrp),
+  id: r.id, userId: r.user_id, tierKey: r.tier_key, amountXlm: num(r.amount_xrp),
   txHash: r.tx_hash ?? null, status: r.status, createdAt: r.created_at,
 });
 
 const mapTx = (r: any): TxRecord => ({
   id: r.id, userId: r.user_id, kind: r.kind, description: r.description ?? null,
-  referenceId: r.reference_id ?? null, amountXrp: num(r.amount_xrp), txHash: r.tx_hash ?? null,
+  referenceId: r.reference_id ?? null, amountXlm: num(r.amount_xrp), txHash: r.tx_hash ?? null,
   account: r.account ?? null, status: r.status, createdAt: r.created_at,
 });
 
@@ -152,7 +152,7 @@ export async function fetchBadgeTiers(includeInactive = false): Promise<BadgeTie
 
 export async function saveBadgeTier(t: Partial<BadgeTier> & { id: string }) {
   const { error } = await db().from("badge_tiers").update({
-    name: t.name, price_xrp: t.priceXrp, color: t.color, benefits: t.benefits,
+    name: t.name, price_xrp: t.priceXlm, color: t.color, benefits: t.benefits,
     sort_order: t.sortOrder, active: t.active,
   }).eq("id", t.id);
   if (error) throw new Error(error.message);
@@ -160,7 +160,7 @@ export async function saveBadgeTier(t: Partial<BadgeTier> & { id: string }) {
 
 export async function createBadgeTier(t: Omit<BadgeTier, "id">) {
   const { error } = await db().from("badge_tiers").insert({
-    key: t.key, name: t.name, price_xrp: t.priceXrp, color: t.color,
+    key: t.key, name: t.name, price_xrp: t.priceXlm, color: t.color,
     benefits: t.benefits, sort_order: t.sortOrder, active: t.active,
   });
   if (error) throw new Error(error.message);
@@ -181,7 +181,7 @@ export async function fetchPromotionPackages(includeInactive = false): Promise<P
 
 export async function savePromotionPackage(p: Partial<PromotionPackage> & { id: string }) {
   const { error } = await db().from("promotion_packages").update({
-    slot: p.slot, duration_days: p.durationDays, price_xrp: p.priceXrp,
+    slot: p.slot, duration_days: p.durationDays, price_xrp: p.priceXlm,
     active: p.active, sort_order: p.sortOrder,
   }).eq("id", p.id);
   if (error) throw new Error(error.message);
@@ -189,7 +189,7 @@ export async function savePromotionPackage(p: Partial<PromotionPackage> & { id: 
 
 export async function createPromotionPackage(p: Omit<PromotionPackage, "id">) {
   const { error } = await db().from("promotion_packages").insert({
-    slot: p.slot, duration_days: p.durationDays, price_xrp: p.priceXrp,
+    slot: p.slot, duration_days: p.durationDays, price_xrp: p.priceXlm,
     active: p.active, sort_order: p.sortOrder,
   });
   if (error) throw new Error(error.message);
@@ -281,11 +281,11 @@ export async function upsertAuthorProfile(userId: string, p: Partial<AuthorProfi
 
 export async function logTransaction(input: {
   userId: string; kind: string; description?: string; referenceId?: string;
-  amountXrp: number; txHash?: string | null; account?: string | null; status: string;
+  amountXlm: number; txHash?: string | null; account?: string | null; status: string;
 }) {
   const { error } = await db().from("transactions").insert({
     user_id: input.userId, kind: input.kind, description: input.description ?? null,
-    reference_id: input.referenceId ?? null, amount_xrp: input.amountXrp,
+    reference_id: input.referenceId ?? null, amount_xrp: input.amountXlm,
     tx_hash: input.txHash ?? null, account: input.account ?? null, status: input.status,
   });
   if (error) throw new Error(error.message);
@@ -306,7 +306,7 @@ export async function fetchAllTransactions(): Promise<TxRecord[]> {
 /** Records a lifetime badge purchase and immediately grants it (tx hash verified on-ledger by Xaman). */
 export async function purchaseBadge(userId: string, tier: BadgeTier, txHash: string, account?: string | null) {
   const { error } = await db().from("badge_purchases").insert({
-    user_id: userId, tier_key: tier.key, amount_xrp: tier.priceXrp, tx_hash: txHash, status: "success",
+    user_id: userId, tier_key: tier.key, amount_xrp: tier.priceXlm, tx_hash: txHash, status: "success",
   });
   if (error) throw new Error(error.message);
   const { error: e2 } = await db().from("author_profiles")
@@ -315,7 +315,7 @@ export async function purchaseBadge(userId: string, tier: BadgeTier, txHash: str
   if (e2) throw new Error(e2.message);
   await logTransaction({
     userId, kind: "badge", description: `${tier.name} lifetime badge`, referenceId: tier.key,
-    amountXrp: tier.priceXrp, txHash, account, status: "success",
+    amountXlm: tier.priceXlm, txHash, account, status: "success",
   });
 }
 
@@ -344,7 +344,7 @@ export async function createPromotion(input: {
     user_id: input.userId,
     slot: input.pkg.slot,
     duration_days: input.pkg.durationDays,
-    amount_xrp: input.pkg.priceXrp,
+    amount_xrp: input.pkg.priceXlm,
     tx_hash: input.txHash,
     status: active ? "active" : "pending",
     starts_at: active ? now.toISOString() : null,
@@ -354,7 +354,7 @@ export async function createPromotion(input: {
   await logTransaction({
     userId: input.userId, kind: "promotion",
     description: `${SLOT_LABEL[input.pkg.slot]} — ${input.projectName} (${input.pkg.durationDays} days)`,
-    referenceId: input.projectSlug, amountXrp: input.pkg.priceXrp,
+    referenceId: input.projectSlug, amountXlm: input.pkg.priceXlm,
     txHash: input.txHash, account: input.account, status: "success",
   });
 }

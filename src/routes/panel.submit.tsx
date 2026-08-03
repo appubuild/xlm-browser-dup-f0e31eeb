@@ -29,7 +29,7 @@ function SubmitGate() {
           <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-amber-400/15 text-3xl">★</div>
           <h1 className="mt-4 text-2xl font-bold">Founder Membership required</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Submitting projects to XRPBrowser is reserved for Founder Members. Unlock it once and keep it forever —
+            Submitting projects to XLM Browser is reserved for Founder Members. Unlock it once and keep it forever —
             you also get the Founder badge, full dashboard access and project analytics.
           </p>
           <ul className="mx-auto mt-4 max-w-sm space-y-1.5 text-left text-sm">
@@ -145,9 +145,9 @@ function SubmitPage() {
             </div>
             <div className="space-y-4 px-8 py-6 text-left text-sm">
               <Step icon="🔍" title="Admin review" desc="Our team will look over your submission within 24–48 hours." />
-              <Step icon={siteSettings.listingFeeXrp > 0 ? "💳" : "🚀"}
-                title={siteSettings.listingFeeXrp > 0 ? `Pay listing fee (${siteSettings.listingFeeXrp} XRP)` : "Auto-publish"}
-                desc={siteSettings.listingFeeXrp > 0
+              <Step icon={siteSettings.listingFeeXlm > 0 ? "💳" : "🚀"}
+                title={siteSettings.listingFeeXlm > 0 ? `Pay listing fee (${siteSettings.listingFeeXlm} XLM)` : "Auto-publish"}
+                desc={siteSettings.listingFeeXlm > 0
                   ? "Once approved, complete payment from “My Submissions” to go live."
                   : "Once approved, your project will be published automatically."} />
               <Step icon="📣" title="You'll be notified" desc="Watch your inbox and the Notifications tab for updates." />
@@ -171,7 +171,7 @@ function SubmitPage() {
     <PanelShell>
       <div className="mx-auto max-w-3xl px-6 py-8">
         <h1 className="text-3xl font-bold">Submit a Project</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Get your XRPL project listed on XRPBrowser. All fields are required.</p>
+        <p className="mt-1 text-sm text-muted-foreground">Get your Stellar project listed on XLM Browser. All fields are required.</p>
 
         <div className="mt-6 flex items-center gap-2 text-sm">
           {[1, 2, 3].map((n) => (
@@ -278,9 +278,9 @@ function SubmitPage() {
                 <div><b>Tagline:</b> {f.tagline}</div>
                 <div><b>Socials:</b> {validSocials.map((s) => SOCIAL_OPTIONS.find((o) => o.value === s.platform)?.label || s.platform).join(", ") || "—"}</div>
               </div>
-              {siteSettings.listingFeeXrp > 0 ? (
+              {siteSettings.listingFeeXlm > 0 ? (
                 <div className="rounded border border-primary/30 bg-primary/5 p-3 text-sm">
-                  <b>Listing fee: {siteSettings.listingFeeXrp} XRP.</b> Payment required <i>after</i> admin approval to publish your listing.
+                  <b>Listing fee: {siteSettings.listingFeeXlm} XLM.</b> Payment required <i>after</i> admin approval to publish your listing.
                 </div>
               ) : (
                 <div className="rounded border border-success/30 bg-success/5 p-3 text-sm">

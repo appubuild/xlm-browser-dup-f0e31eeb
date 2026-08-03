@@ -9,10 +9,10 @@ export const Route = createFileRoute("/admin/categories")({
   component: AdminCategories,
   head: () => ({
     meta: [
-      { title: "Categories — XRPBrowser Admin" },
-      { name: "description", content: "Create, edit, reorder and delete XRPL project categories." },
-      { property: "og:title", content: "Categories — XRPBrowser Admin" },
-      { property: "og:description", content: "Manage XRPL project categories." },
+      { title: "Categories — XLM Browser Admin" },
+      { name: "description", content: "Create, edit, reorder and delete Stellar project categories." },
+      { property: "og:title", content: "Categories — XLM Browser Admin" },
+      { property: "og:description", content: "Manage Stellar project categories." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

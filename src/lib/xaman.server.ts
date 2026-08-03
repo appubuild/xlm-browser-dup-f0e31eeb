@@ -133,7 +133,7 @@ export async function loadXamanCreds(): Promise<XamanCreds> {
     apiKey: envKey.value ?? "",
     apiSecret: envSecret.value ?? "",
     network: "Mainnet",
-    rpcUrl: "https://xrplcluster.com",
+    rpcUrl: "https://horizon.stellar.org",
     treasuryAddress: "",
     source: "env",
   };
@@ -243,10 +243,10 @@ export async function createSignInPayload(returnUrl?: string) {
   };
 }
 
-export async function createPaymentPayload(opts: { amountXrp: number; memo?: string; returnUrl?: string }) {
+export async function createPaymentPayload(opts: { amountXlm: number; memo?: string; returnUrl?: string }) {
   const creds = await loadXamanCreds();
   if (!creds.treasuryAddress) throw new Error("Treasury address is not set in Admin → Wallet Connect Config.");
-  const drops = String(Math.round(opts.amountXrp * 1_000_000));
+  const drops = String(Math.round(opts.amountXlm * 1_000_000));
   const created = (await xummFetch("/payload", creds, {
     method: "POST",
     body: JSON.stringify({
@@ -268,7 +268,7 @@ export async function createPaymentPayload(opts: { amountXrp: number; memo?: str
     qrPng: created.refs.qr_png,
     deeplink: created.next.always,
     destination: creds.treasuryAddress,
-    amountXrp: opts.amountXrp,
+    amountXlm: opts.amountXlm,
   };
 }
 
@@ -289,9 +289,9 @@ export async function getPayloadStatus(uuid: string) {
   };
 }
 
-/** XRP balance in XRP (not drops) using a public XRPL JSON-RPC endpoint. */
-export async function getXrpBalance(account: string, network: "Mainnet" | "Testnet" = "Mainnet") {
-  const rpc = network === "Testnet" ? "https://s.altnet.rippletest.net:51234" : "https://xrplcluster.com";
+/** XLM balance in XLM (not drops) using a public Stellar JSON-RPC endpoint. */
+export async function getXlmBalance(account: string, network: "Mainnet" | "Testnet" = "Mainnet") {
+  const rpc = network === "Testnet" ? "https://horizon-testnet.stellar.org" : "https://horizon.stellar.org";
   const res = await fetch(rpc, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -300,7 +300,7 @@ export async function getXrpBalance(account: string, network: "Mainnet" | "Testn
       params: [{ account, ledger_index: "validated" }],
     }),
   });
-  if (!res.ok) throw new Error(`XRPL RPC ${res.status}`);
+  if (!res.ok) throw new Error(`Stellar RPC ${res.status}`);
   const json = (await res.json()) as {
     result?: { account_data?: { Balance?: string }; error?: string };
   };

@@ -18,7 +18,7 @@ function NewsPage() {
   return (
     <PublicShell>
       <div className="mx-auto max-w-6xl px-6 py-8">
-        <h1 className="text-3xl font-bold">XRPL News</h1>
+        <h1 className="text-3xl font-bold">Stellar News</h1>
         <div className="mt-4 flex flex-wrap items-center gap-2">
           {cats.map((c) => (
             <button key={c} onClick={() => setCat(c)} className={`rounded-full border px-3 py-1.5 text-sm ${cat === c ? "bg-primary text-primary-foreground" : "hover:bg-accent"}`}>{c}</button>

@@ -13,10 +13,10 @@ export const Route = createFileRoute("/contact")({
   component: ContactPage,
   head: () => ({
     meta: [
-      { title: "Contact XRPBrowser | XRPL Support & Partnerships" },
-      { name: "description", content: "Contact the XRPBrowser team about project listings, partnerships, billing or issues. Pick a reason and we'll reply in your support thread." },
-      { property: "og:title", content: "Contact XRPBrowser" },
-      { property: "og:description", content: "Reach the XRPBrowser team for XRPL listing support, partnerships and general questions." },
+      { title: "Contact XLM Browser | Stellar Support & Partnerships" },
+      { name: "description", content: "Contact the XLM Browser team about project listings, partnerships, billing or issues. Pick a reason and we'll reply in your support thread." },
+      { property: "og:title", content: "Contact XLM Browser" },
+      { property: "og:description", content: "Reach the XLM Browser team for Stellar listing support, partnerships and general questions." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -84,7 +84,7 @@ function ContactPage() {
     <PublicShell>
       <div className="mx-auto max-w-3xl px-6 py-10">
         <h1 className="text-3xl font-bold">Contact us</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Questions about listing, payments, or the XRPL ecosystem? Send us a message.</p>
+        <p className="mt-2 text-sm text-muted-foreground">Questions about listing, payments, or the Stellar ecosystem? Send us a message.</p>
 
         <div className="soft-card mt-6 flex flex-wrap items-center gap-4 p-4 text-sm">
           <span className="inline-flex items-center gap-2"><Mail className="h-4 w-4 text-primary" /> {siteSettings.contactEmail}</span>

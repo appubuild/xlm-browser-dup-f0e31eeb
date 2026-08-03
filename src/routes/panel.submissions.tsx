@@ -38,7 +38,7 @@ function Submissions() {
               </thead>
               <tbody>
                 {mine.map((p) => {
-                  const needsPay = p.status === "approved" && !p.isPublic && siteSettings.listingFeeXrp > 0;
+                  const needsPay = p.status === "approved" && !p.isPublic && siteSettings.listingFeeXlm > 0;
                   return (
                     <tr key={p.id} className="border-b last:border-0">
                       <td className="p-3 font-medium">
@@ -63,7 +63,7 @@ function Submissions() {
                       <td className="p-3 text-muted-foreground">{p.dateAdded}</td>
                       <td className="p-3">
                         <div className="flex flex-wrap gap-1">
-                          {needsPay && <button onClick={() => setPayFor(p)} className="rounded bg-primary px-2.5 py-1 text-xs text-primary-foreground">Pay {siteSettings.listingFeeXrp} XRP</button>}
+                          {needsPay && <button onClick={() => setPayFor(p)} className="rounded bg-primary px-2.5 py-1 text-xs text-primary-foreground">Pay {siteSettings.listingFeeXlm} XLM</button>}
                           {p.isPublic && <button onClick={() => setPromoteFor(p)} className="rounded border px-2.5 py-1 text-xs hover:bg-accent">🚀 Promote</button>}
                           <button onClick={() => setEditFor(p)} className="rounded border px-2.5 py-1 text-xs hover:bg-accent">Edit</button>
                           <button onClick={() => setDetailsFor(p)} className="rounded border px-2.5 py-1 text-xs hover:bg-accent">Details</button>
@@ -83,7 +83,7 @@ function Submissions() {
       </div>
 
       <PayDialog project={payFor} onClose={() => setPayFor(null)} onPaid={async (proj, tx) => {
-        await markProjectPaid(proj.id, tx, siteSettings.listingFeeXrp);
+        await markProjectPaid(proj.id, tx, siteSettings.listingFeeXlm);
         toast.success("Payment received — project is now live");
         setPayFor(null);
       }} />
@@ -129,7 +129,7 @@ function PromoteDialog({ project, onClose }: { project: Project | null; onClose:
                       <button key={p.id} onClick={() => setPicked(p)}
                         className="flex items-center justify-between rounded-lg border p-3 text-left text-sm hover:border-primary hover:bg-accent">
                         <span>{p.durationDays} days</span>
-                        <b>{p.priceXrp} XRP</b>
+                        <b>{p.priceXlm} XLM</b>
                       </button>
                     ))}
                   </div>
@@ -145,8 +145,8 @@ function PromoteDialog({ project, onClose }: { project: Project | null; onClose:
         open={!!picked}
         title={`Promote ${project.name}`}
         subtitle={picked ? `${SLOT_LABEL[picked.slot]} · ${picked.durationDays} days` : undefined}
-        amountXrp={picked?.priceXrp ?? 0}
-        memo={`XRPBrowser promotion ${project.slug}`}
+        amountXlm={picked?.priceXlm ?? 0}
+        memo={`XLM Browser promotion ${project.slug}`}
         onClose={() => setPicked(null)}
         onPaid={async (txHash, account) => {
           if (!user || !picked) return;
@@ -180,7 +180,7 @@ function PayDialog({ project, onClose, onPaid }: { project: Project | null; onCl
     setError(null);
     setCreating(true);
     try {
-      const request = { amountXrp: siteSettings.listingFeeXrp, memo: `XRPBrowser listing: ${project.name}` };
+      const request = { amountXlm: siteSettings.listingFeeXlm, memo: `XLM Browser listing: ${project.name}` };
       const res = await pay({ data: request });
       let next: XamanPaymentPayload | null = null;
       if (res.ok) next = res.data;
@@ -230,7 +230,7 @@ function PayDialog({ project, onClose, onPaid }: { project: Project | null; onCl
         <DialogHeader><DialogTitle>Pay listing fee — {project.name}</DialogTitle></DialogHeader>
         <div className="space-y-3 text-sm">
           <div className="rounded border bg-muted/50 p-3">
-            <div className="flex justify-between"><span className="text-muted-foreground">Amount</span><b>{siteSettings.listingFeeXrp} XRP</b></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Amount</span><b>{siteSettings.listingFeeXlm} XLM</b></div>
             <div className="mt-1 flex justify-between gap-3"><span className="text-muted-foreground">To</span><span className="break-all font-mono text-xs">{addr}</span></div>
           </div>
           {error && <div className="whitespace-pre-wrap rounded border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">{error}</div>}
@@ -252,7 +252,7 @@ function PayDialog({ project, onClose, onPaid }: { project: Project | null; onCl
           <button onClick={onClose} className="rounded border px-3 py-2 text-sm">Cancel</button>
           {!payload && (
             <button disabled={creating} onClick={() => void start()} className="rounded bg-primary px-3 py-2 text-sm text-primary-foreground disabled:opacity-50">
-              {creating ? "Creating…" : `Pay ${siteSettings.listingFeeXrp} XRP with Xaman`}
+              {creating ? "Creating…" : `Pay ${siteSettings.listingFeeXlm} XLM with Xaman`}
             </button>
           )}
         </DialogFooter>

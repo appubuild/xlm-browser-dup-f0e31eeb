@@ -25,7 +25,7 @@ function AdminAnalytics() {
         <h1 className="text-2xl font-semibold">Analytics</h1>
         <div className="flex items-center gap-2">
           <RangePicker days={days} setDays={setDays} />
-          <button onClick={() => { exportCsv(rows, `xrpbrowser-analytics-${days}d.csv`); toast.success("CSV exported"); }} className="rounded border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm">Export CSV</button>
+          <button onClick={() => { exportCsv(rows, `xlmbrowser-analytics-${days}d.csv`); toast.success("CSV exported"); }} className="rounded border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm">Export CSV</button>
         </div>
       </div>
 

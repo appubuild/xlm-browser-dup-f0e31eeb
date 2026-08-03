@@ -8,8 +8,8 @@ export const Route = createFileRoute("/category/$slug")({
   component: CategoryPage,
   head: ({ params }) => {
     const pretty = params.slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-    const title = `${pretty} projects on the XRP Ledger — XRPBrowser`;
-    const description = `Browse verified and community-submitted ${pretty} projects across the XRP Ledger ecosystem.`;
+    const title = `${pretty} projects on the Stellar Network — XLM Browser`;
+    const description = `Browse verified and community-submitted ${pretty} projects across the Stellar Network ecosystem.`;
     return {
       meta: [
         { title },

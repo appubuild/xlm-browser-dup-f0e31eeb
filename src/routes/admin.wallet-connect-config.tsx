@@ -24,7 +24,7 @@ function WalletConfig() {
         xamanApiSecret: r.xaman_api_secret ?? "",
         treasuryAddress: r.treasury_address ?? "",
         network: (r.network as "Mainnet" | "Testnet") ?? "Mainnet",
-        rpcUrl: r.rpc_url ?? "https://xrplcluster.com",
+        rpcUrl: r.rpc_url ?? "https://horizon.stellar.org",
       });
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,7 +59,7 @@ function WalletConfig() {
       <div className="max-w-3xl">
         <h1 className="text-2xl font-semibold">Wallet Connect Config</h1>
         <p className="mt-1 text-sm text-slate-400">
-          XRPBrowser uses <b>Xaman (Xumm)</b> as the exclusive wallet for user connect &amp; payments.
+          XLM Browser uses <b>Xaman (Xumm)</b> as the exclusive wallet for user connect &amp; payments.
           Users connect via QR or the Xaman mobile app and pay listing fees to the treasury address below.
         </p>
 
@@ -128,11 +128,11 @@ function WalletConfig() {
               <span className="grid h-8 w-8 place-items-center rounded-md bg-emerald-500/20 text-emerald-300">🏦</span>
               <div>
                 <div className="text-sm font-semibold">Treasury address</div>
-                <div className="text-xs text-slate-400">XRPL address that receives listing-fee payments.</div>
+                <div className="text-xs text-slate-400">Stellar address that receives listing-fee payments.</div>
               </div>
             </div>
             <label className="mt-3 block text-xs">
-              <div className="mb-1 text-slate-400">XRPL address (r...)</div>
+              <div className="mb-1 text-slate-400">Stellar address (r...)</div>
               <input
                 value={walletConfig.treasuryAddress}
                 onChange={(e) => updateWalletConfig({ treasuryAddress: e.target.value })}
@@ -150,7 +150,7 @@ function WalletConfig() {
               <span className="grid h-8 w-8 place-items-center rounded-md bg-sky-500/20 text-sky-300">🌐</span>
               <div>
                 <div className="text-sm font-semibold">Network</div>
-                <div className="text-xs text-slate-400">Which XRPL network Xaman payloads target.</div>
+                <div className="text-xs text-slate-400">Which Stellar network Xaman payloads target.</div>
               </div>
             </div>
             <div className="mt-3 grid gap-3 md:grid-cols-2">
@@ -166,7 +166,7 @@ function WalletConfig() {
                 </select>
               </label>
               <label className="block text-xs">
-                <div className="mb-1 text-slate-400">XRPL RPC URL</div>
+                <div className="mb-1 text-slate-400">Stellar RPC URL</div>
                 <input
                   value={walletConfig.rpcUrl}
                   onChange={(e) => updateWalletConfig({ rpcUrl: e.target.value })}

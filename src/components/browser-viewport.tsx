@@ -131,7 +131,7 @@ export function BrowserViewport({ open, onClose, initialProject }: Props) {
           <span className="inline-block h-3 w-3 rounded-full bg-yellow-400" />
           <span className="inline-block h-3 w-3 rounded-full bg-green-400" />
         </div>
-        <div className="ml-2 text-xs font-medium">XRPBrowser {isRetro ? "— Navigator 4.0" : "Viewport"}</div>
+        <div className="ml-2 text-xs font-medium">XLM Browser {isRetro ? "— Navigator 4.0" : "Viewport"}</div>
         <button onClick={onClose} className="ml-auto inline-flex items-center gap-1 rounded px-2 py-1 text-xs hover:bg-muted">
           <X className="h-3.5 w-3.5" /> Close
         </button>
@@ -226,7 +226,7 @@ function NewTabPage({ projects, onPick, onGo }: { projects: Project[]; onPick: (
       <h2 className="text-center text-2xl font-bold">New Tab</h2>
       <form onSubmit={(e) => { e.preventDefault(); onGo(q); }} className="mt-6 flex items-center gap-2 rounded-full border bg-background px-4 py-2 shadow-sm">
         <Search className="h-4 w-4 opacity-60" />
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Enter URL or search XRPL ecosystem…" className="flex-1 bg-transparent outline-none text-sm" />
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Enter URL or search Stellar ecosystem…" className="flex-1 bg-transparent outline-none text-sm" />
         <button className="rounded-full bg-primary px-3 py-1 text-xs text-primary-foreground">Go</button>
       </form>
       <div className="mt-8 grid grid-cols-3 gap-3 sm:grid-cols-4">

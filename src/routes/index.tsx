@@ -69,7 +69,7 @@ function Home() {
         <div className="relative z-10 mx-auto max-w-4xl text-center">
           <h1 className={isRetro ? "font-mono text-4xl md:text-5xl" : "text-4xl font-extrabold tracking-tight md:text-6xl"}>
             {isRetro ? ">> SEARCH THE " : "Search the "}
-            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">XRP Ledger</span>
+            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Stellar Network</span>
             {isRetro ? " UNIVERSE <<" : " Universe"}
           </h1>
           <p className="mt-4 text-base text-muted-foreground md:text-lg">
@@ -86,9 +86,9 @@ function Home() {
             {[
               { l: "Explore dApps", to: "/category/dapps" },
               { l: "Find Tokens", to: "/category/tokens" },
-              { l: "XRPL Network", to: "/ecosystem" },
+              { l: "Stellar Network", to: "/ecosystem" },
               { l: "NFT Marketplace", to: "/category/nfts" },
-              { l: "XRP News", to: "/news" },
+              { l: "XLM News", to: "/news" },
             ].map((p) => (
               <Link key={p.l} to={p.to} className={isRetro ? "retro-btn text-xs" : "rounded-full border bg-card px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground"}>
                 {p.l}
@@ -146,7 +146,7 @@ function Home() {
       {isVisible("trending") && trending.length > 0 && (
         <section className="mx-auto max-w-6xl px-6 py-6">
           <div className="mb-4 flex items-end justify-between">
-            <h2 className="text-xl font-bold">{sectionsByKey.trending?.title || "Trending on XRPL"}</h2>
+            <h2 className="text-xl font-bold">{sectionsByKey.trending?.title || "Trending on Stellar"}</h2>
             <Link to="/ecosystem" className="text-sm text-primary hover:underline">View all →</Link>
           </div>
           <div className="flex snap-x gap-3 overflow-x-auto pb-2">
@@ -188,7 +188,7 @@ function Home() {
         <section className="mx-auto max-w-6xl px-6 py-10">
           <div className="mb-4">
             <h2 className="text-2xl font-bold">{sectionsByKey.verified_companies?.title || "Verified Companies"}</h2>
-            <p className="text-sm text-muted-foreground">{sectionsByKey.verified_companies?.subtitle || "Trusted teams building on the XRP Ledger"}</p>
+            <p className="text-sm text-muted-foreground">{sectionsByKey.verified_companies?.subtitle || "Trusted teams building on the Stellar Network"}</p>
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {companies.map((c) => (
@@ -219,8 +219,8 @@ function Home() {
       <section className="mx-auto max-w-6xl px-6 py-10">
         <div className="grid gap-4 md:grid-cols-4">
           {[
-            { Icon: Globe, t: "Borderless Search", d: "Discover XRPL apps everywhere." },
-            { Icon: Rocket, t: "Built for XRPL", d: "Purpose-built for the ledger." },
+            { Icon: Globe, t: "Borderless Search", d: "Discover Stellar apps everywhere." },
+            { Icon: Rocket, t: "Built for Stellar", d: "Purpose-built for the ledger." },
             { Icon: Lock, t: "Private by Default", d: "No tracking. No profiles." },
             { Icon: ShieldCheck, t: "Open & Decentralized", d: "Community-driven directory." },
           ].map((f) => (
@@ -237,8 +237,8 @@ function Home() {
       <section className="mx-auto max-w-6xl px-6 py-10">
         <div className="soft-card flex flex-col items-start justify-between gap-4 p-8 md:flex-row md:items-center">
           <div>
-            <h3 className="text-xl font-bold">Have a project on the XRP Ledger?</h3>
-            <p className="text-sm text-muted-foreground">Submit it to XRPBrowser and get discovered.</p>
+            <h3 className="text-xl font-bold">Have a project on the Stellar Network?</h3>
+            <p className="text-sm text-muted-foreground">Submit it to XLM Browser and get discovered.</p>
           </div>
           <Link to="/submit" className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90">
             Submit a project <ArrowRight className="h-4 w-4" />

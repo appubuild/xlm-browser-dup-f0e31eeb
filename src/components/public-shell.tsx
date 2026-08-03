@@ -135,7 +135,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
               <Wallet className="h-4 w-4" />
               {user?.walletAddress ? (
                 <span className="flex items-center gap-1.5">
-                  <span className="font-mono font-semibold">{headerBalance === null ? "…" : `${headerBalance.toLocaleString(undefined, { maximumFractionDigits: 4 })} XRP`}</span>
+                  <span className="font-mono font-semibold">{headerBalance === null ? "…" : `${headerBalance.toLocaleString(undefined, { maximumFractionDigits: 4 })} XLM`}</span>
                   <span className="text-xs text-muted-foreground">{user.walletAddress.slice(0, 4)}…{user.walletAddress.slice(-4)}</span>
                 </span>
               ) : "Connect Wallet"}
@@ -227,7 +227,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
             {!collapsed && (
               <div className={isRetro ? "m-2 border border-primary p-2 text-xs" : "soft-card m-2 p-3 text-xs"}>
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">XRP</span>
+                  <span className="text-muted-foreground">XLM</span>
                   <span className="font-mono font-semibold">${xrpPrice.price.toFixed(4)}</span>
                 </div>
                 <div className={`text-right font-mono ${xrpPrice.change >= 0 ? "text-success" : "text-destructive"}`}>{xrpPrice.change >= 0 ? "+" : ""}{xrpPrice.change.toFixed(2)}%</div>
@@ -305,7 +305,7 @@ function RetroChrome({ path, loading }: { path: string; loading: boolean }) {
           <span className="inline-block h-3 w-3 border border-primary bg-secondary" />
           <span className="inline-block h-3 w-3 border border-primary bg-secondary" />
         </div>
-        <span className="ml-2 font-mono">XRPBROWSER.COM — Netscape Navigator 4.0</span>
+        <span className="ml-2 font-mono">XLM BROWSER.COM — Netscape Navigator 4.0</span>
       </div>
       <div className="flex items-center gap-1 border-t border-primary px-2 py-1">
         <button className="retro-btn text-xs">◀ Back</button>
@@ -313,7 +313,7 @@ function RetroChrome({ path, loading }: { path: string; loading: boolean }) {
         <button className="retro-btn text-xs">⟳ Reload</button>
         <button className="retro-btn text-xs">⌂ Home</button>
         <div className="ml-1 flex flex-1 items-center gap-1 border border-primary bg-background px-2 py-0.5 font-mono text-xs">
-          <span>xrpbrowser.com{path}</span>
+          <span>xlmbrowser.com{path}</span>
           <span className="blink">_</span>
         </div>
       </div>
@@ -527,7 +527,7 @@ function XamanConnected({ onClose }: { onClose: () => void }) {
         <div className="mt-3 flex items-center justify-between">
           <div>
             <div className="text-xs text-muted-foreground">Balance</div>
-            <div className="text-lg font-semibold">{balance === null ? (balErr ? "—" : "Loading…") : `${balance.toLocaleString()} XRP`}</div>
+            <div className="text-lg font-semibold">{balance === null ? (balErr ? "—" : "Loading…") : `${balance.toLocaleString()} XLM`}</div>
             <div className="text-xs text-muted-foreground">{usd ? `≈ $${usd}` : balErr ?? ""}</div>
           </div>
           <div className="text-right text-[11px] text-muted-foreground">
@@ -538,7 +538,7 @@ function XamanConnected({ onClose }: { onClose: () => void }) {
       </div>
       <div className="grid grid-cols-2 gap-3 rounded-md border p-3 text-xs">
         <div>
-          <div className="text-muted-foreground">XRP price</div>
+          <div className="text-muted-foreground">XLM price</div>
           <div className="font-mono font-medium text-foreground">${xrpPrice.price.toFixed(4)}</div>
         </div>
         <div className="text-right">
@@ -549,11 +549,11 @@ function XamanConnected({ onClose }: { onClose: () => void }) {
         </div>
         <div className="col-span-2">
           <a
-            href={`https://livenet.xrpl.org/accounts/${user?.walletAddress ?? ""}`}
+            href={`https://livenet.stellar.org/accounts/${user?.walletAddress ?? ""}`}
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-1 underline hover:no-underline"
-          >View on XRPL explorer ↗</a>
+          >View on Stellar explorer ↗</a>
         </div>
       </div>
       <button onClick={() => { disconnectWallet(); onClose(); toast("Xaman disconnected"); }} className="w-full rounded-md border px-3 py-2 hover:bg-muted">

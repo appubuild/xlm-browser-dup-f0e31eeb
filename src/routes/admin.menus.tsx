@@ -8,9 +8,9 @@ export const Route = createFileRoute("/admin/menus")({
   component: AdminMenus,
   head: () => ({
     meta: [
-      { title: "Menu Builder — XRPBrowser Admin" },
+      { title: "Menu Builder — XLM Browser Admin" },
       { name: "description", content: "Build the header drop-down menu and the user panel sidebar." },
-      { property: "og:title", content: "Menu Builder — XRPBrowser Admin" },
+      { property: "og:title", content: "Menu Builder — XLM Browser Admin" },
       { property: "og:description", content: "Manage header and panel navigation items." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

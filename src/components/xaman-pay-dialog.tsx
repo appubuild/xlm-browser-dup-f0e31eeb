@@ -8,17 +8,17 @@ import {
 } from "@/lib/xaman-client";
 
 /**
- * Reusable "pay with Xaman" modal. Creates a real XRPL payment payload,
+ * Reusable "pay with Xaman" modal. Creates a real Stellar payment payload,
  * shows the QR + deeplink and polls until it is signed, then hands the
  * on-ledger transaction hash back to the caller.
  */
 export function XamanPayDialog({
-  open, title, subtitle, amountXrp, memo, onClose, onPaid,
+  open, title, subtitle, amountXlm, memo, onClose, onPaid,
 }: {
   open: boolean;
   title: string;
   subtitle?: string;
-  amountXrp: number;
+  amountXlm: number;
   memo: string;
   onClose: () => void;
   onPaid: (txHash: string, account: string | null) => Promise<void> | void;
@@ -32,13 +32,13 @@ export function XamanPayDialog({
 
   useEffect(() => {
     if (open) { setPayload(null); setError(null); setDone(false); }
-  }, [open, amountXrp, memo]);
+  }, [open, amountXlm, memo]);
 
   const start = async () => {
     setError(null);
     setCreating(true);
     try {
-      const request = { amountXrp, memo };
+      const request = { amountXlm, memo };
       const res = await pay({ data: request });
       let next: XamanPaymentPayload | null = null;
       if (res.ok) next = res.data;
@@ -89,7 +89,7 @@ export function XamanPayDialog({
         <div className="space-y-3 text-sm">
           {subtitle && <p className="text-muted-foreground">{subtitle}</p>}
           <div className="rounded border bg-muted/50 p-3">
-            <div className="flex justify-between"><span className="text-muted-foreground">Amount</span><b>{amountXrp} XRP</b></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Amount</span><b>{amountXlm} XLM</b></div>
             {payload && (
               <div className="mt-1 flex justify-between gap-3">
                 <span className="text-muted-foreground">To</span>
@@ -110,9 +110,9 @@ export function XamanPayDialog({
               </div>
             </div>
           ) : (
-            <button onClick={start} disabled={creating || amountXrp <= 0}
+            <button onClick={start} disabled={creating || amountXlm <= 0}
               className="w-full rounded bg-primary px-3 py-2 text-sm text-primary-foreground disabled:opacity-50">
-              {creating ? "Creating payment…" : `Pay ${amountXrp} XRP with Xaman`}
+              {creating ? "Creating payment…" : `Pay ${amountXlm} XLM with Xaman`}
             </button>
           )}
         </div>

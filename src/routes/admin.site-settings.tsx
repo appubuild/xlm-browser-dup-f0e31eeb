@@ -181,13 +181,13 @@ function SiteSettings() {
           <F label="Company"><input value={siteSettings.contactCompany} onChange={(e) => updateSiteSettings({ contactCompany: e.target.value })} className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" /></F>
           <F label="Location"><input value={siteSettings.contactLocation} onChange={(e) => updateSiteSettings({ contactLocation: e.target.value })} className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" /></F>
         </Card>
-        <Card title="Listing Fee (XRP payment)">
-          <F label="Listing fee in XRP (set 0 for free)">
-            <input type="number" min={0} step="0.1" value={siteSettings.listingFeeXrp}
-              onChange={(e) => updateSiteSettings({ listingFeeXrp: parseFloat(e.target.value) || 0 })}
+        <Card title="Listing Fee (XLM payment)">
+          <F label="Listing fee in XLM (set 0 for free)">
+            <input type="number" min={0} step="0.1" value={siteSettings.listingFeeXlm}
+              onChange={(e) => updateSiteSettings({ listingFeeXlm: parseFloat(e.target.value) || 0 })}
               className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" />
           </F>
-          <F label="Receiving XRPL address (r…)">
+          <F label="Receiving Stellar address (r…)">
             <input value={siteSettings.listingPaymentAddress} placeholder="rXXXXXXXXXXXXXXXXXXXXXXXX"
               onChange={(e) => updateSiteSettings({ listingPaymentAddress: e.target.value })}
               className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm font-mono" />
@@ -212,7 +212,7 @@ function SiteSettings() {
             <textarea
               value={siteSettings.aiDefaultInstruction ?? ""}
               onChange={(e) => updateSiteSettings({ aiDefaultInstruction: e.target.value })}
-              placeholder="e.g. Write in a friendly, informative tone for the XRPL community. Prefer short paragraphs and concrete examples."
+              placeholder="e.g. Write in a friendly, informative tone for the Stellar community. Prefer short paragraphs and concrete examples."
               className="min-h-24 w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm"
             />
           </F>

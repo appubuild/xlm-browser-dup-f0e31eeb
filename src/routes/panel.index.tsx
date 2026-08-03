@@ -9,10 +9,10 @@ export const Route = createFileRoute("/panel/")({
   component: PanelHome,
   head: () => ({
     meta: [
-      { title: "Your Dashboard — XRPBrowser" },
-      { name: "description", content: "Traffic, engagement and project performance for everything you publish on XRPBrowser." },
-      { property: "og:title", content: "Your Dashboard — XRPBrowser" },
-      { property: "og:description", content: "Track views, visits, upvotes and comments on your XRPL projects." },
+      { title: "Your Dashboard — XLM Browser" },
+      { name: "description", content: "Traffic, engagement and project performance for everything you publish on XLM Browser." },
+      { property: "og:title", content: "Your Dashboard — XLM Browser" },
+      { property: "og:description", content: "Track views, visits, upvotes and comments on your Stellar projects." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -99,7 +99,7 @@ function PanelHome() {
     <PanelShell>
       <div className="p-6">
         <h1 className="text-2xl font-bold">Welcome back, {user?.name}</h1>
-        <p className="text-sm text-muted-foreground">Here's your XRPBrowser activity.</p>
+        <p className="text-sm text-muted-foreground">Here's your XLM Browser activity.</p>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-3">
           {[

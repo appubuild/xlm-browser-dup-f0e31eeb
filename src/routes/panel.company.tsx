@@ -16,10 +16,10 @@ export const Route = createFileRoute("/panel/company")({
   component: CompanyProfilePage,
   head: () => ({
     meta: [
-      { title: "Author & Company Profile — XRPBrowser" },
-      { name: "description", content: "Manage your XRPL company profile and buy a lifetime verification badge for all your listed projects." },
-      { property: "og:title", content: "Author & Company Profile — XRPBrowser" },
-      { property: "og:description", content: "Manage your XRPL company profile and lifetime verification badge." },
+      { title: "Author & Company Profile — XLM Browser" },
+      { name: "description", content: "Manage your Stellar company profile and buy a lifetime verification badge for all your listed projects." },
+      { property: "og:title", content: "Author & Company Profile — XLM Browser" },
+      { property: "og:description", content: "Manage your Stellar company profile and lifetime verification badge." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -127,7 +127,7 @@ function CompanyProfilePage() {
                 <input value={form.logo} onChange={(e) => setForm((f) => ({ ...f, logo: e.target.value }))} className="inp" placeholder="🏢 or https://…" />
               </Field>
               <Field label="Bio">
-                <textarea value={form.bio} onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))} className="inp min-h-24" placeholder="What does your company build on the XRP Ledger?" />
+                <textarea value={form.bio} onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))} className="inp min-h-24" placeholder="What does your company build on the Stellar Network?" />
               </Field>
               <div className="grid gap-3 sm:grid-cols-2">
                 <Field label="Official email">
@@ -168,7 +168,7 @@ function CompanyProfilePage() {
                   return (
                     <div key={t.id} className={`rounded-xl border p-5 ${TIER_COLORS[t.color] ?? "border-border"}`}>
                       <div className="text-sm font-semibold uppercase tracking-wider">{t.name}</div>
-                      <div className="mt-1 text-3xl font-bold">{t.priceXrp} <span className="text-base font-normal text-muted-foreground">XRP</span></div>
+                      <div className="mt-1 text-3xl font-bold">{t.priceXlm} <span className="text-base font-normal text-muted-foreground">XLM</span></div>
                       <div className="text-xs text-muted-foreground">one-time · lifetime</div>
                       <ul className="mt-3 space-y-1.5 text-sm">
                         {t.benefits.map((b) => <li key={b} className="flex gap-2"><span className="text-primary">✓</span><span>{b}</span></li>)}
@@ -178,7 +178,7 @@ function CompanyProfilePage() {
                         onClick={() => setBuying(t)}
                         className="mt-4 w-full rounded bg-primary px-3 py-2 text-sm text-primary-foreground disabled:opacity-50"
                       >
-                        {owned ? "Current badge" : !profile ? "Create profile first" : `Buy for ${t.priceXrp} XRP`}
+                        {owned ? "Current badge" : !profile ? "Create profile first" : `Buy for ${t.priceXlm} XLM`}
                       </button>
                     </div>
                   );
@@ -210,8 +210,8 @@ function CompanyProfilePage() {
         open={!!buying}
         title={`Buy ${buying?.name ?? ""} badge`}
         subtitle="Lifetime verification for your company and all its listed projects."
-        amountXrp={buying?.priceXrp ?? 0}
-        memo={`XRPBrowser ${buying?.name ?? ""} lifetime badge`}
+        amountXlm={buying?.priceXlm ?? 0}
+        memo={`XLM Browser ${buying?.name ?? ""} lifetime badge`}
         onClose={() => setBuying(null)}
         onPaid={async (txHash, account) => {
           if (!user || !buying) return;

@@ -126,7 +126,7 @@ export function BlogEditor({ initial, id }: { initial?: NewsArticle; id?: string
             <div className="mt-2 flex flex-wrap gap-2">
               <label className="flex-1 text-xs">
                 <div className="mb-1 text-slate-400">Topic / angle (optional)</div>
-                <input value={angle} onChange={(e) => setAngle(e.target.value)} placeholder="e.g. Why XRPL EVM sidechain matters"
+                <input value={angle} onChange={(e) => setAngle(e.target.value)} placeholder="e.g. Why Stellar EVM sidechain matters"
                   className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" />
               </label>
               <button onClick={handleWrite} disabled={aiBusy} className="mt-5 inline-flex items-center gap-1 rounded border border-slate-700 bg-slate-950 px-3 py-2 text-xs hover:bg-slate-800 disabled:opacity-50">

@@ -90,7 +90,7 @@ function BadgeTiersPanel() {
       <button onClick={async () => {
         try {
           await createBadgeTier({
-            key: `tier_${Date.now()}`, name: "New tier", priceXrp: 0, color: "#38bdf8",
+            key: `tier_${Date.now()}`, name: "New tier", priceXlm: 0, color: "#38bdf8",
             benefits: [], sortOrder: tiers.length + 1, active: true,
           });
           await load();
@@ -103,8 +103,8 @@ function BadgeTiersPanel() {
             <div key={t.id} className="rounded-lg border border-current/10 p-3">
               <div className="flex flex-wrap items-center gap-2">
                 <input value={t.name} onChange={(e) => patch(t.id, { name: e.target.value })} className={`${inp} min-w-40 flex-1`} />
-                <input type="number" step="0.1" value={t.priceXrp} onChange={(e) => patch(t.id, { priceXrp: parseFloat(e.target.value) || 0 })} className={`${inp} w-24`} />
-                <span className="text-xs opacity-60">XRP lifetime</span>
+                <input type="number" step="0.1" value={t.priceXlm} onChange={(e) => patch(t.id, { priceXlm: parseFloat(e.target.value) || 0 })} className={`${inp} w-24`} />
+                <span className="text-xs opacity-60">XLM lifetime</span>
                 <input type="color" value={t.color} onChange={(e) => patch(t.id, { color: e.target.value })} className="h-8 w-10 rounded border border-current/25 bg-transparent" />
                 <label className="flex items-center gap-1 text-xs opacity-70">
                   <input type="checkbox" checked={t.active} onChange={(e) => patch(t.id, { active: e.target.checked })} /> Active
@@ -141,7 +141,7 @@ function PackagesPanel() {
     <Panel title="Promotion packages" action={
       <button onClick={async () => {
         try {
-          await createPromotionPackage({ slot: "home", durationDays: 7, priceXrp: 0, active: true, sortOrder: pkgs.length + 1 });
+          await createPromotionPackage({ slot: "home", durationDays: 7, priceXlm: 0, active: true, sortOrder: pkgs.length + 1 });
           await load();
         } catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); }
       }} className="rounded border border-current/25 px-2 py-1 text-xs">+ Add package</button>
@@ -149,7 +149,7 @@ function PackagesPanel() {
       {loading ? <div className="text-sm opacity-70">Loading…</div> : (
         <div className="-mx-4 overflow-x-auto px-4">
           <table className="w-full min-w-[520px] text-sm">
-            <thead className="text-left text-xs opacity-70"><tr><th className="pb-2">Section</th><th className="pb-2">Days</th><th className="pb-2">XRP</th><th className="pb-2">Active</th><th></th></tr></thead>
+            <thead className="text-left text-xs opacity-70"><tr><th className="pb-2">Section</th><th className="pb-2">Days</th><th className="pb-2">XLM</th><th className="pb-2">Active</th><th></th></tr></thead>
             <tbody>
               {pkgs.map((p) => (
                 <tr key={p.id} className="border-t border-current/10">
@@ -159,7 +159,7 @@ function PackagesPanel() {
                     </select>
                   </td>
                   <td className="py-2 pr-2"><input type="number" value={p.durationDays} onChange={(e) => setPkgs((s) => s.map((x) => x.id === p.id ? { ...x, durationDays: parseInt(e.target.value) || 1 } : x))} className={`${inp} w-20`} /></td>
-                  <td className="py-2 pr-2"><input type="number" step="0.1" value={p.priceXrp} onChange={(e) => setPkgs((s) => s.map((x) => x.id === p.id ? { ...x, priceXrp: parseFloat(e.target.value) || 0 } : x))} className={`${inp} w-24`} /></td>
+                  <td className="py-2 pr-2"><input type="number" step="0.1" value={p.priceXlm} onChange={(e) => setPkgs((s) => s.map((x) => x.id === p.id ? { ...x, priceXlm: parseFloat(e.target.value) || 0 } : x))} className={`${inp} w-24`} /></td>
                   <td className="py-2 pr-2"><input type="checkbox" checked={p.active} onChange={(e) => setPkgs((s) => s.map((x) => x.id === p.id ? { ...x, active: e.target.checked } : x))} /></td>
                   <td className="py-2 whitespace-nowrap text-right">
                     <button onClick={async () => { try { await savePromotionPackage(p); toast.success("Saved"); } catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); } }} className="rounded bg-sky-500 px-2 py-1 text-xs text-white">Save</button>
@@ -210,7 +210,7 @@ function PromotionsTab() {
                 <td className="py-2 font-medium">{r.projectSlug}</td>
                 <td className="py-2">{SLOT_LABEL[r.slot] ?? r.slot}</td>
                 <td className="py-2">{r.durationDays}</td>
-                <td className="py-2">{r.amountXrp} XRP</td>
+                <td className="py-2">{r.amountXlm} XLM</td>
                 <td className="py-2 font-mono text-xs">{r.txHash ? `${r.txHash.slice(0, 8)}…` : "—"}</td>
                 <td className="py-2 capitalize">{r.status}</td>
                 <td className="py-2 text-xs opacity-70">{r.endsAt ? new Date(r.endsAt).toLocaleDateString() : "—"}</td>
@@ -243,9 +243,9 @@ function TransactionsTab() {
     })();
   }, []);
   if (loading) return <div className="text-sm opacity-70">Loading…</div>;
-  const total = rows.filter((r) => r.status === "success").reduce((a, r) => a + r.amountXrp, 0);
+  const total = rows.filter((r) => r.status === "success").reduce((a, r) => a + r.amountXlm, 0);
   return (
-    <Panel title={`All transactions (${rows.length}) — ${total} XRP collected`}>
+    <Panel title={`All transactions (${rows.length}) — ${total} XLM collected`}>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="text-left text-xs opacity-70"><tr><th className="pb-2">Date</th><th className="pb-2">Type</th><th className="pb-2">Description</th><th className="pb-2">Amount</th><th className="pb-2">Tx hash</th><th className="pb-2">Status</th></tr></thead>
@@ -255,8 +255,8 @@ function TransactionsTab() {
                 <td className="py-2 text-xs opacity-70">{new Date(r.createdAt).toLocaleString()}</td>
                 <td className="py-2 capitalize">{r.kind}</td>
                 <td className="py-2">{r.description ?? "—"}</td>
-                <td className="py-2">{r.amountXrp} XRP</td>
-                <td className="py-2">{r.txHash ? <a className="font-mono text-xs text-sky-400 hover:underline" target="_blank" rel="noreferrer" href={`https://livenet.xrpl.org/transactions/${r.txHash}`}>{r.txHash.slice(0, 10)}…</a> : "—"}</td>
+                <td className="py-2">{r.amountXlm} XLM</td>
+                <td className="py-2">{r.txHash ? <a className="font-mono text-xs text-sky-400 hover:underline" target="_blank" rel="noreferrer" href={`https://livenet.stellar.org/transactions/${r.txHash}`}>{r.txHash.slice(0, 10)}…</a> : "—"}</td>
                 <td className="py-2 capitalize">{r.status}</td>
               </tr>
             ))}

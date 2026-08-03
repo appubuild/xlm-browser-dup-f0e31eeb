@@ -17,7 +17,7 @@ function DevAPI() {
     <PublicShell>
       <div className="mx-auto max-w-4xl px-6 py-10">
         <h1 className="text-3xl font-bold">Developer API</h1>
-        <p className="mt-2 text-muted-foreground">REST endpoints for the XRPBrowser directory (mock).</p>
+        <p className="mt-2 text-muted-foreground">REST endpoints for the XLM Browser directory (mock).</p>
 
         <div className="soft-card mt-6 p-5">
           <div className="mb-2 font-semibold">API Key</div>

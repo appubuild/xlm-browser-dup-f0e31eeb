@@ -8,12 +8,12 @@ function Developers() {
     <PublicShell>
       <div className="mx-auto max-w-5xl px-6 py-10">
         <h1 className="text-3xl font-bold">Developer Hub</h1>
-        <p className="mt-2 text-muted-foreground">Build on XRPBrowser and the XRP Ledger.</p>
+        <p className="mt-2 text-muted-foreground">Build on XLM Browser and the Stellar Network.</p>
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           {[
             { t: "REST API", d: "Query projects, categories and submissions.", to: "/developers/api" },
-            { t: "SDK (JS)", d: "Coming soon — TypeScript SDK for XRPBrowser." },
-            { t: "XRPL RPC", d: "Public XRPL node endpoints and docs." },
+            { t: "SDK (JS)", d: "Coming soon — TypeScript SDK for XLM Browser." },
+            { t: "Stellar RPC", d: "Public Stellar node endpoints and docs." },
           ].map((c) => (
             <div key={c.t} className="soft-card p-5">
               <div className="font-semibold">{c.t}</div>
@@ -23,8 +23,8 @@ function Developers() {
           ))}
         </div>
         <div className="soft-card mt-8 p-6">
-          <div className="font-semibold">XRPL RPC endpoint (reference)</div>
-          <pre className="mt-2 overflow-auto rounded bg-muted p-3 font-mono text-xs">wss://s1.ripple.com{"\n"}wss://xrplcluster.com</pre>
+          <div className="font-semibold">Stellar RPC endpoint (reference)</div>
+          <pre className="mt-2 overflow-auto rounded bg-muted p-3 font-mono text-xs">https://horizon.stellar.org{"\n"}https://horizon.stellar.org</pre>
         </div>
       </div>
     </PublicShell>

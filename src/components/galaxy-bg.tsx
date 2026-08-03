@@ -1,5 +1,5 @@
 /**
- * Animated XRP Ledger ecosystem / galaxy background for the hero.
+ * Animated Stellar Network ecosystem / galaxy background for the hero.
  * Pure SVG + CSS animations, no external deps.
  */
 export function GalaxyBg() {
@@ -46,7 +46,7 @@ export function GalaxyBg() {
 
         {/* Orbit system — centered near right */}
         <g transform="translate(500 300)">
-          {/* Central XRPL core */}
+          {/* Central Stellar core */}
           <circle r="42" fill="url(#core)" />
           <circle r="10" fill="oklch(0.72 0.16 250)" />
           <circle r="18" fill="none" stroke="oklch(0.72 0.16 250)" strokeOpacity="0.5" strokeWidth="1" className="xrpb-pulse-ring" />

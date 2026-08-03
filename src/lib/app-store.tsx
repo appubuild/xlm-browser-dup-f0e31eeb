@@ -60,7 +60,7 @@ interface SiteSettings {
   contactCompany: string;
   contactLocation: string;
   autoApprove: boolean;
-  listingFeeXrp: number;
+  listingFeeXlm: number;
   listingPaymentAddress: string;
   cloudinaryCloudName: string;
   cloudinaryUploadPreset: string;
@@ -174,12 +174,12 @@ interface AppState {
 const AppCtx = createContext<AppState | null>(null);
 
 const DEFAULT_SETTINGS: SiteSettings = {
-  siteName: "XRPBrowser", metaDescription: "The search engine and browser for the XRP Ledger.",
+  siteName: "XLM Browser", metaDescription: "The search engine and browser for the Stellar Network.",
   defaultTheme: "light", allowUserOverride: true, enableSubmissions: true, enableIframe: true, maintenanceMode: false,
   contactEmail: "partner@skipads.ai", contactCompany: "SkipAds AI LLC", contactLocation: "Detroit, MI · USA", autoApprove: false,
-  listingFeeXrp: 0, listingPaymentAddress: "",
+  listingFeeXlm: 0, listingPaymentAddress: "",
   cloudinaryCloudName: "", cloudinaryUploadPreset: "",
-  aiDefaultInstruction: "You are a helpful writer for XRPBrowser, an XRP Ledger discovery portal. Write clear, accurate, upbeat posts.",
+  aiDefaultInstruction: "You are a helpful writer for XLM Browser, an Stellar Network discovery portal. Write clear, accurate, upbeat posts.",
   enableGoogleLogin: true, enableAppleLogin: true,
 };
 
@@ -246,10 +246,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [footerLinks, setFooterLinks] = useState<FooterLink[]>([]);
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(DEFAULT_SETTINGS);
   const [walletConfig, setWalletConfig] = useState<AppState["walletConfig"]>({
-    network: "Mainnet", rpcUrl: "wss://s1.ripple.com",
+    network: "Mainnet", rpcUrl: "https://horizon.stellar.org",
     xamanApiKey: "", xamanApiSecret: "", treasuryAddress: "",
   });
-  const [xrpPrice, setXrpPrice] = useState({ price: 0.52, change: 3.12 });
+  const [xrpPrice, setXlmPrice] = useState({ price: 0.52, change: 3.12 });
   const [ledgerIndex, setLedgerIndex] = useState(89234501);
   const [loading, setLoading] = useState(true);
 
@@ -266,19 +266,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     document.documentElement.classList.toggle("retro", theme === "retro");
   }, [theme, hydrated]);
 
-  // --- Real XRP price from CoinGecko (refreshed every 60s) + ledger tick
+  // --- Real XLM price from CoinGecko (refreshed every 60s) + ledger tick
   useEffect(() => {
     let alive = true;
     const load = async () => {
       try {
         const res = await fetch(
-          "https://api.coingecko.com/api/v3/simple/price?ids=ripple&vs_currencies=usd&include_24hr_change=true",
+          "https://api.coingecko.com/api/v3/simple/price?ids=stellar&vs_currencies=usd&include_24hr_change=true",
         );
         if (!res.ok) return;
-        const json = (await res.json()) as { ripple?: { usd?: number; usd_24h_change?: number } };
-        const price = json.ripple?.usd;
+        const json = (await res.json()) as { stellar?: { usd?: number; usd_24h_change?: number } };
+        const price = json.stellar?.usd;
         if (alive && typeof price === "number") {
-          setXrpPrice({ price, change: Number(json.ripple?.usd_24h_change ?? 0) });
+          setXlmPrice({ price, change: Number(json.stellar?.usd_24h_change ?? 0) });
         }
       } catch {
         /* keep last known price */
@@ -323,7 +323,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         enableIframe: ss.data.enable_iframe, maintenanceMode: ss.data.maintenance_mode,
         contactEmail: ss.data.contact_email ?? "", contactCompany: ss.data.contact_company ?? "",
         contactLocation: ss.data.contact_location ?? "", autoApprove: ss.data.auto_approve,
-        listingFeeXrp: Number((s.listing_fee_xrp as number | string | null) ?? 0),
+        listingFeeXlm: Number((s.listing_fee_xrp as number | string | null) ?? 0),
         listingPaymentAddress: (s.listing_payment_address as string | null) ?? "",
         cloudinaryCloudName: (s.cloudinary_cloud_name as string | null) ?? "",
         cloudinaryUploadPreset: (s.cloudinary_upload_preset as string | null) ?? "",
@@ -414,7 +414,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const addProject: AppState["addProject"] = async (p) => {
     if (!user) { return null; }
     const slug = (p.slug || p.name.toLowerCase().replace(/\s+/g, "-")).replace(/[^a-z0-9-]/g, "");
-    const feeIsZero = !siteSettings.listingFeeXrp || siteSettings.listingFeeXrp <= 0;
+    const feeIsZero = !siteSettings.listingFeeXlm || siteSettings.listingFeeXlm <= 0;
     const { data, error } = await supabase.from("projects").insert({
       slug, name: p.name, logo: p.logo ?? "🔗", category: p.category, tagline: p.tagline,
       description: p.description, url: p.url, screenshots: p.screenshots ?? [],
@@ -457,7 +457,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.badges !== undefined) dbPatch.badges = patch.badges;
 
     // Auto-publish on approval when listing fee is zero (free listings).
-    const feeIsZero = !siteSettings.listingFeeXrp || siteSettings.listingFeeXrp <= 0;
+    const feeIsZero = !siteSettings.listingFeeXlm || siteSettings.listingFeeXlm <= 0;
     const autoPub = patch.status === "approved" && feeIsZero && patch.isPublic === undefined;
     if (autoPub) dbPatch.is_public = true;
 
@@ -737,7 +737,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (patch.contactCompany !== undefined) dbPatch.contact_company = patch.contactCompany;
     if (patch.contactLocation !== undefined) dbPatch.contact_location = patch.contactLocation;
     if (patch.autoApprove !== undefined) dbPatch.auto_approve = patch.autoApprove;
-    if (patch.listingFeeXrp !== undefined) dbPatch.listing_fee_xrp = patch.listingFeeXrp;
+    if (patch.listingFeeXlm !== undefined) dbPatch.listing_fee_xrp = patch.listingFeeXlm;
     if (patch.listingPaymentAddress !== undefined) dbPatch.listing_payment_address = patch.listingPaymentAddress;
     if (patch.cloudinaryCloudName !== undefined) dbPatch.cloudinary_cloud_name = patch.cloudinaryCloudName;
     if (patch.cloudinaryUploadPreset !== undefined) dbPatch.cloudinary_upload_preset = patch.cloudinaryUploadPreset;

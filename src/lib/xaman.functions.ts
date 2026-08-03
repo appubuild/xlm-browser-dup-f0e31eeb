@@ -23,7 +23,7 @@ export const xamanSignIn = createServerFn({ method: "POST" })
 export const xamanPay = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) =>
     z.object({
-      amountXrp: z.number().positive().max(100000),
+      amountXlm: z.number().positive().max(100000),
       memo: z.string().max(240).optional(),
       returnUrl: z.string().url().optional(),
     }).parse(input),
@@ -50,7 +50,7 @@ export const xamanBalance = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) =>
     safe(async () => {
-      const { getXrpBalance } = await import("@/lib/xaman.server");
-      return getXrpBalance(data.account, data.network);
+      const { getXlmBalance } = await import("@/lib/xaman.server");
+      return getXlmBalance(data.account, data.network);
     }),
   );
