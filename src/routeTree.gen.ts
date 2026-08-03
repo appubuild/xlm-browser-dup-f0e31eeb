@@ -9,115 +9,65 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as SubmitRouteImport } from './routes/submit'
-import { Route as SignupRouteImport } from './routes/signup'
-import { Route as SearchRouteImport } from './routes/search'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as PricingRouteImport } from './routes/pricing'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as HelpRouteImport } from './routes/help'
-import { Route as EcosystemRouteImport } from './routes/ecosystem'
-import { Route as DevelopersRouteImport } from './routes/developers'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as PanelIndexRouteImport } from './routes/panel.index'
-import { Route as NewsIndexRouteImport } from './routes/news.index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DevelopersRouteImport } from './routes/developers'
+import { Route as EcosystemRouteImport } from './routes/ecosystem'
+import { Route as HelpRouteImport } from './routes/help'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as SubmitRouteImport } from './routes/submit'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as ProjectSlugRouteImport } from './routes/project.$slug'
-import { Route as PanelTransactionsRouteImport } from './routes/panel.transactions'
-import { Route as PanelSubmitRouteImport } from './routes/panel.submit'
-import { Route as PanelSubmissionsRouteImport } from './routes/panel.submissions'
-import { Route as PanelSettingsRouteImport } from './routes/panel.settings'
-import { Route as PanelNotificationsRouteImport } from './routes/panel.notifications'
-import { Route as PanelHistoryRouteImport } from './routes/panel.history'
-import { Route as PanelCompanyRouteImport } from './routes/panel.company'
-import { Route as PanelBookmarksRouteImport } from './routes/panel.bookmarks'
-import { Route as PanelAnalyticsRouteImport } from './routes/panel.analytics'
-import { Route as PSlugRouteImport } from './routes/p.$slug'
-import { Route as NewsSlugRouteImport } from './routes/news.$slug'
-import { Route as DirectoryCategoryRouteImport } from './routes/directory.$category'
-import { Route as DevelopersApiRouteImport } from './routes/developers.api'
-import { Route as CompanyKeyRouteImport } from './routes/company.$key'
-import { Route as CategorySlugRouteImport } from './routes/category.$slug'
-import { Route as AdminWalletConnectConfigRouteImport } from './routes/admin.wallet-connect-config'
-import { Route as AdminUsersRouteImport } from './routes/admin.users'
-import { Route as AdminTickersRouteImport } from './routes/admin.tickers'
-import { Route as AdminSiteSettingsRouteImport } from './routes/admin.site-settings'
-import { Route as AdminSidebarRouteImport } from './routes/admin.sidebar'
-import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
-import { Route as AdminNotificationsRouteImport } from './routes/admin.notifications'
-import { Route as AdminMonetizationRouteImport } from './routes/admin.monetization'
-import { Route as AdminMenusRouteImport } from './routes/admin.menus'
-import { Route as AdminLoginRouteImport } from './routes/admin.login'
-import { Route as AdminLandingRouteImport } from './routes/admin.landing'
-import { Route as AdminFooterRouteImport } from './routes/admin.footer'
-import { Route as AdminContactRouteImport } from './routes/admin.contact'
-import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
-import { Route as AdminAuthSetupRouteImport } from './routes/admin.auth-setup'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
-import { Route as AdminPagesIndexRouteImport } from './routes/admin.pages.index'
+import { Route as AdminAuthSetupRouteImport } from './routes/admin.auth-setup'
+import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
+import { Route as AdminContactRouteImport } from './routes/admin.contact'
+import { Route as AdminFooterRouteImport } from './routes/admin.footer'
+import { Route as AdminLandingRouteImport } from './routes/admin.landing'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminMenusRouteImport } from './routes/admin.menus'
+import { Route as AdminMonetizationRouteImport } from './routes/admin.monetization'
+import { Route as AdminNotificationsRouteImport } from './routes/admin.notifications'
+import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
+import { Route as AdminSidebarRouteImport } from './routes/admin.sidebar'
+import { Route as AdminSiteSettingsRouteImport } from './routes/admin.site-settings'
+import { Route as AdminTickersRouteImport } from './routes/admin.tickers'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminWalletConnectConfigRouteImport } from './routes/admin.wallet-connect-config'
+import { Route as CategorySlugRouteImport } from './routes/category.$slug'
+import { Route as CompanyKeyRouteImport } from './routes/company.$key'
+import { Route as DevelopersApiRouteImport } from './routes/developers.api'
+import { Route as DirectoryCategoryRouteImport } from './routes/directory.$category'
+import { Route as NewsIndexRouteImport } from './routes/news.index'
+import { Route as NewsSlugRouteImport } from './routes/news.$slug'
+import { Route as PSlugRouteImport } from './routes/p.$slug'
+import { Route as PanelIndexRouteImport } from './routes/panel.index'
+import { Route as PanelAnalyticsRouteImport } from './routes/panel.analytics'
+import { Route as PanelBookmarksRouteImport } from './routes/panel.bookmarks'
+import { Route as PanelCompanyRouteImport } from './routes/panel.company'
+import { Route as PanelHistoryRouteImport } from './routes/panel.history'
+import { Route as PanelNotificationsRouteImport } from './routes/panel.notifications'
+import { Route as PanelSettingsRouteImport } from './routes/panel.settings'
+import { Route as PanelSubmissionsRouteImport } from './routes/panel.submissions'
+import { Route as PanelSubmitRouteImport } from './routes/panel.submit'
+import { Route as PanelTransactionsRouteImport } from './routes/panel.transactions'
+import { Route as ProjectSlugRouteImport } from './routes/project.$slug'
 import { Route as AdminBlogIndexRouteImport } from './routes/admin.blog.index'
-import { Route as AdminProjectsPendingRouteImport } from './routes/admin.projects.pending'
-import { Route as AdminPagesNewRouteImport } from './routes/admin.pages.new'
-import { Route as AdminPagesIdRouteImport } from './routes/admin.pages.$id'
-import { Route as AdminBlogNewRouteImport } from './routes/admin.blog.new'
 import { Route as AdminBlogIdRouteImport } from './routes/admin.blog.$id'
+import { Route as AdminBlogNewRouteImport } from './routes/admin.blog.new'
+import { Route as AdminPagesIndexRouteImport } from './routes/admin.pages.index'
+import { Route as AdminPagesIdRouteImport } from './routes/admin.pages.$id'
+import { Route as AdminPagesNewRouteImport } from './routes/admin.pages.new'
+import { Route as AdminProjectsPendingRouteImport } from './routes/admin.projects.pending'
 
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SubmitRoute = SubmitRouteImport.update({
-  id: '/submit',
-  path: '/submit',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SignupRoute = SignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SearchRoute = SearchRouteImport.update({
-  id: '/search',
-  path: '/search',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PricingRoute = PricingRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HelpRoute = HelpRouteImport.update({
-  id: '/help',
-  path: '/help',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EcosystemRoute = EcosystemRouteImport.update({
-  id: '/ecosystem',
-  path: '/ecosystem',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DevelopersRoute = DevelopersRouteImport.update({
-  id: '/developers',
-  path: '/developers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -125,19 +75,59 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PanelIndexRoute = PanelIndexRouteImport.update({
-  id: '/panel/',
-  path: '/panel/',
+const DevelopersRoute = DevelopersRouteImport.update({
+  id: '/developers',
+  path: '/developers',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NewsIndexRoute = NewsIndexRouteImport.update({
-  id: '/news/',
-  path: '/news/',
+const EcosystemRoute = EcosystemRouteImport.update({
+  id: '/ecosystem',
+  path: '/ecosystem',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubmitRoute = SubmitRouteImport.update({
+  id: '/submit',
+  path: '/submit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -145,84 +135,79 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProjectSlugRoute = ProjectSlugRouteImport.update({
-  id: '/project/$slug',
-  path: '/project/$slug',
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/admin/analytics',
+  path: '/admin/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PanelTransactionsRoute = PanelTransactionsRouteImport.update({
-  id: '/panel/transactions',
-  path: '/panel/transactions',
+const AdminAuthSetupRoute = AdminAuthSetupRouteImport.update({
+  id: '/admin/auth-setup',
+  path: '/admin/auth-setup',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PanelSubmitRoute = PanelSubmitRouteImport.update({
-  id: '/panel/submit',
-  path: '/panel/submit',
+const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
+  id: '/admin/categories',
+  path: '/admin/categories',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PanelSubmissionsRoute = PanelSubmissionsRouteImport.update({
-  id: '/panel/submissions',
-  path: '/panel/submissions',
+const AdminContactRoute = AdminContactRouteImport.update({
+  id: '/admin/contact',
+  path: '/admin/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PanelSettingsRoute = PanelSettingsRouteImport.update({
-  id: '/panel/settings',
-  path: '/panel/settings',
+const AdminFooterRoute = AdminFooterRouteImport.update({
+  id: '/admin/footer',
+  path: '/admin/footer',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PanelNotificationsRoute = PanelNotificationsRouteImport.update({
-  id: '/panel/notifications',
-  path: '/panel/notifications',
+const AdminLandingRoute = AdminLandingRouteImport.update({
+  id: '/admin/landing',
+  path: '/admin/landing',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PanelHistoryRoute = PanelHistoryRouteImport.update({
-  id: '/panel/history',
-  path: '/panel/history',
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PanelCompanyRoute = PanelCompanyRouteImport.update({
-  id: '/panel/company',
-  path: '/panel/company',
+const AdminMenusRoute = AdminMenusRouteImport.update({
+  id: '/admin/menus',
+  path: '/admin/menus',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PanelBookmarksRoute = PanelBookmarksRouteImport.update({
-  id: '/panel/bookmarks',
-  path: '/panel/bookmarks',
+const AdminMonetizationRoute = AdminMonetizationRouteImport.update({
+  id: '/admin/monetization',
+  path: '/admin/monetization',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PanelAnalyticsRoute = PanelAnalyticsRouteImport.update({
-  id: '/panel/analytics',
-  path: '/panel/analytics',
+const AdminNotificationsRoute = AdminNotificationsRouteImport.update({
+  id: '/admin/notifications',
+  path: '/admin/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PSlugRoute = PSlugRouteImport.update({
-  id: '/p/$slug',
-  path: '/p/$slug',
+const AdminProjectsRoute = AdminProjectsRouteImport.update({
+  id: '/admin/projects',
+  path: '/admin/projects',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NewsSlugRoute = NewsSlugRouteImport.update({
-  id: '/news/$slug',
-  path: '/news/$slug',
+const AdminSidebarRoute = AdminSidebarRouteImport.update({
+  id: '/admin/sidebar',
+  path: '/admin/sidebar',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DirectoryCategoryRoute = DirectoryCategoryRouteImport.update({
-  id: '/directory/$category',
-  path: '/directory/$category',
+const AdminSiteSettingsRoute = AdminSiteSettingsRouteImport.update({
+  id: '/admin/site-settings',
+  path: '/admin/site-settings',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DevelopersApiRoute = DevelopersApiRouteImport.update({
-  id: '/api',
-  path: '/api',
-  getParentRoute: () => DevelopersRoute,
-} as any)
-const CompanyKeyRoute = CompanyKeyRouteImport.update({
-  id: '/company/$key',
-  path: '/company/$key',
+const AdminTickersRoute = AdminTickersRouteImport.update({
+  id: '/admin/tickers',
+  path: '/admin/tickers',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CategorySlugRoute = CategorySlugRouteImport.update({
-  id: '/category/$slug',
-  path: '/category/$slug',
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminWalletConnectConfigRoute =
@@ -231,84 +216,94 @@ const AdminWalletConnectConfigRoute =
     path: '/admin/wallet-connect-config',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AdminUsersRoute = AdminUsersRouteImport.update({
-  id: '/admin/users',
-  path: '/admin/users',
+const CategorySlugRoute = CategorySlugRouteImport.update({
+  id: '/category/$slug',
+  path: '/category/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminTickersRoute = AdminTickersRouteImport.update({
-  id: '/admin/tickers',
-  path: '/admin/tickers',
+const CompanyKeyRoute = CompanyKeyRouteImport.update({
+  id: '/company/$key',
+  path: '/company/$key',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminSiteSettingsRoute = AdminSiteSettingsRouteImport.update({
-  id: '/admin/site-settings',
-  path: '/admin/site-settings',
+const DevelopersApiRoute = DevelopersApiRouteImport.update({
+  id: '/api',
+  path: '/api',
+  getParentRoute: () => DevelopersRoute,
+} as any)
+const DirectoryCategoryRoute = DirectoryCategoryRouteImport.update({
+  id: '/directory/$category',
+  path: '/directory/$category',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminSidebarRoute = AdminSidebarRouteImport.update({
-  id: '/admin/sidebar',
-  path: '/admin/sidebar',
+const NewsIndexRoute = NewsIndexRouteImport.update({
+  id: '/news/',
+  path: '/news/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminProjectsRoute = AdminProjectsRouteImport.update({
-  id: '/admin/projects',
-  path: '/admin/projects',
+const NewsSlugRoute = NewsSlugRouteImport.update({
+  id: '/news/$slug',
+  path: '/news/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminNotificationsRoute = AdminNotificationsRouteImport.update({
-  id: '/admin/notifications',
-  path: '/admin/notifications',
+const PSlugRoute = PSlugRouteImport.update({
+  id: '/p/$slug',
+  path: '/p/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminMonetizationRoute = AdminMonetizationRouteImport.update({
-  id: '/admin/monetization',
-  path: '/admin/monetization',
+const PanelIndexRoute = PanelIndexRouteImport.update({
+  id: '/panel/',
+  path: '/panel/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminMenusRoute = AdminMenusRouteImport.update({
-  id: '/admin/menus',
-  path: '/admin/menus',
+const PanelAnalyticsRoute = PanelAnalyticsRouteImport.update({
+  id: '/panel/analytics',
+  path: '/panel/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/admin/login',
-  path: '/admin/login',
+const PanelBookmarksRoute = PanelBookmarksRouteImport.update({
+  id: '/panel/bookmarks',
+  path: '/panel/bookmarks',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminLandingRoute = AdminLandingRouteImport.update({
-  id: '/admin/landing',
-  path: '/admin/landing',
+const PanelCompanyRoute = PanelCompanyRouteImport.update({
+  id: '/panel/company',
+  path: '/panel/company',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminFooterRoute = AdminFooterRouteImport.update({
-  id: '/admin/footer',
-  path: '/admin/footer',
+const PanelHistoryRoute = PanelHistoryRouteImport.update({
+  id: '/panel/history',
+  path: '/panel/history',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminContactRoute = AdminContactRouteImport.update({
-  id: '/admin/contact',
-  path: '/admin/contact',
+const PanelNotificationsRoute = PanelNotificationsRouteImport.update({
+  id: '/panel/notifications',
+  path: '/panel/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
-  id: '/admin/categories',
-  path: '/admin/categories',
+const PanelSettingsRoute = PanelSettingsRouteImport.update({
+  id: '/panel/settings',
+  path: '/panel/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminAuthSetupRoute = AdminAuthSetupRouteImport.update({
-  id: '/admin/auth-setup',
-  path: '/admin/auth-setup',
+const PanelSubmissionsRoute = PanelSubmissionsRouteImport.update({
+  id: '/panel/submissions',
+  path: '/panel/submissions',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
-  id: '/admin/analytics',
-  path: '/admin/analytics',
+const PanelSubmitRoute = PanelSubmitRouteImport.update({
+  id: '/panel/submit',
+  path: '/panel/submit',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminPagesIndexRoute = AdminPagesIndexRouteImport.update({
-  id: '/admin/pages/',
-  path: '/admin/pages/',
+const PanelTransactionsRoute = PanelTransactionsRouteImport.update({
+  id: '/panel/transactions',
+  path: '/panel/transactions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectSlugRoute = ProjectSlugRouteImport.update({
+  id: '/project/$slug',
+  path: '/project/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminBlogIndexRoute = AdminBlogIndexRouteImport.update({
@@ -316,19 +311,9 @@ const AdminBlogIndexRoute = AdminBlogIndexRouteImport.update({
   path: '/admin/blog/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminProjectsPendingRoute = AdminProjectsPendingRouteImport.update({
-  id: '/pending',
-  path: '/pending',
-  getParentRoute: () => AdminProjectsRoute,
-} as any)
-const AdminPagesNewRoute = AdminPagesNewRouteImport.update({
-  id: '/admin/pages/new',
-  path: '/admin/pages/new',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminPagesIdRoute = AdminPagesIdRouteImport.update({
-  id: '/admin/pages/$id',
-  path: '/admin/pages/$id',
+const AdminBlogIdRoute = AdminBlogIdRouteImport.update({
+  id: '/admin/blog/$id',
+  path: '/admin/blog/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminBlogNewRoute = AdminBlogNewRouteImport.update({
@@ -336,10 +321,25 @@ const AdminBlogNewRoute = AdminBlogNewRouteImport.update({
   path: '/admin/blog/new',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminBlogIdRoute = AdminBlogIdRouteImport.update({
-  id: '/admin/blog/$id',
-  path: '/admin/blog/$id',
+const AdminPagesIndexRoute = AdminPagesIndexRouteImport.update({
+  id: '/admin/pages/',
+  path: '/admin/pages/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPagesIdRoute = AdminPagesIdRouteImport.update({
+  id: '/admin/pages/$id',
+  path: '/admin/pages/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPagesNewRoute = AdminPagesNewRouteImport.update({
+  id: '/admin/pages/new',
+  path: '/admin/pages/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminProjectsPendingRoute = AdminProjectsPendingRouteImport.update({
+  id: '/pending',
+  path: '/pending',
+  getParentRoute: () => AdminProjectsRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -746,81 +746,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/submit': {
-      id: '/submit'
-      path: '/submit'
-      fullPath: '/submit'
-      preLoaderRoute: typeof SubmitRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/search': {
-      id: '/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof SearchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pricing': {
-      id: '/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof PricingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/help': {
-      id: '/help'
-      path: '/help'
-      fullPath: '/help'
-      preLoaderRoute: typeof HelpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ecosystem': {
-      id: '/ecosystem'
-      path: '/ecosystem'
-      fullPath: '/ecosystem'
-      preLoaderRoute: typeof EcosystemRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/developers': {
-      id: '/developers'
-      path: '/developers'
-      fullPath: '/developers'
-      preLoaderRoute: typeof DevelopersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -830,25 +760,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/panel/': {
-      id: '/panel/'
-      path: '/panel'
-      fullPath: '/panel/'
-      preLoaderRoute: typeof PanelIndexRouteImport
+    '/developers': {
+      id: '/developers'
+      path: '/developers'
+      fullPath: '/developers'
+      preLoaderRoute: typeof DevelopersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/news/': {
-      id: '/news/'
-      path: '/news'
-      fullPath: '/news/'
-      preLoaderRoute: typeof NewsIndexRouteImport
+    '/ecosystem': {
+      id: '/ecosystem'
+      path: '/ecosystem'
+      fullPath: '/ecosystem'
+      preLoaderRoute: typeof EcosystemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/submit': {
+      id: '/submit'
+      path: '/submit'
+      fullPath: '/submit'
+      preLoaderRoute: typeof SubmitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -858,214 +844,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/project/$slug': {
-      id: '/project/$slug'
-      path: '/project/$slug'
-      fullPath: '/project/$slug'
-      preLoaderRoute: typeof ProjectSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/panel/transactions': {
-      id: '/panel/transactions'
-      path: '/panel/transactions'
-      fullPath: '/panel/transactions'
-      preLoaderRoute: typeof PanelTransactionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/panel/submit': {
-      id: '/panel/submit'
-      path: '/panel/submit'
-      fullPath: '/panel/submit'
-      preLoaderRoute: typeof PanelSubmitRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/panel/submissions': {
-      id: '/panel/submissions'
-      path: '/panel/submissions'
-      fullPath: '/panel/submissions'
-      preLoaderRoute: typeof PanelSubmissionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/panel/settings': {
-      id: '/panel/settings'
-      path: '/panel/settings'
-      fullPath: '/panel/settings'
-      preLoaderRoute: typeof PanelSettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/panel/notifications': {
-      id: '/panel/notifications'
-      path: '/panel/notifications'
-      fullPath: '/panel/notifications'
-      preLoaderRoute: typeof PanelNotificationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/panel/history': {
-      id: '/panel/history'
-      path: '/panel/history'
-      fullPath: '/panel/history'
-      preLoaderRoute: typeof PanelHistoryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/panel/company': {
-      id: '/panel/company'
-      path: '/panel/company'
-      fullPath: '/panel/company'
-      preLoaderRoute: typeof PanelCompanyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/panel/bookmarks': {
-      id: '/panel/bookmarks'
-      path: '/panel/bookmarks'
-      fullPath: '/panel/bookmarks'
-      preLoaderRoute: typeof PanelBookmarksRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/panel/analytics': {
-      id: '/panel/analytics'
-      path: '/panel/analytics'
-      fullPath: '/panel/analytics'
-      preLoaderRoute: typeof PanelAnalyticsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/p/$slug': {
-      id: '/p/$slug'
-      path: '/p/$slug'
-      fullPath: '/p/$slug'
-      preLoaderRoute: typeof PSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/news/$slug': {
-      id: '/news/$slug'
-      path: '/news/$slug'
-      fullPath: '/news/$slug'
-      preLoaderRoute: typeof NewsSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/directory/$category': {
-      id: '/directory/$category'
-      path: '/directory/$category'
-      fullPath: '/directory/$category'
-      preLoaderRoute: typeof DirectoryCategoryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/developers/api': {
-      id: '/developers/api'
-      path: '/api'
-      fullPath: '/developers/api'
-      preLoaderRoute: typeof DevelopersApiRouteImport
-      parentRoute: typeof DevelopersRoute
-    }
-    '/company/$key': {
-      id: '/company/$key'
-      path: '/company/$key'
-      fullPath: '/company/$key'
-      preLoaderRoute: typeof CompanyKeyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/category/$slug': {
-      id: '/category/$slug'
-      path: '/category/$slug'
-      fullPath: '/category/$slug'
-      preLoaderRoute: typeof CategorySlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/wallet-connect-config': {
-      id: '/admin/wallet-connect-config'
-      path: '/admin/wallet-connect-config'
-      fullPath: '/admin/wallet-connect-config'
-      preLoaderRoute: typeof AdminWalletConnectConfigRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/users': {
-      id: '/admin/users'
-      path: '/admin/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AdminUsersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/tickers': {
-      id: '/admin/tickers'
-      path: '/admin/tickers'
-      fullPath: '/admin/tickers'
-      preLoaderRoute: typeof AdminTickersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/site-settings': {
-      id: '/admin/site-settings'
-      path: '/admin/site-settings'
-      fullPath: '/admin/site-settings'
-      preLoaderRoute: typeof AdminSiteSettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/sidebar': {
-      id: '/admin/sidebar'
-      path: '/admin/sidebar'
-      fullPath: '/admin/sidebar'
-      preLoaderRoute: typeof AdminSidebarRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/projects': {
-      id: '/admin/projects'
-      path: '/admin/projects'
-      fullPath: '/admin/projects'
-      preLoaderRoute: typeof AdminProjectsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/notifications': {
-      id: '/admin/notifications'
-      path: '/admin/notifications'
-      fullPath: '/admin/notifications'
-      preLoaderRoute: typeof AdminNotificationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/monetization': {
-      id: '/admin/monetization'
-      path: '/admin/monetization'
-      fullPath: '/admin/monetization'
-      preLoaderRoute: typeof AdminMonetizationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/menus': {
-      id: '/admin/menus'
-      path: '/admin/menus'
-      fullPath: '/admin/menus'
-      preLoaderRoute: typeof AdminMenusRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/login': {
-      id: '/admin/login'
-      path: '/admin/login'
-      fullPath: '/admin/login'
-      preLoaderRoute: typeof AdminLoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/landing': {
-      id: '/admin/landing'
-      path: '/admin/landing'
-      fullPath: '/admin/landing'
-      preLoaderRoute: typeof AdminLandingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/footer': {
-      id: '/admin/footer'
-      path: '/admin/footer'
-      fullPath: '/admin/footer'
-      preLoaderRoute: typeof AdminFooterRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/contact': {
-      id: '/admin/contact'
-      path: '/admin/contact'
-      fullPath: '/admin/contact'
-      preLoaderRoute: typeof AdminContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/categories': {
-      id: '/admin/categories'
-      path: '/admin/categories'
-      fullPath: '/admin/categories'
-      preLoaderRoute: typeof AdminCategoriesRouteImport
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/admin/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/auth-setup': {
@@ -1075,18 +858,228 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAuthSetupRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/analytics': {
-      id: '/admin/analytics'
-      path: '/admin/analytics'
-      fullPath: '/admin/analytics'
-      preLoaderRoute: typeof AdminAnalyticsRouteImport
+    '/admin/categories': {
+      id: '/admin/categories'
+      path: '/admin/categories'
+      fullPath: '/admin/categories'
+      preLoaderRoute: typeof AdminCategoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/pages/': {
-      id: '/admin/pages/'
-      path: '/admin/pages'
-      fullPath: '/admin/pages/'
-      preLoaderRoute: typeof AdminPagesIndexRouteImport
+    '/admin/contact': {
+      id: '/admin/contact'
+      path: '/admin/contact'
+      fullPath: '/admin/contact'
+      preLoaderRoute: typeof AdminContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/footer': {
+      id: '/admin/footer'
+      path: '/admin/footer'
+      fullPath: '/admin/footer'
+      preLoaderRoute: typeof AdminFooterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/landing': {
+      id: '/admin/landing'
+      path: '/admin/landing'
+      fullPath: '/admin/landing'
+      preLoaderRoute: typeof AdminLandingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/menus': {
+      id: '/admin/menus'
+      path: '/admin/menus'
+      fullPath: '/admin/menus'
+      preLoaderRoute: typeof AdminMenusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/monetization': {
+      id: '/admin/monetization'
+      path: '/admin/monetization'
+      fullPath: '/admin/monetization'
+      preLoaderRoute: typeof AdminMonetizationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/notifications': {
+      id: '/admin/notifications'
+      path: '/admin/notifications'
+      fullPath: '/admin/notifications'
+      preLoaderRoute: typeof AdminNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/projects': {
+      id: '/admin/projects'
+      path: '/admin/projects'
+      fullPath: '/admin/projects'
+      preLoaderRoute: typeof AdminProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/sidebar': {
+      id: '/admin/sidebar'
+      path: '/admin/sidebar'
+      fullPath: '/admin/sidebar'
+      preLoaderRoute: typeof AdminSidebarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/site-settings': {
+      id: '/admin/site-settings'
+      path: '/admin/site-settings'
+      fullPath: '/admin/site-settings'
+      preLoaderRoute: typeof AdminSiteSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/tickers': {
+      id: '/admin/tickers'
+      path: '/admin/tickers'
+      fullPath: '/admin/tickers'
+      preLoaderRoute: typeof AdminTickersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/wallet-connect-config': {
+      id: '/admin/wallet-connect-config'
+      path: '/admin/wallet-connect-config'
+      fullPath: '/admin/wallet-connect-config'
+      preLoaderRoute: typeof AdminWalletConnectConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/category/$slug': {
+      id: '/category/$slug'
+      path: '/category/$slug'
+      fullPath: '/category/$slug'
+      preLoaderRoute: typeof CategorySlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/company/$key': {
+      id: '/company/$key'
+      path: '/company/$key'
+      fullPath: '/company/$key'
+      preLoaderRoute: typeof CompanyKeyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/developers/api': {
+      id: '/developers/api'
+      path: '/api'
+      fullPath: '/developers/api'
+      preLoaderRoute: typeof DevelopersApiRouteImport
+      parentRoute: typeof DevelopersRoute
+    }
+    '/directory/$category': {
+      id: '/directory/$category'
+      path: '/directory/$category'
+      fullPath: '/directory/$category'
+      preLoaderRoute: typeof DirectoryCategoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news/': {
+      id: '/news/'
+      path: '/news'
+      fullPath: '/news/'
+      preLoaderRoute: typeof NewsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news/$slug': {
+      id: '/news/$slug'
+      path: '/news/$slug'
+      fullPath: '/news/$slug'
+      preLoaderRoute: typeof NewsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/p/$slug': {
+      id: '/p/$slug'
+      path: '/p/$slug'
+      fullPath: '/p/$slug'
+      preLoaderRoute: typeof PSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/': {
+      id: '/panel/'
+      path: '/panel'
+      fullPath: '/panel/'
+      preLoaderRoute: typeof PanelIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/analytics': {
+      id: '/panel/analytics'
+      path: '/panel/analytics'
+      fullPath: '/panel/analytics'
+      preLoaderRoute: typeof PanelAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/bookmarks': {
+      id: '/panel/bookmarks'
+      path: '/panel/bookmarks'
+      fullPath: '/panel/bookmarks'
+      preLoaderRoute: typeof PanelBookmarksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/company': {
+      id: '/panel/company'
+      path: '/panel/company'
+      fullPath: '/panel/company'
+      preLoaderRoute: typeof PanelCompanyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/history': {
+      id: '/panel/history'
+      path: '/panel/history'
+      fullPath: '/panel/history'
+      preLoaderRoute: typeof PanelHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/notifications': {
+      id: '/panel/notifications'
+      path: '/panel/notifications'
+      fullPath: '/panel/notifications'
+      preLoaderRoute: typeof PanelNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/settings': {
+      id: '/panel/settings'
+      path: '/panel/settings'
+      fullPath: '/panel/settings'
+      preLoaderRoute: typeof PanelSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/submissions': {
+      id: '/panel/submissions'
+      path: '/panel/submissions'
+      fullPath: '/panel/submissions'
+      preLoaderRoute: typeof PanelSubmissionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/submit': {
+      id: '/panel/submit'
+      path: '/panel/submit'
+      fullPath: '/panel/submit'
+      preLoaderRoute: typeof PanelSubmitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panel/transactions': {
+      id: '/panel/transactions'
+      path: '/panel/transactions'
+      fullPath: '/panel/transactions'
+      preLoaderRoute: typeof PanelTransactionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/project/$slug': {
+      id: '/project/$slug'
+      path: '/project/$slug'
+      fullPath: '/project/$slug'
+      preLoaderRoute: typeof ProjectSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/blog/': {
@@ -1096,25 +1089,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/projects/pending': {
-      id: '/admin/projects/pending'
-      path: '/pending'
-      fullPath: '/admin/projects/pending'
-      preLoaderRoute: typeof AdminProjectsPendingRouteImport
-      parentRoute: typeof AdminProjectsRoute
-    }
-    '/admin/pages/new': {
-      id: '/admin/pages/new'
-      path: '/admin/pages/new'
-      fullPath: '/admin/pages/new'
-      preLoaderRoute: typeof AdminPagesNewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/pages/$id': {
-      id: '/admin/pages/$id'
-      path: '/admin/pages/$id'
-      fullPath: '/admin/pages/$id'
-      preLoaderRoute: typeof AdminPagesIdRouteImport
+    '/admin/blog/$id': {
+      id: '/admin/blog/$id'
+      path: '/admin/blog/$id'
+      fullPath: '/admin/blog/$id'
+      preLoaderRoute: typeof AdminBlogIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/blog/new': {
@@ -1124,12 +1103,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBlogNewRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/blog/$id': {
-      id: '/admin/blog/$id'
-      path: '/admin/blog/$id'
-      fullPath: '/admin/blog/$id'
-      preLoaderRoute: typeof AdminBlogIdRouteImport
+    '/admin/pages/': {
+      id: '/admin/pages/'
+      path: '/admin/pages'
+      fullPath: '/admin/pages/'
+      preLoaderRoute: typeof AdminPagesIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/pages/$id': {
+      id: '/admin/pages/$id'
+      path: '/admin/pages/$id'
+      fullPath: '/admin/pages/$id'
+      preLoaderRoute: typeof AdminPagesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pages/new': {
+      id: '/admin/pages/new'
+      path: '/admin/pages/new'
+      fullPath: '/admin/pages/new'
+      preLoaderRoute: typeof AdminPagesNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/projects/pending': {
+      id: '/admin/projects/pending'
+      path: '/pending'
+      fullPath: '/admin/projects/pending'
+      preLoaderRoute: typeof AdminProjectsPendingRouteImport
+      parentRoute: typeof AdminProjectsRoute
     }
   }
 }
@@ -1216,3 +1216,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
