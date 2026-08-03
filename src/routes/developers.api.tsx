@@ -43,7 +43,7 @@ function DevAPI() {
         <pre className="soft-card mt-3 overflow-auto p-4 font-mono text-xs">{`GET /projects?category=wallets
 {
   "results": [
-    { "id": "1", "slug": "xaman", "name": "Xaman", "verified": true }
+    { "id": "1", "slug": "freighter", "name": "Freighter", "verified": true }
   ]
 }`}</pre>
       </div>

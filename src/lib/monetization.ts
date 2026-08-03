@@ -303,7 +303,7 @@ export async function fetchAllTransactions(): Promise<TxRecord[]> {
   return (data ?? []).map(mapTx);
 }
 
-/** Records a lifetime badge purchase and immediately grants it (tx hash verified on-ledger by Xaman). */
+/** Records a lifetime badge purchase and immediately grants it (tx hash verified on-ledger by Freighter). */
 export async function purchaseBadge(userId: string, tier: BadgeTier, txHash: string, account?: string | null) {
   const { error } = await db().from("badge_purchases").insert({
     user_id: userId, tier_key: tier.key, amount_xrp: tier.priceXlm, tx_hash: txHash, status: "success",

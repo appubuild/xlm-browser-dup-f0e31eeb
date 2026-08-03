@@ -11,7 +11,7 @@ import {
 /**
  * Founder Membership call-to-action.
  * Shows the free claim button while the promo window is open, otherwise the
- * 2 XLM (admin-configurable) Xaman checkout.
+ * 2 XLM (admin-configurable) Freighter checkout.
  */
 export function FounderCta({
   tier, promo, onGranted, compact,

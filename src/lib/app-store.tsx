@@ -150,7 +150,7 @@ interface AppState {
   siteSettings: SiteSettings;
   updateSiteSettings: (patch: Partial<SiteSettings>) => Promise<void>;
 
-  walletConfig: { network: "Mainnet" | "Testnet"; rpcUrl: string; xamanApiKey: string; xamanApiSecret: string; treasuryAddress: string };
+  walletConfig: { network: "Mainnet" | "Testnet"; rpcUrl: string; treasuryAddress: string };
   updateWalletConfig: (patch: Partial<AppState["walletConfig"]>) => void;
 
   xlmPrice: { price: number; change: number };
@@ -247,7 +247,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(DEFAULT_SETTINGS);
   const [walletConfig, setWalletConfig] = useState<AppState["walletConfig"]>({
     network: "Mainnet", rpcUrl: "https://horizon.stellar.org",
-    xamanApiKey: "", xamanApiSecret: "", treasuryAddress: "",
+    treasuryAddress: "",
   });
   const [xlmPrice, setXlmPrice] = useState({ price: 0.52, change: 3.12 });
   const [ledgerIndex, setLedgerIndex] = useState(89234501);

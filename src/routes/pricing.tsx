@@ -34,7 +34,7 @@ function PricingPage() {
         <header className="text-center">
           <h1 className="text-3xl font-bold sm:text-4xl">Pricing & Plans</h1>
           <p className="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground">
-            Everything is paid on-ledger in XLM through your Xaman wallet. No cards, no subscriptions you can't cancel.
+            Everything is paid on-ledger in XLM through your Freighter wallet. No cards, no subscriptions you can't cancel.
           </p>
           {isFounder && (
             <div className="mt-4 flex justify-center"><FounderBadge /></div>
@@ -141,7 +141,7 @@ function PromotionPackagesSection() {
             <ul className="mt-4 flex-1 space-y-1.5 text-sm">
               <li className="flex gap-2"><span className="text-primary">✓</span><span>{SLOT_LABEL[p.slot]} placement</span></li>
               <li className="flex gap-2"><span className="text-primary">✓</span><span>Runs for {p.durationDays} days from activation</span></li>
-              <li className="flex gap-2"><span className="text-primary">✓</span><span>Paid on-ledger in XLM via Xaman</span></li>
+              <li className="flex gap-2"><span className="text-primary">✓</span><span>Paid on-ledger in XLM via Freighter</span></li>
             </ul>
             <Link to="/panel/submissions"
               className="mt-5 block w-full rounded bg-primary px-3 py-2 text-center text-sm text-primary-foreground">

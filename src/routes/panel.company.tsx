@@ -161,7 +161,7 @@ function CompanyProfilePage() {
 
             <section className="mt-8">
               <h2 className="text-lg font-semibold">Lifetime verification badges</h2>
-              <p className="text-sm text-muted-foreground">Pay once with your Xaman wallet — the badge never expires and applies to every project you list.</p>
+              <p className="text-sm text-muted-foreground">Pay once with your Freighter wallet — the badge never expires and applies to every project you list.</p>
               <div className="mt-4 grid gap-4 md:grid-cols-3">
                 {tiers.map((t) => {
                   const owned = profile?.badgeTier === t.key;
