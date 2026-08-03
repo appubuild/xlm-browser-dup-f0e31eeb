@@ -1,16 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
-import { xamanPay, xamanStatus } from "@/lib/xaman.functions";
 import { PanelShell } from "@/components/panel-shell";
 import { useApp, type Project } from "@/lib/app-store";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { callXamanProxy, formatXamanConnectError, shouldUseXamanProxy, type XamanPaymentPayload, type XamanStatusPayload } from "@/lib/xaman-client";
-import { XamanPayDialog } from "@/components/xaman-pay-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { StellarPayDialog } from "@/components/stellar-pay-dialog";
 import { ProjectFormDialog, ProjectDetailsDialog } from "@/components/project-form-dialog";
 import { ProjectBadges } from "@/components/project-badges";
 import { fetchPromotionPackages, createPromotion, SLOT_LABEL, type PromotionPackage, type PromoSlot } from "@/lib/monetization";
+
 
 export const Route = createFileRoute("/panel/submissions")({ component: Submissions });
 
