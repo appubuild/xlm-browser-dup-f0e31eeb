@@ -479,14 +479,14 @@ function FreighterConnected({ onClose }: { onClose: () => void }) {
         </div>
         <div className="col-span-2">
           <a
-            href={`https://livenet.stellar.org/accounts/${user?.walletAddress ?? ""}`}
+            href={`${EXPLORER[walletConfig.network]}/account/${user?.walletAddress ?? ""}`}
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-1 underline hover:no-underline"
           >View on Stellar explorer ↗</a>
         </div>
       </div>
-      <button onClick={() => { disconnectWallet(); onClose(); toast("Xaman disconnected"); }} className="w-full rounded-md border px-3 py-2 hover:bg-muted">
+      <button onClick={() => { disconnectWallet(); onClose(); toast("Freighter disconnected"); }} className="w-full rounded-md border px-3 py-2 hover:bg-muted">
         Disconnect
       </button>
     </div>
