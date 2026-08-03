@@ -5,6 +5,7 @@ import { useApp } from "@/lib/app-store";
 import { FounderCta, FounderBadge } from "@/components/founder-gate";
 import { usePricing, useFounder, priceLabel, FOUNDER_KEY } from "@/lib/pricing";
 import { fetchPromotionPackages, SLOT_LABEL, type PromotionPackage } from "@/lib/monetization";
+import { XlmAmount } from "@/components/xlm-amount";
 
 
 export const Route = createFileRoute("/pricing")({
