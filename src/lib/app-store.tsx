@@ -153,7 +153,7 @@ interface AppState {
   walletConfig: { network: "Mainnet" | "Testnet"; rpcUrl: string; xamanApiKey: string; xamanApiSecret: string; treasuryAddress: string };
   updateWalletConfig: (patch: Partial<AppState["walletConfig"]>) => void;
 
-  xrpPrice: { price: number; change: number };
+  xlmPrice: { price: number; change: number };
   ledgerIndex: number;
 
   refresh: () => Promise<void>;
@@ -249,19 +249,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     network: "Mainnet", rpcUrl: "https://horizon.stellar.org",
     xamanApiKey: "", xamanApiSecret: "", treasuryAddress: "",
   });
-  const [xrpPrice, setXlmPrice] = useState({ price: 0.52, change: 3.12 });
+  const [xlmPrice, setXlmPrice] = useState({ price: 0.52, change: 3.12 });
   const [ledgerIndex, setLedgerIndex] = useState(89234501);
   const [loading, setLoading] = useState(true);
 
   // --- Theme persistence
   useEffect(() => {
-    const saved = typeof window !== "undefined" ? localStorage.getItem("xrpb-theme") : null;
+    const saved = typeof window !== "undefined" ? localStorage.getItem("xlmb-theme") : null;
     if (saved === "light" || saved === "dark" || saved === "retro") setThemeState(saved);
     setHydrated(true);
   }, []);
   useEffect(() => {
     if (!hydrated) return;
-    localStorage.setItem("xrpb-theme", theme);
+    localStorage.setItem("xlmb-theme", theme);
     document.documentElement.classList.toggle("dark", theme === "dark");
     document.documentElement.classList.toggle("retro", theme === "retro");
   }, [theme, hydrated]);
@@ -812,7 +812,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     notifications, pushNotification, markAllRead,
     siteSettings, updateSiteSettings,
     walletConfig, updateWalletConfig,
-    xrpPrice, ledgerIndex,
+    xlmPrice, ledgerIndex,
     refresh,
     users: usersList, updateUser, deleteUser,
     login: legacyLogin, adminLogin, adminLogout,
@@ -820,7 +820,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setAutoApprove: (v: boolean) => { void updateSiteSettings({ autoApprove: v }); },
     setCategories: setCategoriesLegacy, setTickers: setTickersLegacy,
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [loading, theme, session, user, isAdmin, projects, news, blogCategories, mediaGallery, tickers, categories, sidebarItems, landingSections, bookmarks, history, notifications, siteSettings, walletConfig, xrpPrice, ledgerIndex, usersList]);
+  }), [loading, theme, session, user, isAdmin, projects, news, blogCategories, mediaGallery, tickers, categories, sidebarItems, landingSections, bookmarks, history, notifications, siteSettings, walletConfig, xlmPrice, ledgerIndex, usersList]);
 
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;
 }

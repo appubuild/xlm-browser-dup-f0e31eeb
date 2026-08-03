@@ -41,7 +41,7 @@ function useWalletBalance(account: string | undefined, network: "Mainnet" | "Tes
 }
 
 export function PublicShell({ children }: { children: ReactNode }) {
-  const { theme, setTheme, toggleTheme, user, logout, connectWallet, disconnectWallet, projects, xrpPrice, ledgerIndex, siteSettings, sidebarItems, isAdmin, walletConfig } = useApp();
+  const { theme, setTheme, toggleTheme, user, logout, connectWallet, disconnectWallet, projects, xlmPrice, ledgerIndex, siteSettings, sidebarItems, isAdmin, walletConfig } = useApp();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const [walletOpen, setWalletOpen] = useState(false);
@@ -228,9 +228,9 @@ export function PublicShell({ children }: { children: ReactNode }) {
               <div className={isRetro ? "m-2 border border-primary p-2 text-xs" : "soft-card m-2 p-3 text-xs"}>
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">XLM</span>
-                  <span className="font-mono font-semibold">${xrpPrice.price.toFixed(4)}</span>
+                  <span className="font-mono font-semibold">${xlmPrice.price.toFixed(4)}</span>
                 </div>
-                <div className={`text-right font-mono ${xrpPrice.change >= 0 ? "text-success" : "text-destructive"}`}>{xrpPrice.change >= 0 ? "+" : ""}{xrpPrice.change.toFixed(2)}%</div>
+                <div className={`text-right font-mono ${xlmPrice.change >= 0 ? "text-success" : "text-destructive"}`}>{xlmPrice.change >= 0 ? "+" : ""}{xlmPrice.change.toFixed(2)}%</div>
                 <div className="mt-2 flex items-center gap-1.5 text-xs">
                   <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-success" /> Mainnet
                 </div>
@@ -490,7 +490,7 @@ function XamanConnect({ onDone }: { onDone: () => void }) {
 }
 
 function XamanConnected({ onClose }: { onClose: () => void }) {
-  const { user, disconnectWallet, walletConfig, xrpPrice } = useApp();
+  const { user, disconnectWallet, walletConfig, xlmPrice } = useApp();
   const getBalance = useServerFn(xamanBalance);
   const [balance, setBalance] = useState<number | null>(null);
   const [balErr, setBalErr] = useState<string | null>(null);
@@ -512,7 +512,7 @@ function XamanConnected({ onClose }: { onClose: () => void }) {
     return () => { stop = true; };
   }, [user?.walletAddress, walletConfig.network, getBalance]);
 
-  const usd = balance !== null ? (balance * xrpPrice.price).toFixed(2) : null;
+  const usd = balance !== null ? (balance * xlmPrice.price).toFixed(2) : null;
   return (
     <div className="space-y-3 text-sm">
       <div className="rounded-md border bg-muted/40 p-3">
@@ -539,12 +539,12 @@ function XamanConnected({ onClose }: { onClose: () => void }) {
       <div className="grid grid-cols-2 gap-3 rounded-md border p-3 text-xs">
         <div>
           <div className="text-muted-foreground">XLM price</div>
-          <div className="font-mono font-medium text-foreground">${xrpPrice.price.toFixed(4)}</div>
+          <div className="font-mono font-medium text-foreground">${xlmPrice.price.toFixed(4)}</div>
         </div>
         <div className="text-right">
           <div className="text-muted-foreground">24h</div>
-          <div className={`font-mono font-medium ${xrpPrice.change >= 0 ? "text-success" : "text-destructive"}`}>
-            {xrpPrice.change >= 0 ? "+" : ""}{xrpPrice.change.toFixed(2)}%
+          <div className={`font-mono font-medium ${xlmPrice.change >= 0 ? "text-success" : "text-destructive"}`}>
+            {xlmPrice.change >= 0 ? "+" : ""}{xlmPrice.change.toFixed(2)}%
           </div>
         </div>
         <div className="col-span-2">
