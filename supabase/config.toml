@@ -1,6 +1,1 @@
-project_id = "unhzdlkzuwcgdbmanirb"
-
-[functions.xaman-proxy]
-verify_jwt = false
-[functions.ai-proxy]
-verify_jwt = false
+project_id = "boqtayksxghsvcrrhgul"
