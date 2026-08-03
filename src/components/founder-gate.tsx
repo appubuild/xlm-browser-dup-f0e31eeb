@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useApp } from "@/lib/app-store";
-import { XamanPayDialog } from "@/components/xaman-pay-dialog";
+import { StellarPayDialog } from "@/components/stellar-pay-dialog";
 import {
   claimFreeFounder, claimWindowOpen, registerFounderPayment,
   type PricingTier, type PromoSettings,
@@ -67,12 +67,12 @@ export function FounderCta({
         </button>
       )}
 
-      <XamanPayDialog
+      <StellarPayDialog
         open={pay}
         title="Founder Membership"
         subtitle="One-time payment. Founder status is permanent."
         amountXlm={price}
-        memo="XLM Browser Founder Membership"
+        memo="Founder Membership"
         onClose={() => setPay(false)}
         onPaid={async (txHash, account) => {
           try {

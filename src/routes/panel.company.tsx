@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { PanelShell } from "@/components/panel-shell";
 import { useApp } from "@/lib/app-store";
 import { toast } from "sonner";
-import { XamanPayDialog } from "@/components/xaman-pay-dialog";
+import { StellarPayDialog } from "@/components/stellar-pay-dialog";
 import {
   fetchBadgeTiers, fetchMyAuthorProfile, upsertAuthorProfile, purchaseBadge, findCompanyConflict,
   type AuthorProfile, type BadgeTier, type SocialLink, type DuplicateField,
@@ -206,7 +206,7 @@ function CompanyProfilePage() {
         </DialogContent>
       </Dialog>
 
-      <XamanPayDialog
+      <StellarPayDialog
         open={!!buying}
         title={`Buy ${buying?.name ?? ""} badge`}
         subtitle="Lifetime verification for your company and all its listed projects."

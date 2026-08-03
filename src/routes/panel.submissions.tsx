@@ -139,12 +139,12 @@ function PromoteDialog({ project, onClose }: { project: Project | null; onClose:
         </DialogContent>
       </Dialog>
 
-      <XamanPayDialog
+      <StellarPayDialog
         open={!!picked}
         title={`Promote ${project.name}`}
         subtitle={picked ? `${SLOT_LABEL[picked.slot]} · ${picked.durationDays} days` : undefined}
         amountXlm={picked?.priceXlm ?? 0}
-        memo={`XLM Browser promotion ${project.slug}`}
+        memo={`Promo ${project.slug}`}
         onClose={() => setPicked(null)}
         onPaid={async (txHash, account) => {
           if (!user || !picked) return;
