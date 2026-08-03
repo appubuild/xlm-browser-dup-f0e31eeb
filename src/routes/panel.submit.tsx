@@ -280,7 +280,7 @@ function SubmitPage() {
               </div>
               {siteSettings.listingFeeXlm > 0 ? (
                 <div className="rounded border border-primary/30 bg-primary/5 p-3 text-sm">
-                  <b>Listing fee: {siteSettings.listingFeeXlm} XLM.</b> Payment required <i>after</i> admin approval to publish your listing.
+                  <b>Listing fee: <XlmAmount xlm={siteSettings.listingFeeXlm} inline /></b> Payment required <i>after</i> admin approval to publish your listing.
                 </div>
               ) : (
                 <div className="rounded border border-success/30 bg-success/5 p-3 text-sm">
