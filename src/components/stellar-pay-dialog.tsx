@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { XlmAmount } from "@/components/xlm-amount";
 import {
   connectWallet, loadPublicWalletConfig, payXlm, type PublicWalletConfig,
 } from "@/lib/stellar-wallet";
@@ -71,7 +72,7 @@ export function StellarPayDialog({
         <div className="space-y-3 text-sm">
           {subtitle && <p className="text-muted-foreground">{subtitle}</p>}
           <div className="rounded border bg-muted/50 p-3">
-            <div className="flex justify-between"><span className="text-muted-foreground">Amount</span><b>{amountXlm} XLM</b></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Amount</span><b><XlmAmount xlm={amountXlm} inline /></b></div>
             {config?.treasuryAddress && (
               <div className="mt-1 flex justify-between gap-3">
                 <span className="text-muted-foreground">To</span>

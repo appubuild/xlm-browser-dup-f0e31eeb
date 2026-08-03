@@ -10,6 +10,7 @@ import {
   SLOT_LABEL, type BadgeTier, type PromotionPackage, type ProjectPromotion,
   type AuthorProfile, type TxRecord, type PromoSlot,
 } from "@/lib/monetization";
+import { XlmAmount } from "@/components/xlm-amount";
 
 import { AdminPricingCard } from "@/components/admin-pricing-card";
 import { useApp } from "@/lib/app-store";
@@ -210,7 +211,7 @@ function PromotionsTab() {
                 <td className="py-2 font-medium">{r.projectSlug}</td>
                 <td className="py-2">{SLOT_LABEL[r.slot] ?? r.slot}</td>
                 <td className="py-2">{r.durationDays}</td>
-                <td className="py-2">{r.amountXlm} XLM</td>
+                <td className="py-2"><XlmAmount xlm={r.amountXlm} inline /></td>
                 <td className="py-2 font-mono text-xs">{r.txHash ? `${r.txHash.slice(0, 8)}…` : "—"}</td>
                 <td className="py-2 capitalize">{r.status}</td>
                 <td className="py-2 text-xs opacity-70">{r.endsAt ? new Date(r.endsAt).toLocaleDateString() : "—"}</td>
@@ -255,7 +256,7 @@ function TransactionsTab() {
                 <td className="py-2 text-xs opacity-70">{new Date(r.createdAt).toLocaleString()}</td>
                 <td className="py-2 capitalize">{r.kind}</td>
                 <td className="py-2">{r.description ?? "—"}</td>
-                <td className="py-2">{r.amountXlm} XLM</td>
+                <td className="py-2"><XlmAmount xlm={r.amountXlm} inline /></td>
                 <td className="py-2">{r.txHash ? <a className="font-mono text-xs text-sky-400 hover:underline" target="_blank" rel="noreferrer" href={`https://livenet.stellar.org/transactions/${r.txHash}`}>{r.txHash.slice(0, 10)}…</a> : "—"}</td>
                 <td className="py-2 capitalize">{r.status}</td>
               </tr>
