@@ -63,7 +63,7 @@ function PricingPage() {
                   {t.highlight && <span className="rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">Popular</span>}
                 </div>
                 {t.tagline && <p className="mt-1 text-xs text-muted-foreground">{t.tagline}</p>}
-                <div className="mt-4 text-2xl font-bold">{t.priceXlm} <span className="text-sm font-normal text-muted-foreground">XLM</span></div>
+                <div className="mt-4 text-2xl font-bold"><XlmAmount xlm={t.priceXlm} /></div>
                 <div className="text-xs text-muted-foreground">{priceLabel(t)}</div>
                 <ul className="mt-4 flex-1 space-y-1.5 text-sm">
                   {t.features.map((f) => (
