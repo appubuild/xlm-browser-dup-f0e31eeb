@@ -419,9 +419,8 @@ function FreighterConnect({ onDone }: { onDone: () => void }) {
 }
 
 
-function XamanConnected({ onClose }: { onClose: () => void }) {
+function FreighterConnected({ onClose }: { onClose: () => void }) {
   const { user, disconnectWallet, walletConfig, xlmPrice } = useApp();
-  const getBalance = useServerFn(xamanBalance);
   const [balance, setBalance] = useState<number | null>(null);
   const [balErr, setBalErr] = useState<string | null>(null);
 
@@ -431,16 +430,16 @@ function XamanConnected({ onClose }: { onClose: () => void }) {
     let stop = false;
     void (async () => {
       try {
-        const res = await getBalance({ data: { account, network: walletConfig.network } });
+        const res = await getStellarBalance(account, walletConfig.network);
         if (stop) return;
-        if (res.ok) setBalance(res.data.balance);
-        else setBalErr(res.error);
+        setBalance(res.balance);
       } catch (e) {
         if (!stop) setBalErr(e instanceof Error ? e.message : "Could not read balance");
       }
     })();
     return () => { stop = true; };
-  }, [user?.walletAddress, walletConfig.network, getBalance]);
+  }, [user?.walletAddress, walletConfig.network]);
+
 
   const usd = balance !== null ? (balance * xlmPrice.price).toFixed(2) : null;
   return (
