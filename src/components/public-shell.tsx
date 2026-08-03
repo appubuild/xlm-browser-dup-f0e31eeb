@@ -1,8 +1,6 @@
 import { UserAvatar } from "@/components/user-avatar";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
-import { useServerFn } from "@tanstack/react-start";
-import { xamanSignIn, xamanStatus, xamanBalance } from "@/lib/xaman.functions";
 import { Sun, Moon, Terminal, Wallet, Rocket, Menu, User as UserIcon, Bell, Search, ChevronLeft, Shield } from "lucide-react";
 import { useApp } from "@/lib/app-store";
 
@@ -13,11 +11,10 @@ import { useViewport } from "@/components/browser-viewport";
 import { CryptoTicker } from "@/components/crypto-ticker";
 import { listPages, type SitePage } from "@/lib/cms";
 import { buildMenuTree, listMenus, type MenuItem } from "@/lib/menus";
-import { callXamanProxy, formatXamanConnectError, shouldUseXamanProxy, type XamanSignInPayload, type XamanStatusPayload } from "@/lib/xaman-client";
+import { connectFreighter, getStellarBalance, EXPLORER } from "@/lib/stellar-wallet";
 
 
 function useWalletBalance(account: string | undefined, network: "Mainnet" | "Testnet") {
-  const getBalance = useServerFn(xamanBalance);
   const [balance, setBalance] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
@@ -25,10 +22,10 @@ function useWalletBalance(account: string | undefined, network: "Mainnet" | "Tes
     let stop = false;
     const load = async () => {
       try {
-        const res = await getBalance({ data: { account, network } });
+        const res = await getStellarBalance(account, network);
         if (stop) return;
-        if (res.ok) { setBalance(res.data.balance); setError(null); }
-        else setError(res.error);
+        setBalance(res.balance);
+        setError(null);
       } catch (e) {
         if (!stop) setError(e instanceof Error ? e.message : "Could not read balance");
       }
@@ -36,9 +33,10 @@ function useWalletBalance(account: string | undefined, network: "Mainnet" | "Tes
     void load();
     const t = setInterval(() => void load(), 30_000);
     return () => { stop = true; clearInterval(t); };
-  }, [account, network, getBalance]);
+  }, [account, network]);
   return { balance, error };
 }
+
 
 export function PublicShell({ children }: { children: ReactNode }) {
   const { theme, setTheme, toggleTheme, user, logout, connectWallet, disconnectWallet, projects, xlmPrice, ledgerIndex, siteSettings, sidebarItems, isAdmin, walletConfig } = useApp();
