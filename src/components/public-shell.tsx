@@ -249,17 +249,18 @@ export function PublicShell({ children }: { children: ReactNode }) {
 
       {!hideFooter && <Footer />}
 
-      {/* Wallet modal — Xaman only */}
+      {/* Wallet modal — Freighter (Stellar) */}
       <Dialog open={walletOpen} onOpenChange={setWalletOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{user?.walletAddress ? "Xaman wallet connected" : "Connect with Xaman"}</DialogTitle>
+            <DialogTitle>{user?.walletAddress ? "Freighter wallet connected" : "Connect with Freighter"}</DialogTitle>
           </DialogHeader>
           {user?.walletAddress ? (
-            <XamanConnected onClose={() => setWalletOpen(false)} />
+            <FreighterConnected onClose={() => setWalletOpen(false)} />
           ) : (
-            <XamanConnect onDone={() => { setWalletOpen(false); toast.success("Connected via Xaman ✅"); }} />
+            <FreighterConnect onDone={() => { setWalletOpen(false); toast.success("Connected via Freighter ✅"); }} />
           )}
+
         </DialogContent>
       </Dialog>
     </div>
