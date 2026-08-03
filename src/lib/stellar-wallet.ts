@@ -17,24 +17,118 @@ export const EXPLORER: Record<StellarNetwork, string> = {
   Testnet: "https://stellar.expert/explorer/testnet",
 };
 
-export type PublicWalletConfig = { network: StellarNetwork; horizonUrl: string; treasuryAddress: string };
+/** Wallets the Stellar Wallets Kit modal can offer. */
+export const WALLET_OPTIONS = [
+  { id: "freighter", label: "Freighter" },
+  { id: "xbull", label: "xBull" },
+  { id: "albedo", label: "Albedo" },
+  { id: "rabet", label: "Rabet" },
+  { id: "lobstr", label: "Lobstr" },
+  { id: "hana", label: "Hana" },
+] as const;
+
+export const DEFAULT_WALLETS = ["freighter", "xbull", "albedo", "rabet", "lobstr", "hana"];
+
+export type PublicWalletConfig = {
+  network: StellarNetwork;
+  horizonUrl: string;
+  treasuryAddress: string;
+  enabledWallets: string[];
+  walletConnectProjectId: string;
+};
+
+const FALLBACK_CONFIG: PublicWalletConfig = {
+  network: "Mainnet",
+  horizonUrl: HORIZON.Mainnet,
+  treasuryAddress: "",
+  enabledWallets: DEFAULT_WALLETS,
+  walletConnectProjectId: "",
+};
 
 /** Non-secret wallet settings, readable by any visitor through a security-definer RPC. */
 export async function loadPublicWalletConfig(): Promise<PublicWalletConfig> {
-  const fallback: PublicWalletConfig = { network: "Mainnet", horizonUrl: HORIZON.Mainnet, treasuryAddress: "" };
   try {
-    const { data } = await supabase.rpc("xaman_public_config" as never);
-    const row = Array.isArray(data) ? (data[0] as Record<string, string> | undefined) : undefined;
-    if (!row) return fallback;
+    const { data } = await supabase.rpc("stellar_public_config" as never);
+    const row = Array.isArray(data) ? (data[0] as Record<string, unknown> | undefined) : undefined;
+    if (!row) return FALLBACK_CONFIG;
     const network: StellarNetwork = row.network === "Testnet" ? "Testnet" : "Mainnet";
+    const rpcUrl = typeof row.rpc_url === "string" ? row.rpc_url : "";
+    const wallets = Array.isArray(row.enabled_wallets) ? (row.enabled_wallets as string[]) : [];
     return {
       network,
-      horizonUrl: row.rpc_url?.startsWith("http") ? row.rpc_url : HORIZON[network],
-      treasuryAddress: row.treasury_address ?? "",
+      horizonUrl: rpcUrl.startsWith("http") ? rpcUrl : HORIZON[network],
+      treasuryAddress: typeof row.treasury_address === "string" ? row.treasury_address : "",
+      enabledWallets: wallets.length ? wallets : DEFAULT_WALLETS,
+      walletConnectProjectId:
+        typeof row.walletconnect_project_id === "string" ? row.walletconnect_project_id : "",
     };
   } catch {
-    return fallback;
+    return FALLBACK_CONFIG;
   }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Stellar Wallets Kit (multi-wallet) with an automatic Freighter fallback     */
+/* -------------------------------------------------------------------------- */
+
+const SELECTED_KEY = "xlmb.wallet.id";
+
+type Kit = typeof import("@creit.tech/stellar-wallets-kit").StellarWalletsKit;
+
+let kitPromise: Promise<Kit> | null = null;
+
+/** Lazily build & init the kit in the browser. Throws when the kit cannot load. */
+async function getKit(cfg: PublicWalletConfig): Promise<Kit> {
+  if (typeof window === "undefined") throw new Error("Wallets are only available in the browser.");
+  if (kitPromise) return kitPromise;
+
+  kitPromise = (async () => {
+    const [{ StellarWalletsKit }, { Networks }] = await Promise.all([
+      import("@creit.tech/stellar-wallets-kit/sdk"),
+      import("@creit.tech/stellar-wallets-kit/types"),
+    ]);
+
+    const wanted = new Set(cfg.enabledWallets.length ? cfg.enabledWallets : DEFAULT_WALLETS);
+    const modules: unknown[] = [];
+
+    if (wanted.has("freighter")) {
+      const m = await import("@creit.tech/stellar-wallets-kit/modules/freighter");
+      modules.push(new m.FreighterModule());
+    }
+    if (wanted.has("xbull")) {
+      const m = await import("@creit.tech/stellar-wallets-kit/modules/xbull");
+      modules.push(new m.xBullModule());
+    }
+    if (wanted.has("albedo")) {
+      const m = await import("@creit.tech/stellar-wallets-kit/modules/albedo");
+      modules.push(new m.AlbedoModule());
+    }
+    if (wanted.has("rabet")) {
+      const m = await import("@creit.tech/stellar-wallets-kit/modules/rabet");
+      modules.push(new m.RabetModule());
+    }
+    if (wanted.has("lobstr")) {
+      const m = await import("@creit.tech/stellar-wallets-kit/modules/lobstr");
+      modules.push(new m.LobstrModule());
+    }
+    if (wanted.has("hana")) {
+      const m = await import("@creit.tech/stellar-wallets-kit/modules/hana");
+      modules.push(new m.HanaModule());
+    }
+    if (!modules.length) throw new Error("No wallets are enabled.");
+
+    StellarWalletsKit.init({
+      modules: modules as never,
+      network: cfg.network === "Testnet" ? Networks.TESTNET : Networks.PUBLIC,
+      selectedWalletId: window.localStorage.getItem(SELECTED_KEY) ?? undefined,
+    });
+    return StellarWalletsKit;
+  })().catch((e) => {
+    kitPromise = null;
+    throw e;
+  });
+
+  return kitPromise;
 }
 
 async function freighter() {
@@ -51,19 +145,69 @@ export async function isFreighterInstalled(): Promise<boolean> {
   }
 }
 
-/** Ask Freighter for access and return the public key. Throws with a readable message. */
+/** Direct Freighter connect — used as the automatic fallback when the kit fails. */
 export async function connectFreighter(): Promise<string> {
   const api = await freighter();
   const installed = await api.isConnected();
   if (!installed.isConnected) {
     throw new Error(
-      "Freighter wallet was not detected. Install the Freighter extension from https://freighter.app and reload this page.",
+      "No Stellar wallet was detected. Install Freighter from https://freighter.app (or use a supported mobile wallet) and reload this page.",
     );
   }
   const access = await api.requestAccess();
   if (access.error) throw new Error(String(access.error));
-  if (!access.address) throw new Error("Freighter did not return an account. Unlock the wallet and try again.");
+  if (!access.address) throw new Error("The wallet did not return an account. Unlock it and try again.");
   return access.address;
+}
+
+/**
+ * Open the Stellar Wallets Kit modal so the user can pick any supported wallet.
+ * If the kit fails for any reason (module load, modal error, wallet unsupported)
+ * we automatically fall back to a direct Freighter connection.
+ */
+export async function connectWallet(cfg?: PublicWalletConfig): Promise<{ address: string; via: "kit" | "freighter" }> {
+  const config = cfg ?? (await loadPublicWalletConfig());
+  try {
+    const kit = await getKit(config);
+    const { address } = await kit.authModal();
+    try {
+      const id = (kit.selectedModule as { productId?: string } | undefined)?.productId;
+      if (id) window.localStorage.setItem(SELECTED_KEY, id);
+    } catch { /* storage may be unavailable */ }
+    if (!address) throw new Error("No account returned");
+    return { address, via: "kit" };
+  } catch (e) {
+    // User closed the modal on purpose — don't silently jump to Freighter.
+    const msg = e instanceof Error ? e.message : String(e);
+    if (/clos|cancel|reject|denied/i.test(msg)) throw new Error(msg);
+    const address = await connectFreighter();
+    return { address, via: "freighter" };
+  }
+}
+
+export async function disconnectWallet(): Promise<void> {
+  try {
+    window.localStorage.removeItem(SELECTED_KEY);
+    const mod = await import("@creit.tech/stellar-wallets-kit/sdk");
+    await mod.StellarWalletsKit.disconnect();
+  } catch { /* nothing connected */ }
+}
+
+/** Sign an XDR with the active kit wallet, falling back to Freighter. */
+async function signXdr(xdr: string, networkPassphrase: string, address: string): Promise<string> {
+  try {
+    const mod = await import("@creit.tech/stellar-wallets-kit/sdk");
+    const res = await mod.StellarWalletsKit.signTransaction(xdr, { networkPassphrase, address });
+    if (res?.signedTxXdr) return res.signedTxXdr;
+    throw new Error("The wallet did not return a signed transaction.");
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (/reject|denied|declin|cancel/i.test(msg)) throw new Error(msg);
+    const api = await freighter();
+    const signed = await api.signTransaction(xdr, { networkPassphrase, address });
+    if (signed.error) throw new Error(String(signed.error));
+    return signed.signedTxXdr;
+  }
 }
 
 export async function getStellarBalance(
@@ -78,20 +222,22 @@ export async function getStellarBalance(
   return { balance: Number(native?.balance ?? 0), funded: true };
 }
 
-/** Build, sign (Freighter) and submit an XLM payment. Returns the transaction hash. */
+/** Build, sign (any supported wallet) and submit an XLM payment. Returns the transaction hash. */
 export async function payXlm(opts: {
   destination: string;
   amountXlm: number;
   memo?: string;
   network?: StellarNetwork;
   horizonUrl?: string;
+  address?: string;
+  config?: PublicWalletConfig;
 }): Promise<{ hash: string; account: string }> {
   const network = opts.network ?? "Mainnet";
   const horizonUrl = opts.horizonUrl ?? HORIZON[network];
   if (!opts.destination) throw new Error("Treasury address is not configured yet.");
 
-  const address = await connectFreighter();
-  const [sdk, api] = await Promise.all([import("@stellar/stellar-sdk"), freighter()]);
+  const address = opts.address ?? (await connectWallet(opts.config)).address;
+  const sdk = await import("@stellar/stellar-sdk");
   const server = new sdk.Horizon.Server(horizonUrl);
   const source = await server.loadAccount(address);
 
@@ -108,13 +254,8 @@ export async function payXlm(opts: {
   if (opts.memo) builder.addMemo(sdk.Memo.text(opts.memo.slice(0, 28)));
   const tx = builder.setTimeout(180).build();
 
-  const signed = await api.signTransaction(tx.toXDR(), {
-    networkPassphrase: PASSPHRASE[network],
-    address,
-  });
-  if (signed.error) throw new Error(String(signed.error));
-
-  const signedTx = sdk.TransactionBuilder.fromXDR(signed.signedTxXdr, PASSPHRASE[network]);
+  const signedXdr = await signXdr(tx.toXDR(), PASSPHRASE[network], address);
+  const signedTx = sdk.TransactionBuilder.fromXDR(signedXdr, PASSPHRASE[network]);
   const result = await server.submitTransaction(signedTx);
   return { hash: result.hash, account: address };
 }

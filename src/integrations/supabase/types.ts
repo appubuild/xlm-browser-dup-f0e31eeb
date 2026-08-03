@@ -1366,31 +1366,31 @@ export type Database = {
       }
       wallet_config: {
         Row: {
+          enabled_wallets: string[]
           id: number
           network: string
           rpc_url: string
           treasury_address: string
           updated_at: string
-          xaman_api_key: string
-          xaman_api_secret: string
+          walletconnect_project_id: string
         }
         Insert: {
+          enabled_wallets?: string[]
           id?: number
           network?: string
           rpc_url?: string
           treasury_address?: string
           updated_at?: string
-          xaman_api_key?: string
-          xaman_api_secret?: string
+          walletconnect_project_id?: string
         }
         Update: {
+          enabled_wallets?: string[]
           id?: number
           network?: string
           rpc_url?: string
           treasury_address?: string
           updated_at?: string
-          xaman_api_key?: string
-          xaman_api_secret?: string
+          walletconnect_project_id?: string
         }
         Relationships: []
       }
@@ -1429,12 +1429,14 @@ export type Database = {
         Args: { _account?: string; _amount: number; _tx_hash: string }
         Returns: boolean
       }
-      xaman_public_config: {
+      stellar_public_config: {
         Args: never
         Returns: {
+          enabled_wallets: string[]
           network: string
           rpc_url: string
           treasury_address: string
+          walletconnect_project_id: string
         }[]
       }
     }

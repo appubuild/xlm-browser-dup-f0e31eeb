@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { loadPublicWalletConfig, payXlm, type PublicWalletConfig } from "@/lib/stellar-wallet";
+import {
+  connectWallet, loadPublicWalletConfig, payXlm, type PublicWalletConfig,
+} from "@/lib/stellar-wallet";
 
 /**
- * Reusable "pay with Freighter" modal. Builds a real Stellar payment, has the
- * user sign it in the Freighter extension, submits it to Horizon and hands the
- * on-ledger transaction hash back to the caller.
+ * Reusable "pay with a Stellar wallet" modal. Opens the Stellar Wallets Kit
+ * chooser (Freighter, xBull, Albedo, Rabet, Lobstr, Hana — with an automatic
+ * Freighter fallback), builds a real payment, has the user sign it, submits it
+ * to Horizon and hands the on-ledger transaction hash back to the caller.
  */
 export function StellarPayDialog({
   open, title, subtitle, amountXlm, memo, onClose, onPaid,
@@ -20,6 +23,7 @@ export function StellarPayDialog({
 }) {
   const [config, setConfig] = useState<PublicWalletConfig | null>(null);
   const [busy, setBusy] = useState(false);
+  const [step, setStep] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
@@ -27,6 +31,7 @@ export function StellarPayDialog({
     if (!open) return;
     setError(null);
     setDone(false);
+    setStep(null);
     void loadPublicWalletConfig().then(setConfig);
   }, [open, amountXlm, memo]);
 
@@ -35,16 +40,23 @@ export function StellarPayDialog({
     setBusy(true);
     try {
       const cfg = config ?? (await loadPublicWalletConfig());
+      setStep("Choose your wallet…");
+      const { address, via } = await connectWallet(cfg);
+      setStep(via === "kit" ? "Approve the payment in your wallet…" : "Approve the payment in Freighter…");
       const { hash, account } = await payXlm({
         destination: cfg.treasuryAddress,
         amountXlm,
         memo,
         network: cfg.network,
         horizonUrl: cfg.horizonUrl,
+        address,
+        config: cfg,
       });
+      setStep(null);
       setDone(true);
       await onPaid(hash, account);
     } catch (e) {
+      setStep(null);
       setError(e instanceof Error ? e.message : "The payment could not be completed");
     } finally {
       setBusy(false);
@@ -75,12 +87,11 @@ export function StellarPayDialog({
             <>
               <button onClick={() => void start()} disabled={busy || amountXlm <= 0}
                 className="w-full rounded bg-primary px-3 py-2 text-sm text-primary-foreground disabled:opacity-50">
-                {busy ? "Waiting for Freighter…" : `Pay ${amountXlm} XLM with Freighter`}
+                {busy ? (step ?? "Working…") : `Pay ${amountXlm} XLM with your wallet`}
               </button>
               <p className="text-xs text-muted-foreground">
-                You need the{" "}
-                <a href="https://freighter.app" target="_blank" rel="noreferrer" className="underline">Freighter</a>{" "}
-                browser extension. Approve the transaction in the popup to complete the payment.
+                Works with Freighter, xBull, Albedo, Rabet, Lobstr and Hana. No wallet yet? Get{" "}
+                <a href="https://freighter.app" target="_blank" rel="noreferrer" className="underline">Freighter</a>.
               </p>
             </>
           )}
