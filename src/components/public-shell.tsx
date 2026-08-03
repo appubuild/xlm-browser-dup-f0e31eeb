@@ -11,7 +11,7 @@ import { useViewport } from "@/components/browser-viewport";
 import { CryptoTicker } from "@/components/crypto-ticker";
 import { listPages, type SitePage } from "@/lib/cms";
 import { buildMenuTree, listMenus, type MenuItem } from "@/lib/menus";
-import { connectFreighter, getStellarBalance, EXPLORER } from "@/lib/stellar-wallet";
+import { connectWallet as connectStellarWallet, disconnectWallet as disconnectStellarWallet, getStellarBalance, EXPLORER } from "@/lib/stellar-wallet";
 
 
 function useWalletBalance(account: string | undefined, network: "Mainnet" | "Testnet") {
@@ -391,11 +391,12 @@ function FreighterConnect({ onDone }: { onDone: () => void }) {
     setError(null);
     setBusy(true);
     try {
-      const address = await connectFreighter();
-      await connectWallet("Freighter", address);
+      const { address, via } = await connectStellarWallet();
+      await connectWallet(via === "kit" ? "Stellar Wallet" : "Freighter", address);
+      if (via === "freighter") toast("Wallet chooser unavailable — connected with Freighter");
       onDone();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not connect to Freighter");
+      setError(e instanceof Error ? e.message : "Could not connect a wallet");
     } finally {
       setBusy(false);
     }
@@ -404,20 +405,21 @@ function FreighterConnect({ onDone }: { onDone: () => void }) {
   return (
     <div className="space-y-3 text-sm">
       <p className="text-muted-foreground">
-        Connect your Stellar account with the Freighter browser extension. Nothing is signed — we only read your public address.
+        Connect your Stellar account with Freighter, xBull, Albedo, Rabet, Lobstr or Hana. Nothing is signed — we only read your public address.
       </p>
       {error && <div className="whitespace-pre-wrap rounded-md border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">{error}</div>}
       <button onClick={() => void start()} disabled={busy}
         className="w-full rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground disabled:opacity-50">
-        {busy ? "Waiting for Freighter…" : "Connect Freighter"}
+        {busy ? "Waiting for your wallet…" : "Connect wallet"}
       </button>
       <p className="text-xs text-muted-foreground">
-        Don't have it yet? Install{" "}
+        No wallet yet? Install{" "}
         <a href="https://freighter.app" target="_blank" rel="noreferrer" className="underline">Freighter</a> and reload this page.
       </p>
     </div>
   );
 }
+
 
 
 function FreighterConnected({ onClose }: { onClose: () => void }) {
@@ -486,7 +488,7 @@ function FreighterConnected({ onClose }: { onClose: () => void }) {
           >View on Stellar explorer ↗</a>
         </div>
       </div>
-      <button onClick={() => { disconnectWallet(); onClose(); toast("Freighter disconnected"); }} className="w-full rounded-md border px-3 py-2 hover:bg-muted">
+      <button onClick={() => { void disconnectStellarWallet(); disconnectWallet(); onClose(); toast("Wallet disconnected"); }} className="w-full rounded-md border px-3 py-2 hover:bg-muted">
         Disconnect
       </button>
     </div>
