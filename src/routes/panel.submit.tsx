@@ -6,6 +6,7 @@ import { useApp } from "@/lib/app-store";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import { FounderCta } from "@/components/founder-gate";
 import { usePricing, useFounder, FOUNDER_KEY } from "@/lib/pricing";
+import { XlmAmount } from "@/components/xlm-amount";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/panel/submit")({ component: SubmitGate });
