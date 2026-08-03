@@ -6,8 +6,8 @@ export const Route = createFileRoute("/news/$slug")({
   component: NewsArticle,
   head: ({ params }) => ({
     meta: [
-      { title: `${params.slug} — XRPBrowser News` },
-      { property: "og:title", content: `${params.slug} — XRPBrowser News` },
+      { title: `${params.slug} — XLM Browser News` },
+      { property: "og:title", content: `${params.slug} — XLM Browser News` },
       { property: "og:type", content: "article" },
       { property: "og:url", content: `/news/${params.slug}` },
     ],

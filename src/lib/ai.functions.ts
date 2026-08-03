@@ -14,7 +14,7 @@ export const askProjectAi = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { callAi } = await import("@/lib/ai.server");
     const doc = (data.aiDoc || "").slice(0, 12000);
-    const system = `You are the official AI assistant for the XRPL project "${data.projectName}"${
+    const system = `You are the official AI assistant for the Stellar project "${data.projectName}"${
       data.projectTagline ? ` (${data.projectTagline})` : ""
     }. Answer public users' questions concisely and accurately using ONLY the project documentation below. If a question is not covered, say you don't have that information and suggest contacting the project directly.
 
@@ -36,7 +36,7 @@ export const generateProjectFaq = createServerFn({ method: "POST" })
     const { callAi } = await import("@/lib/ai.server");
     const doc = (data.aiDoc || "").slice(0, 12000);
     if (!doc.trim()) return { faq: [] as { q: string; a: string }[] };
-    const system = `You generate a short public FAQ for an XRPL project from its documentation. Output ONLY strict JSON: {"faq":[{"q":"...","a":"..."}]}. Include 5-8 concise Q&A pairs.`;
+    const system = `You generate a short public FAQ for an Stellar project from its documentation. Output ONLY strict JSON: {"faq":[{"q":"...","a":"..."}]}. Include 5-8 concise Q&A pairs.`;
     const user = `Project: ${data.projectName}\n\nDOCUMENTATION:\n${doc}`;
     const reply = await callAi(
       [{ role: "system", content: system }, { role: "user", content: user }],
@@ -59,10 +59,10 @@ export const generateBlogPost = createServerFn({ method: "POST" })
   }).parse(input))
   .handler(async ({ data }) => {
     const { callAi } = await import("@/lib/ai.server");
-    const system = `${data.instruction || "You are a helpful blog writer for XRPBrowser."}
+    const system = `${data.instruction || "You are a helpful blog writer for XLM Browser."}
 Write an engaging blog article in clean HTML (use <h2>, <h3>, <p>, <ul>, <li>, <strong>, <a>). Do NOT wrap in <html> or <body>.
 Return ONLY strict JSON: {"title":"...","excerpt":"...","body":"<html>","tags":["..."]}. Keep excerpt under 200 chars.`;
-    const user = `Category: ${data.category || "General"}\nAngle/Topic: ${data.angle || "(pick a compelling XRPL angle)"}`;
+    const user = `Category: ${data.category || "General"}\nAngle/Topic: ${data.angle || "(pick a compelling Stellar angle)"}`;
     const reply = await callAi(
       [{ role: "system", content: system }, { role: "user", content: user }],
       { temperature: 0.7, json: true },

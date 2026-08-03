@@ -74,8 +74,8 @@ export function AdminPricingCard({ onlyKeys, title = "Pricing & Founder Membersh
                 <div className="flex flex-wrap items-center gap-2">
                   <input value={r.name} onChange={(e) => patch(t, { name: e.target.value })}
                     className="min-w-40 flex-1 rounded border border-slate-700 bg-slate-900 px-2 py-1.5 text-sm" />
-                  <input type="number" step="0.1" min={0} value={r.priceXrp}
-                    onChange={(e) => patch(t, { priceXrp: Number(e.target.value) })}
+                  <input type="number" step="0.1" min={0} value={r.priceXlm}
+                    onChange={(e) => patch(t, { priceXlm: Number(e.target.value) })}
                     className="w-28 rounded border border-slate-700 bg-slate-900 px-2 py-1.5 text-sm" />
                   <span className="text-xs text-slate-400">{priceLabel(r)}</span>
                   <label className="flex items-center gap-1 text-xs text-slate-400">

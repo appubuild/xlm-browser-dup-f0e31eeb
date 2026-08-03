@@ -8,10 +8,10 @@ export const Route = createFileRoute("/admin/auth-setup")({
   component: AdminAuthSetup,
   head: () => ({
     meta: [
-      { title: "Social Login Setup — XRPBrowser Admin" },
+      { title: "Social Login Setup — XLM Browser Admin" },
       { name: "description", content: "Step-by-step guide for configuring Google and Apple sign-in with Supabase Auth." },
-      { property: "og:title", content: "Social Login Setup — XRPBrowser Admin" },
-      { property: "og:description", content: "Configure Google and Apple OAuth for XRPBrowser." },
+      { property: "og:title", content: "Social Login Setup — XLM Browser Admin" },
+      { property: "og:description", content: "Configure Google and Apple OAuth for XLM Browser." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -47,7 +47,7 @@ function Field({ label, value }: { label: string; value: string }) {
 function AdminAuthSetup() {
   const [tab, setTab] = useState<"google" | "apple" | "urls">("google");
   const { siteSettings, updateSiteSettings } = useApp();
-  const siteUrl = typeof window !== "undefined" ? window.location.origin : "https://xrpbrowser.com";
+  const siteUrl = typeof window !== "undefined" ? window.location.origin : "https://xlmbrowser.com";
 
   return (
     <AdminShell>
@@ -104,7 +104,7 @@ function AdminAuthSetup() {
             <ol className="list-decimal space-y-2 pl-5">
               <li>You need a paid <b>Apple Developer Program</b> membership.</li>
               <li>In <b>Certificates, Identifiers &amp; Profiles → Identifiers</b>, create an <b>App ID</b> and enable the <b>Sign in with Apple</b> capability.</li>
-              <li>Create a <b>Services ID</b> (this becomes your <b>Client ID</b>, e.g. <code>com.xrpbrowser.web</code>) and enable Sign in with Apple on it.</li>
+              <li>Create a <b>Services ID</b> (this becomes your <b>Client ID</b>, e.g. <code>com.xlmbrowser.web</code>) and enable Sign in with Apple on it.</li>
               <li>Click <b>Configure</b> on the Services ID: set your domain as the web domain and add the Supabase callback URL below as the <b>Return URL</b>.</li>
               <li>In <b>Keys</b>, create a new key with Sign in with Apple enabled and download the <code>.p8</code> file. Note the <b>Key ID</b> and your <b>Team ID</b>.</li>
               <li>Generate the client secret JWT from the <code>.p8</code> key (Team ID + Key ID + Services ID). Apple secrets expire after at most 6 months — set a reminder to rotate it.</li>

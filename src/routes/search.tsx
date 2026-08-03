@@ -56,7 +56,7 @@ function SearchPage() {
       <div className="mx-auto max-w-6xl px-6 py-6">
         <form onSubmit={(e) => e.preventDefault()} className="flex items-center gap-2 rounded-full border bg-card px-4 py-2">
           <Search className="h-4 w-4 opacity-60" />
-          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search XRPL..." className="flex-1 bg-transparent py-2 text-sm outline-none" />
+          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search Stellar..." className="flex-1 bg-transparent py-2 text-sm outline-none" />
         </form>
 
         <div className="mt-4 flex flex-wrap gap-1 border-b">

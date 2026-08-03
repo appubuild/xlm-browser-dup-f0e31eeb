@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useApp } from "@/lib/app-store";
-import { XamanPayDialog } from "@/components/xaman-pay-dialog";
+import { StellarPayDialog } from "@/components/stellar-pay-dialog";
 import {
   claimFreeFounder, claimWindowOpen, registerFounderPayment,
   type PricingTier, type PromoSettings,
@@ -11,7 +11,7 @@ import {
 /**
  * Founder Membership call-to-action.
  * Shows the free claim button while the promo window is open, otherwise the
- * 2 XRP (admin-configurable) Xaman checkout.
+ * 2 XLM (admin-configurable) Freighter checkout.
  */
 export function FounderCta({
   tier, promo, onGranted, compact,
@@ -24,7 +24,7 @@ export function FounderCta({
   const { user } = useApp();
   const [pay, setPay] = useState(false);
   const [busy, setBusy] = useState(false);
-  const price = tier?.priceXrp ?? 2;
+  const price = tier?.priceXlm ?? 2;
   const free = claimWindowOpen(promo);
 
   if (!user) {
@@ -63,16 +63,16 @@ export function FounderCta({
       ) : (
         <button onClick={() => setPay(true)}
           className="w-full rounded bg-primary px-3 py-2 text-sm font-medium text-primary-foreground">
-          Become a Founder — {price} XRP
+          Become a Founder — {price} XLM
         </button>
       )}
 
-      <XamanPayDialog
+      <StellarPayDialog
         open={pay}
         title="Founder Membership"
         subtitle="One-time payment. Founder status is permanent."
-        amountXrp={price}
-        memo="XRPBrowser Founder Membership"
+        amountXlm={price}
+        memo="Founder Membership"
         onClose={() => setPay(false)}
         onPaid={async (txHash, account) => {
           try {

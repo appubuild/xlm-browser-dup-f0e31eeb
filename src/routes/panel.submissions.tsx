@@ -1,16 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
-import { xamanPay, xamanStatus } from "@/lib/xaman.functions";
 import { PanelShell } from "@/components/panel-shell";
 import { useApp, type Project } from "@/lib/app-store";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { callXamanProxy, formatXamanConnectError, shouldUseXamanProxy, type XamanPaymentPayload, type XamanStatusPayload } from "@/lib/xaman-client";
-import { XamanPayDialog } from "@/components/xaman-pay-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { StellarPayDialog } from "@/components/stellar-pay-dialog";
 import { ProjectFormDialog, ProjectDetailsDialog } from "@/components/project-form-dialog";
 import { ProjectBadges } from "@/components/project-badges";
 import { fetchPromotionPackages, createPromotion, SLOT_LABEL, type PromotionPackage, type PromoSlot } from "@/lib/monetization";
+
 
 export const Route = createFileRoute("/panel/submissions")({ component: Submissions });
 
@@ -38,7 +36,7 @@ function Submissions() {
               </thead>
               <tbody>
                 {mine.map((p) => {
-                  const needsPay = p.status === "approved" && !p.isPublic && siteSettings.listingFeeXrp > 0;
+                  const needsPay = p.status === "approved" && !p.isPublic && siteSettings.listingFeeXlm > 0;
                   return (
                     <tr key={p.id} className="border-b last:border-0">
                       <td className="p-3 font-medium">
@@ -63,7 +61,7 @@ function Submissions() {
                       <td className="p-3 text-muted-foreground">{p.dateAdded}</td>
                       <td className="p-3">
                         <div className="flex flex-wrap gap-1">
-                          {needsPay && <button onClick={() => setPayFor(p)} className="rounded bg-primary px-2.5 py-1 text-xs text-primary-foreground">Pay {siteSettings.listingFeeXrp} XRP</button>}
+                          {needsPay && <button onClick={() => setPayFor(p)} className="rounded bg-primary px-2.5 py-1 text-xs text-primary-foreground">Pay {siteSettings.listingFeeXlm} XLM</button>}
                           {p.isPublic && <button onClick={() => setPromoteFor(p)} className="rounded border px-2.5 py-1 text-xs hover:bg-accent">🚀 Promote</button>}
                           <button onClick={() => setEditFor(p)} className="rounded border px-2.5 py-1 text-xs hover:bg-accent">Edit</button>
                           <button onClick={() => setDetailsFor(p)} className="rounded border px-2.5 py-1 text-xs hover:bg-accent">Details</button>
@@ -83,7 +81,7 @@ function Submissions() {
       </div>
 
       <PayDialog project={payFor} onClose={() => setPayFor(null)} onPaid={async (proj, tx) => {
-        await markProjectPaid(proj.id, tx, siteSettings.listingFeeXrp);
+        await markProjectPaid(proj.id, tx, siteSettings.listingFeeXlm);
         toast.success("Payment received — project is now live");
         setPayFor(null);
       }} />
@@ -129,7 +127,7 @@ function PromoteDialog({ project, onClose }: { project: Project | null; onClose:
                       <button key={p.id} onClick={() => setPicked(p)}
                         className="flex items-center justify-between rounded-lg border p-3 text-left text-sm hover:border-primary hover:bg-accent">
                         <span>{p.durationDays} days</span>
-                        <b>{p.priceXrp} XRP</b>
+                        <b>{p.priceXlm} XLM</b>
                       </button>
                     ))}
                   </div>
@@ -141,12 +139,12 @@ function PromoteDialog({ project, onClose }: { project: Project | null; onClose:
         </DialogContent>
       </Dialog>
 
-      <XamanPayDialog
+      <StellarPayDialog
         open={!!picked}
         title={`Promote ${project.name}`}
         subtitle={picked ? `${SLOT_LABEL[picked.slot]} · ${picked.durationDays} days` : undefined}
-        amountXrp={picked?.priceXrp ?? 0}
-        memo={`XRPBrowser promotion ${project.slug}`}
+        amountXlm={picked?.priceXlm ?? 0}
+        memo={`Promo ${project.slug}`}
         onClose={() => setPicked(null)}
         onPaid={async (txHash, account) => {
           if (!user || !picked) return;
@@ -169,97 +167,20 @@ function PromoteDialog({ project, onClose }: { project: Project | null; onClose:
 
 function PayDialog({ project, onClose, onPaid }: { project: Project | null; onClose: () => void; onPaid: (p: Project, tx: string) => Promise<void> }) {
   const { siteSettings } = useApp();
-  const pay = useServerFn(xamanPay);
-  const status = useServerFn(xamanStatus);
-  const [payload, setPayload] = useState<{ uuid: string; qrPng: string; deeplink: string; destination: string } | null>(null);
-  const [creating, setCreating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const start = async () => {
-    if (!project) return;
-    setError(null);
-    setCreating(true);
-    try {
-      const request = { amountXrp: siteSettings.listingFeeXrp, memo: `XRPBrowser listing: ${project.name}` };
-      const res = await pay({ data: request });
-      let next: XamanPaymentPayload | null = null;
-      if (res.ok) next = res.data;
-      else if (shouldUseXamanProxy(res.error)) {
-        const fallback = await callXamanProxy<XamanPaymentPayload>({ action: "pay", ...request });
-        if (fallback.ok) next = fallback.data;
-        else { setError(formatXamanConnectError(res.error, fallback.error)); return; }
-      } else { setError(res.error); return; }
-      setPayload({ uuid: next.uuid, qrPng: next.qrPng, deeplink: next.deeplink, destination: next.destination });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not create the payment request");
-    } finally {
-      setCreating(false);
-    }
-  };
-
-  // Poll the payment payload until it is signed on-ledger.
-  useEffect(() => {
-    if (!payload || !project) return;
-    let stop = false;
-    const t = setInterval(() => {
-      void (async () => {
-        try {
-          const res = await status({ data: { uuid: payload.uuid } });
-          let s: XamanStatusPayload | null = res.ok ? res.data : null;
-          if (!s && !res.ok && shouldUseXamanProxy(res.error)) {
-            const fallback = await callXamanProxy<XamanStatusPayload>({ action: "status", uuid: payload.uuid });
-            if (fallback.ok) s = fallback.data;
-          }
-          if (stop || !s) return;
-          if (s.signed && s.txid) { clearInterval(t); await onPaid(project, s.txid); return; }
-          if (s.cancelled || (s.resolved && !s.signed)) { clearInterval(t); setError("Payment was rejected in Xaman."); setPayload(null); }
-          else if (s.expired) { clearInterval(t); setError("The payment request expired."); setPayload(null); }
-        } catch { /* transient */ }
-      })();
-    }, 2500);
-    return () => { stop = true; clearInterval(t); };
-  }, [payload, project, status, onPaid]);
-
-  useEffect(() => { if (project) { setPayload(null); setError(null); } }, [project]);
-
   if (!project) return null;
-  const addr = payload?.destination || siteSettings.listingPaymentAddress || "(admin has not set a payment address yet)";
   return (
-    <Dialog open={!!project} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent>
-        <DialogHeader><DialogTitle>Pay listing fee — {project.name}</DialogTitle></DialogHeader>
-        <div className="space-y-3 text-sm">
-          <div className="rounded border bg-muted/50 p-3">
-            <div className="flex justify-between"><span className="text-muted-foreground">Amount</span><b>{siteSettings.listingFeeXrp} XRP</b></div>
-            <div className="mt-1 flex justify-between gap-3"><span className="text-muted-foreground">To</span><span className="break-all font-mono text-xs">{addr}</span></div>
-          </div>
-          {error && <div className="whitespace-pre-wrap rounded border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">{error}</div>}
-          {payload ? (
-            <div className="grid gap-3 sm:grid-cols-[200px_1fr] sm:items-center">
-              <div className="mx-auto grid h-[212px] w-[212px] place-items-center rounded-lg border bg-white p-2">
-                <img src={payload.qrPng} alt="Xaman payment QR" className="h-[196px] w-[196px]" />
-              </div>
-              <div className="space-y-2">
-                <div className="text-xs text-muted-foreground">Scan with Xaman and approve the payment. This page updates automatically.</div>
-                <a href={payload.deeplink} target="_blank" rel="noreferrer" className="inline-flex w-full items-center justify-center rounded bg-primary px-3 py-2 text-sm text-primary-foreground">Open in Xaman</a>
-              </div>
-            </div>
-          ) : (
-            <div className="text-xs text-muted-foreground">A Xaman payment request will be created — approve it in the app to publish your project.</div>
-          )}
-        </div>
-        <DialogFooter>
-          <button onClick={onClose} className="rounded border px-3 py-2 text-sm">Cancel</button>
-          {!payload && (
-            <button disabled={creating} onClick={() => void start()} className="rounded bg-primary px-3 py-2 text-sm text-primary-foreground disabled:opacity-50">
-              {creating ? "Creating…" : `Pay ${siteSettings.listingFeeXrp} XRP with Xaman`}
-            </button>
-          )}
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <StellarPayDialog
+      open={!!project}
+      title={`Pay listing fee — ${project.name}`}
+      subtitle="Approve the transaction in Freighter to publish your project."
+      amountXlm={siteSettings.listingFeeXlm}
+      memo={`Listing ${project.slug}`.slice(0, 28)}
+      onClose={onClose}
+      onPaid={async (txHash) => { await onPaid(project, txHash); }}
+    />
   );
 }
+
 
 
 function StatusBadge({ status }: { status: string }) {

@@ -10,7 +10,7 @@ export interface PricingTier {
   key: string;
   name: string;
   tagline: string | null;
-  priceXrp: number;
+  priceXlm: number;
   billingPeriod: BillingPeriod;
   durationDays: number | null;
   features: string[];
@@ -31,7 +31,7 @@ export interface FounderMembership {
   userId: string;
   source: string;
   txHash: string | null;
-  amountXrp: number;
+  amountXlm: number;
   grantedAt: string;
   revoked: boolean;
 }
@@ -43,17 +43,17 @@ export const FOUNDER_KEY = "founder";
 
 export const priceLabel = (t: PricingTier) =>
   t.billingPeriod === "monthly"
-    ? `${t.priceXrp} XRP / month`
+    ? `${t.priceXlm} XLM / month`
     : t.billingPeriod === "duration"
-      ? `${t.priceXrp} XRP / ${t.durationDays ?? 0} days`
-      : `${t.priceXrp} XRP one-time`;
+      ? `${t.priceXlm} XLM / ${t.durationDays ?? 0} days`
+      : `${t.priceXlm} XLM one-time`;
 
 const mapTier = (r: any): PricingTier => ({
   id: r.id,
   key: r.key,
   name: r.name,
   tagline: r.tagline ?? null,
-  priceXrp: num(r.price_xrp),
+  priceXlm: num(r.price_xrp),
   billingPeriod: (r.billing_period ?? "one_time") as BillingPeriod,
   durationDays: r.duration_days ?? null,
   features: Array.isArray(r.features) ? r.features : [],
@@ -74,7 +74,7 @@ export async function fetchPricingTiers(includeInactive = false): Promise<Pricin
 
 export async function savePricingTier(t: PricingTier) {
   const { error } = await db().from("pricing_tiers").update({
-    name: t.name, tagline: t.tagline, price_xrp: t.priceXrp,
+    name: t.name, tagline: t.tagline, price_xrp: t.priceXlm,
     billing_period: t.billingPeriod, duration_days: t.durationDays,
     features: t.features, highlight: t.highlight, sort_order: t.sortOrder, active: t.active,
   }).eq("id", t.id);
@@ -118,7 +118,7 @@ export async function fetchMyFounder(userId: string): Promise<FounderMembership 
   if (!data) return null;
   return {
     id: data.id, userId: data.user_id, source: data.source, txHash: data.tx_hash ?? null,
-    amountXrp: num(data.amount_xrp), grantedAt: data.granted_at, revoked: !!data.revoked,
+    amountXlm: num(data.amount_xrp), grantedAt: data.granted_at, revoked: !!data.revoked,
   };
 }
 

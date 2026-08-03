@@ -9,10 +9,10 @@ export const Route = createFileRoute("/panel/transactions")({
   component: TransactionsPage,
   head: () => ({
     meta: [
-      { title: "Transaction History — XRPBrowser" },
-      { name: "description", content: "Every XRP payment you made on XRPBrowser: badge purchases, project promotions and listing fees with transaction hashes." },
-      { property: "og:title", content: "Transaction History — XRPBrowser" },
-      { property: "og:description", content: "Your XRP payment history on XRPBrowser." },
+      { title: "Transaction History — XLM Browser" },
+      { name: "description", content: "Every XLM payment you made on XLM Browser: badge purchases, project promotions and listing fees with transaction hashes." },
+      { property: "og:title", content: "Transaction History — XLM Browser" },
+      { property: "og:description", content: "Your XLM payment history on XLM Browser." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -32,7 +32,7 @@ export function StatusPill({ status }: { status: string }) {
 export function TxHash({ hash }: { hash: string | null }) {
   if (!hash) return <span className="text-xs text-muted-foreground">—</span>;
   return (
-    <a href={`https://livenet.xrpl.org/transactions/${hash}`} target="_blank" rel="noreferrer"
+    <a href={`https://livenet.stellar.org/transactions/${hash}`} target="_blank" rel="noreferrer"
       className="font-mono text-xs text-primary hover:underline" title={hash}>
       {hash.slice(0, 10)}…{hash.slice(-6)}
     </a>
@@ -65,7 +65,7 @@ function TransactionsPage() {
 
   useEffect(() => { void load(); }, [load]);
 
-  const total = rows.filter((r) => r.status === "success").reduce((a, r) => a + r.amountXrp, 0);
+  const total = rows.filter((r) => r.status === "success").reduce((a, r) => a + r.amountXlm, 0);
 
   return (
     <PanelShell>
@@ -80,7 +80,7 @@ function TransactionsPage() {
 
         <div className="mt-6 grid gap-4 sm:grid-cols-3">
           <div className="soft-card p-5"><div className="text-xs uppercase tracking-wider text-muted-foreground">Payments</div><div className="mt-1 text-2xl font-bold">{rows.length}</div></div>
-          <div className="soft-card p-5"><div className="text-xs uppercase tracking-wider text-muted-foreground">Total spent</div><div className="mt-1 text-2xl font-bold">{total} XRP</div></div>
+          <div className="soft-card p-5"><div className="text-xs uppercase tracking-wider text-muted-foreground">Total spent</div><div className="mt-1 text-2xl font-bold">{total} XLM</div></div>
           <div className="soft-card p-5"><div className="text-xs uppercase tracking-wider text-muted-foreground">Pending</div><div className="mt-1 text-2xl font-bold">{rows.filter((r) => r.status === "pending").length}</div></div>
         </div>
 
@@ -103,7 +103,7 @@ function TransactionsPage() {
                     <td className="p-3 text-muted-foreground">{new Date(r.createdAt).toLocaleString()}</td>
                     <td className="p-3">{KIND_LABEL[r.kind] ?? r.kind}</td>
                     <td className="p-3">{r.description ?? "—"}</td>
-                    <td className="p-3 font-medium">{r.amountXrp} XRP</td>
+                    <td className="p-3 font-medium">{r.amountXlm} XLM</td>
                     <td className="p-3"><TxHash hash={r.txHash} /></td>
                     <td className="p-3"><StatusPill status={r.status} /></td>
                   </tr>

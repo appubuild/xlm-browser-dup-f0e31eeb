@@ -16,8 +16,8 @@ function Ecosystem() {
   return (
     <PublicShell>
       <div className="mx-auto max-w-6xl px-6 py-8">
-        <h1 className="text-3xl font-bold">XRPL Ecosystem</h1>
-        <p className="mt-1 text-muted-foreground">Explore projects across the XRP Ledger.</p>
+        <h1 className="text-3xl font-bold">Stellar Ecosystem</h1>
+        <p className="mt-1 text-muted-foreground">Explore projects across the Stellar Network.</p>
 
         <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
           {stats.map((s) => (
@@ -29,7 +29,7 @@ function Ecosystem() {
         </div>
 
         <div className="mt-6 flex flex-wrap gap-4 rounded-xl border bg-muted/40 p-4 text-sm">
-          <div><span className="text-muted-foreground">XRPL TPS:</span> <b>1,500</b></div>
+          <div><span className="text-muted-foreground">Stellar TPS:</span> <b>1,500</b></div>
           <div><span className="text-muted-foreground">Avg Fee:</span> <b>$0.0002</b></div>
           <div><span className="text-muted-foreground">Ledger Close:</span> <b>3-5s</b></div>
         </div>

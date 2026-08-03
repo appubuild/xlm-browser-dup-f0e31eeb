@@ -9,10 +9,10 @@ export const Route = createFileRoute("/company/$key")({
   component: CompanyPage,
   head: () => ({
     meta: [
-      { title: "Company Profile — XRPBrowser" },
-      { name: "description", content: "Company profile of an XRPL project author: verification badge, bio, social links and support contact." },
-      { property: "og:title", content: "Company Profile — XRPBrowser" },
-      { property: "og:description", content: "XRPL project author profile with verification badge and contact details." },
+      { title: "Company Profile — XLM Browser" },
+      { name: "description", content: "Company profile of an Stellar project author: verification badge, bio, social links and support contact." },
+      { property: "og:title", content: "Company Profile — XLM Browser" },
+      { property: "og:description", content: "Stellar project author profile with verification badge and contact details." },
       { property: "og:type", content: "profile" },
       { name: "twitter:card", content: "summary" },
     ],

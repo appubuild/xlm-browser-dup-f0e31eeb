@@ -5,11 +5,11 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 export const Route = createFileRoute("/help")({ component: Help });
 
 const faqs = [
-  { q: "What is XRPBrowser?", a: "A search engine and discovery portal for the XRP Ledger ecosystem." },
+  { q: "What is XLM Browser?", a: "A search engine and discovery portal for the Stellar Network ecosystem." },
   { q: "How do I submit a project?", a: "Go to /submit and complete the 3-step form. Our team reviews new submissions." },
-  { q: "Is XRPBrowser affiliated with Ripple?", a: "No. XRPBrowser is an independent directory operated by SkipAds AI LLC." },
-  { q: "How do I connect a wallet?", a: "Click 'Connect Wallet' in the top nav and choose your preferred XRPL wallet." },
-  { q: "Do you store my keys?", a: "No. XRPBrowser never has access to private keys." },
+  { q: "Is XLM Browser affiliated with Stellar?", a: "No. XLM Browser is an independent directory operated by SkipAds AI LLC." },
+  { q: "How do I connect a wallet?", a: "Click 'Connect Wallet' in the top nav and choose your preferred Stellar wallet." },
+  { q: "Do you store my keys?", a: "No. XLM Browser never has access to private keys." },
 ];
 
 function Help() {

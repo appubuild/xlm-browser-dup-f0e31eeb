@@ -7,10 +7,10 @@ export const Route = createFileRoute("/p/$slug")({
   component: PublicPage,
   head: () => ({
     meta: [
-      { title: "Page | XRPBrowser" },
-      { name: "description", content: "Read information pages from the XRPBrowser XRPL discovery platform." },
-      { property: "og:title", content: "Page | XRPBrowser" },
-      { property: "og:description", content: "Information pages from XRPBrowser, the XRP Ledger discovery portal." },
+      { title: "Page | XLM Browser" },
+      { name: "description", content: "Read information pages from the XLM Browser Stellar discovery platform." },
+      { property: "og:title", content: "Page | XLM Browser" },
+      { property: "og:description", content: "Information pages from XLM Browser, the Stellar Network discovery portal." },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -31,7 +31,7 @@ function PublicPage() {
   }, [slug]);
 
   useEffect(() => {
-    if (page?.title && typeof document !== "undefined") document.title = `${page.title} | XRPBrowser`;
+    if (page?.title && typeof document !== "undefined") document.title = `${page.title} | XLM Browser`;
   }, [page?.title]);
 
   return (

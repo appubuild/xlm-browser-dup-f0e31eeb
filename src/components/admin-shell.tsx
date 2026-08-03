@@ -114,7 +114,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
       <Link to="/admin" onClick={() => setDrawer(false)} className="mb-4 flex items-center gap-2 px-2 py-2">
         <div className="grid h-8 w-8 place-items-center rounded-md bg-gradient-to-br from-sky-500 to-indigo-500 font-bold text-white">X</div>
         <div>
-          <div className="text-sm font-semibold">XRPBrowser</div>
+          <div className="text-sm font-semibold">XLM Browser</div>
           <div className={`text-[10px] uppercase tracking-wider ${c.subtle}`}>Admin</div>
         </div>
       </Link>

@@ -1,8 +1,6 @@
 import { UserAvatar } from "@/components/user-avatar";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
-import { useServerFn } from "@tanstack/react-start";
-import { xamanSignIn, xamanStatus, xamanBalance } from "@/lib/xaman.functions";
 import { Sun, Moon, Terminal, Wallet, Rocket, Menu, User as UserIcon, Bell, Search, ChevronLeft, Shield } from "lucide-react";
 import { useApp } from "@/lib/app-store";
 
@@ -13,11 +11,10 @@ import { useViewport } from "@/components/browser-viewport";
 import { CryptoTicker } from "@/components/crypto-ticker";
 import { listPages, type SitePage } from "@/lib/cms";
 import { buildMenuTree, listMenus, type MenuItem } from "@/lib/menus";
-import { callXamanProxy, formatXamanConnectError, shouldUseXamanProxy, type XamanSignInPayload, type XamanStatusPayload } from "@/lib/xaman-client";
+import { connectFreighter, getStellarBalance, EXPLORER } from "@/lib/stellar-wallet";
 
 
 function useWalletBalance(account: string | undefined, network: "Mainnet" | "Testnet") {
-  const getBalance = useServerFn(xamanBalance);
   const [balance, setBalance] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
@@ -25,10 +22,10 @@ function useWalletBalance(account: string | undefined, network: "Mainnet" | "Tes
     let stop = false;
     const load = async () => {
       try {
-        const res = await getBalance({ data: { account, network } });
+        const res = await getStellarBalance(account, network);
         if (stop) return;
-        if (res.ok) { setBalance(res.data.balance); setError(null); }
-        else setError(res.error);
+        setBalance(res.balance);
+        setError(null);
       } catch (e) {
         if (!stop) setError(e instanceof Error ? e.message : "Could not read balance");
       }
@@ -36,12 +33,13 @@ function useWalletBalance(account: string | undefined, network: "Mainnet" | "Tes
     void load();
     const t = setInterval(() => void load(), 30_000);
     return () => { stop = true; clearInterval(t); };
-  }, [account, network, getBalance]);
+  }, [account, network]);
   return { balance, error };
 }
 
+
 export function PublicShell({ children }: { children: ReactNode }) {
-  const { theme, setTheme, toggleTheme, user, logout, connectWallet, disconnectWallet, projects, xrpPrice, ledgerIndex, siteSettings, sidebarItems, isAdmin, walletConfig } = useApp();
+  const { theme, setTheme, toggleTheme, user, logout, connectWallet, disconnectWallet, projects, xlmPrice, ledgerIndex, siteSettings, sidebarItems, isAdmin, walletConfig } = useApp();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const [walletOpen, setWalletOpen] = useState(false);
@@ -135,7 +133,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
               <Wallet className="h-4 w-4" />
               {user?.walletAddress ? (
                 <span className="flex items-center gap-1.5">
-                  <span className="font-mono font-semibold">{headerBalance === null ? "…" : `${headerBalance.toLocaleString(undefined, { maximumFractionDigits: 4 })} XRP`}</span>
+                  <span className="font-mono font-semibold">{headerBalance === null ? "…" : `${headerBalance.toLocaleString(undefined, { maximumFractionDigits: 4 })} XLM`}</span>
                   <span className="text-xs text-muted-foreground">{user.walletAddress.slice(0, 4)}…{user.walletAddress.slice(-4)}</span>
                 </span>
               ) : "Connect Wallet"}
@@ -227,10 +225,10 @@ export function PublicShell({ children }: { children: ReactNode }) {
             {!collapsed && (
               <div className={isRetro ? "m-2 border border-primary p-2 text-xs" : "soft-card m-2 p-3 text-xs"}>
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">XRP</span>
-                  <span className="font-mono font-semibold">${xrpPrice.price.toFixed(4)}</span>
+                  <span className="text-muted-foreground">XLM</span>
+                  <span className="font-mono font-semibold">${xlmPrice.price.toFixed(4)}</span>
                 </div>
-                <div className={`text-right font-mono ${xrpPrice.change >= 0 ? "text-success" : "text-destructive"}`}>{xrpPrice.change >= 0 ? "+" : ""}{xrpPrice.change.toFixed(2)}%</div>
+                <div className={`text-right font-mono ${xlmPrice.change >= 0 ? "text-success" : "text-destructive"}`}>{xlmPrice.change >= 0 ? "+" : ""}{xlmPrice.change.toFixed(2)}%</div>
                 <div className="mt-2 flex items-center gap-1.5 text-xs">
                   <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-success" /> Mainnet
                 </div>
@@ -251,17 +249,18 @@ export function PublicShell({ children }: { children: ReactNode }) {
 
       {!hideFooter && <Footer />}
 
-      {/* Wallet modal — Xaman only */}
+      {/* Wallet modal — Freighter (Stellar) */}
       <Dialog open={walletOpen} onOpenChange={setWalletOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{user?.walletAddress ? "Xaman wallet connected" : "Connect with Xaman"}</DialogTitle>
+            <DialogTitle>{user?.walletAddress ? "Freighter wallet connected" : "Connect with Freighter"}</DialogTitle>
           </DialogHeader>
           {user?.walletAddress ? (
-            <XamanConnected onClose={() => setWalletOpen(false)} />
+            <FreighterConnected onClose={() => setWalletOpen(false)} />
           ) : (
-            <XamanConnect onDone={() => { setWalletOpen(false); toast.success("Connected via Xaman ✅"); }} />
+            <FreighterConnect onDone={() => { setWalletOpen(false); toast.success("Connected via Freighter ✅"); }} />
           )}
+
         </DialogContent>
       </Dialog>
     </div>
@@ -305,7 +304,7 @@ function RetroChrome({ path, loading }: { path: string; loading: boolean }) {
           <span className="inline-block h-3 w-3 border border-primary bg-secondary" />
           <span className="inline-block h-3 w-3 border border-primary bg-secondary" />
         </div>
-        <span className="ml-2 font-mono">XRPBROWSER.COM — Netscape Navigator 4.0</span>
+        <span className="ml-2 font-mono">XLM BROWSER.COM — Netscape Navigator 4.0</span>
       </div>
       <div className="flex items-center gap-1 border-t border-primary px-2 py-1">
         <button className="retro-btn text-xs">◀ Back</button>
@@ -313,7 +312,7 @@ function RetroChrome({ path, loading }: { path: string; loading: boolean }) {
         <button className="retro-btn text-xs">⟳ Reload</button>
         <button className="retro-btn text-xs">⌂ Home</button>
         <div className="ml-1 flex flex-1 items-center gap-1 border border-primary bg-background px-2 py-0.5 font-mono text-xs">
-          <span>xrpbrowser.com{path}</span>
+          <span>xlmbrowser.com{path}</span>
           <span className="blink">_</span>
         </div>
       </div>
@@ -383,115 +382,46 @@ function Footer() {
   );
 }
 
-function XamanConnect({ onDone }: { onDone: () => void }) {
+function FreighterConnect({ onDone }: { onDone: () => void }) {
   const { connectWallet } = useApp();
-  const signIn = useServerFn(xamanSignIn);
-  const status = useServerFn(xamanStatus);
-  const [payload, setPayload] = useState<{ uuid: string; qrPng: string; deeplink: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [state, setState] = useState<"creating" | "waiting" | "done">("creating");
+  const [busy, setBusy] = useState(false);
 
   const start = useCallback(async () => {
     setError(null);
-    setState("creating");
-    setPayload(null);
+    setBusy(true);
     try {
-      const res = await signIn({ data: {} });
-      let next: XamanSignInPayload | null = null;
-      if (res.ok) next = res.data;
-      else if (shouldUseXamanProxy(res.error)) {
-        const fallback = await callXamanProxy<XamanSignInPayload>({ action: "signin" });
-        if (fallback.ok) next = fallback.data;
-        else { setError(formatXamanConnectError(res.error, fallback.error)); setState("done"); return; }
-      } else { setError(res.error); setState("done"); return; }
-      setPayload({ uuid: next.uuid, qrPng: next.qrPng, deeplink: next.deeplink });
-      setState("waiting");
+      const address = await connectFreighter();
+      await connectWallet("Freighter", address);
+      onDone();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not start Xaman sign-in");
-      setState("done");
+      setError(e instanceof Error ? e.message : "Could not connect to Freighter");
+    } finally {
+      setBusy(false);
     }
-  }, [signIn]);
-
-  useEffect(() => { void start(); }, [start]);
-
-  // Poll the payload until the user approves / rejects / it expires.
-  useEffect(() => {
-    if (!payload || state !== "waiting") return;
-    let stop = false;
-    const tick = async () => {
-      try {
-        const res = await status({ data: { uuid: payload.uuid } });
-        let s: XamanStatusPayload | null = res.ok ? res.data : null;
-        if (!s && !res.ok && shouldUseXamanProxy(res.error)) {
-          const fallback = await callXamanProxy<XamanStatusPayload>({ action: "status", uuid: payload.uuid });
-          if (fallback.ok) s = fallback.data;
-        }
-        if (stop || !s) return;
-        if (s.signed && s.account) {
-          setState("done");
-          await connectWallet("Xaman (Xumm)", s.account);
-          onDone();
-          return;
-        }
-        if (s.cancelled || (s.resolved && !s.signed)) { setError("Sign-in request was rejected in Xaman."); setState("done"); return; }
-        if (s.expired) { setError("The sign-in request expired. Please try again."); setState("done"); return; }
-      } catch {
-        /* transient — keep polling */
-      }
-    };
-    const t = setInterval(() => { void tick(); }, 2500);
-    return () => { stop = true; clearInterval(t); };
-  }, [payload, state, status, connectWallet, onDone]);
-
-  if (error) {
-    return (
-      <div className="space-y-3 text-sm">
-        <div className="whitespace-pre-wrap rounded-md border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">{error}</div>
-        <button onClick={() => void start()} className="w-full rounded-md border px-3 py-2 text-xs hover:bg-muted">Try again</button>
-      </div>
-    );
-  }
+  }, [connectWallet, onDone]);
 
   return (
-    <div className="space-y-3">
-      <div className="grid gap-3 sm:grid-cols-[220px_1fr] sm:items-center">
-        <div className="mx-auto grid h-[236px] w-[236px] place-items-center rounded-lg border bg-white p-2">
-          {payload ? (
-            <img src={payload.qrPng} alt="Xaman sign-in QR" className="h-[220px] w-[220px]" />
-          ) : (
-            <span className="text-xs text-slate-500">Creating sign-in request…</span>
-          )}
-        </div>
-        <div className="space-y-2 text-sm">
-          <div className="font-medium">Scan with Xaman</div>
-          <ol className="ml-4 list-decimal space-y-1 text-xs text-muted-foreground">
-            <li>Open the Xaman app on your phone</li>
-            <li>Tap the scan icon</li>
-            <li>Point at the QR code</li>
-            <li>Approve the sign-in request</li>
-          </ol>
-          {payload && (
-            <a
-              href={payload.deeplink}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-1 inline-flex w-full items-center justify-center rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground hover:opacity-90"
-            >
-              Open in Xaman
-            </a>
-          )}
-          <div className="text-[11px] text-muted-foreground">
-            {state === "waiting" ? "Waiting for approval in Xaman…" : "Preparing…"}
-          </div>
-        </div>
-      </div>
+    <div className="space-y-3 text-sm">
+      <p className="text-muted-foreground">
+        Connect your Stellar account with the Freighter browser extension. Nothing is signed — we only read your public address.
+      </p>
+      {error && <div className="whitespace-pre-wrap rounded-md border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">{error}</div>}
+      <button onClick={() => void start()} disabled={busy}
+        className="w-full rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground disabled:opacity-50">
+        {busy ? "Waiting for Freighter…" : "Connect Freighter"}
+      </button>
+      <p className="text-xs text-muted-foreground">
+        Don't have it yet? Install{" "}
+        <a href="https://freighter.app" target="_blank" rel="noreferrer" className="underline">Freighter</a> and reload this page.
+      </p>
     </div>
   );
 }
 
-function XamanConnected({ onClose }: { onClose: () => void }) {
-  const { user, disconnectWallet, walletConfig, xrpPrice } = useApp();
-  const getBalance = useServerFn(xamanBalance);
+
+function FreighterConnected({ onClose }: { onClose: () => void }) {
+  const { user, disconnectWallet, walletConfig, xlmPrice } = useApp();
   const [balance, setBalance] = useState<number | null>(null);
   const [balErr, setBalErr] = useState<string | null>(null);
 
@@ -501,18 +431,18 @@ function XamanConnected({ onClose }: { onClose: () => void }) {
     let stop = false;
     void (async () => {
       try {
-        const res = await getBalance({ data: { account, network: walletConfig.network } });
+        const res = await getStellarBalance(account, walletConfig.network);
         if (stop) return;
-        if (res.ok) setBalance(res.data.balance);
-        else setBalErr(res.error);
+        setBalance(res.balance);
       } catch (e) {
         if (!stop) setBalErr(e instanceof Error ? e.message : "Could not read balance");
       }
     })();
     return () => { stop = true; };
-  }, [user?.walletAddress, walletConfig.network, getBalance]);
+  }, [user?.walletAddress, walletConfig.network]);
 
-  const usd = balance !== null ? (balance * xrpPrice.price).toFixed(2) : null;
+
+  const usd = balance !== null ? (balance * xlmPrice.price).toFixed(2) : null;
   return (
     <div className="space-y-3 text-sm">
       <div className="rounded-md border bg-muted/40 p-3">
@@ -527,7 +457,7 @@ function XamanConnected({ onClose }: { onClose: () => void }) {
         <div className="mt-3 flex items-center justify-between">
           <div>
             <div className="text-xs text-muted-foreground">Balance</div>
-            <div className="text-lg font-semibold">{balance === null ? (balErr ? "—" : "Loading…") : `${balance.toLocaleString()} XRP`}</div>
+            <div className="text-lg font-semibold">{balance === null ? (balErr ? "—" : "Loading…") : `${balance.toLocaleString()} XLM`}</div>
             <div className="text-xs text-muted-foreground">{usd ? `≈ $${usd}` : balErr ?? ""}</div>
           </div>
           <div className="text-right text-[11px] text-muted-foreground">
@@ -538,25 +468,25 @@ function XamanConnected({ onClose }: { onClose: () => void }) {
       </div>
       <div className="grid grid-cols-2 gap-3 rounded-md border p-3 text-xs">
         <div>
-          <div className="text-muted-foreground">XRP price</div>
-          <div className="font-mono font-medium text-foreground">${xrpPrice.price.toFixed(4)}</div>
+          <div className="text-muted-foreground">XLM price</div>
+          <div className="font-mono font-medium text-foreground">${xlmPrice.price.toFixed(4)}</div>
         </div>
         <div className="text-right">
           <div className="text-muted-foreground">24h</div>
-          <div className={`font-mono font-medium ${xrpPrice.change >= 0 ? "text-success" : "text-destructive"}`}>
-            {xrpPrice.change >= 0 ? "+" : ""}{xrpPrice.change.toFixed(2)}%
+          <div className={`font-mono font-medium ${xlmPrice.change >= 0 ? "text-success" : "text-destructive"}`}>
+            {xlmPrice.change >= 0 ? "+" : ""}{xlmPrice.change.toFixed(2)}%
           </div>
         </div>
         <div className="col-span-2">
           <a
-            href={`https://livenet.xrpl.org/accounts/${user?.walletAddress ?? ""}`}
+            href={`${EXPLORER[walletConfig.network]}/account/${user?.walletAddress ?? ""}`}
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-1 underline hover:no-underline"
-          >View on XRPL explorer ↗</a>
+          >View on Stellar explorer ↗</a>
         </div>
       </div>
-      <button onClick={() => { disconnectWallet(); onClose(); toast("Xaman disconnected"); }} className="w-full rounded-md border px-3 py-2 hover:bg-muted">
+      <button onClick={() => { disconnectWallet(); onClose(); toast("Freighter disconnected"); }} className="w-full rounded-md border px-3 py-2 hover:bg-muted">
         Disconnect
       </button>
     </div>

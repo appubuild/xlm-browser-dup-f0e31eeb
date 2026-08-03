@@ -11,10 +11,10 @@ export const Route = createFileRoute("/pricing")({
   component: PricingPage,
   head: () => ({
     meta: [
-      { title: "Pricing & Plans — XRPBrowser" },
-      { name: "description", content: "Founder Membership, verified company badges, Pro & Enterprise plans and promotion packages for XRPL projects — all payable in XRP." },
-      { property: "og:title", content: "Pricing & Plans — XRPBrowser" },
-      { property: "og:description", content: "Founder Membership, verified badges, Pro & Enterprise plans and promotion packages for XRPL projects, priced in XRP." },
+      { title: "Pricing & Plans — XLM Browser" },
+      { name: "description", content: "Founder Membership, verified company badges, Pro & Enterprise plans and promotion packages for Stellar projects — all payable in XLM." },
+      { property: "og:title", content: "Pricing & Plans — XLM Browser" },
+      { property: "og:description", content: "Founder Membership, verified badges, Pro & Enterprise plans and promotion packages for Stellar projects, priced in XLM." },
 
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -34,7 +34,7 @@ function PricingPage() {
         <header className="text-center">
           <h1 className="text-3xl font-bold sm:text-4xl">Pricing & Plans</h1>
           <p className="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground">
-            Everything is paid on-ledger in XRP through your Xaman wallet. No cards, no subscriptions you can't cancel.
+            Everything is paid on-ledger in XLM through your Freighter wallet. No cards, no subscriptions you can't cancel.
           </p>
           {isFounder && (
             <div className="mt-4 flex justify-center"><FounderBadge /></div>
@@ -62,7 +62,7 @@ function PricingPage() {
                   {t.highlight && <span className="rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">Popular</span>}
                 </div>
                 {t.tagline && <p className="mt-1 text-xs text-muted-foreground">{t.tagline}</p>}
-                <div className="mt-4 text-2xl font-bold">{t.priceXrp} <span className="text-sm font-normal text-muted-foreground">XRP</span></div>
+                <div className="mt-4 text-2xl font-bold">{t.priceXlm} <span className="text-sm font-normal text-muted-foreground">XLM</span></div>
                 <div className="text-xs text-muted-foreground">{priceLabel(t)}</div>
                 <ul className="mt-4 flex-1 space-y-1.5 text-sm">
                   {t.features.map((f) => (
@@ -133,15 +133,15 @@ function PromotionPackagesSection() {
               </span>
             </div>
             <div className="mt-3 text-2xl font-bold">
-              {p.priceXrp} <span className="text-sm font-normal text-muted-foreground">XRP</span>
+              {p.priceXlm} <span className="text-sm font-normal text-muted-foreground">XLM</span>
             </div>
             <div className="text-xs text-muted-foreground">
-              {p.priceXrp} XRP / {p.durationDays} days
+              {p.priceXlm} XLM / {p.durationDays} days
             </div>
             <ul className="mt-4 flex-1 space-y-1.5 text-sm">
               <li className="flex gap-2"><span className="text-primary">✓</span><span>{SLOT_LABEL[p.slot]} placement</span></li>
               <li className="flex gap-2"><span className="text-primary">✓</span><span>Runs for {p.durationDays} days from activation</span></li>
-              <li className="flex gap-2"><span className="text-primary">✓</span><span>Paid on-ledger in XRP via Xaman</span></li>
+              <li className="flex gap-2"><span className="text-primary">✓</span><span>Paid on-ledger in XLM via Freighter</span></li>
             </ul>
             <Link to="/panel/submissions"
               className="mt-5 block w-full rounded bg-primary px-3 py-2 text-center text-sm text-primary-foreground">

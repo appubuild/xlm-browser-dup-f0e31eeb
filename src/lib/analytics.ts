@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type ProjectEventType = "view" | "visit" | "bookmark" | "unbookmark" | "share" | "search_click";
 
-const SESSION_KEY = "xrpb-session-id";
+const SESSION_KEY = "xlmb-session-id";
 
 export function sessionId(): string {
   if (typeof window === "undefined") return "ssr";

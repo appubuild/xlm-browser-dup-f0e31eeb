@@ -20,7 +20,7 @@ export function useAnalytics(days: number, slugs?: string[]) {
 
 export function Kpi({ label, value, hint }: { label: string; value: number | string; hint?: string }) {
   return (
-    <div className="rounded-xl border p-4" style={{ borderColor: "var(--xrpb-analytics-border, currentColor)" }}>
+    <div className="rounded-xl border p-4" style={{ borderColor: "var(--xlmb-analytics-border, currentColor)" }}>
       <div className="text-xs uppercase tracking-wide opacity-60">{label}</div>
       <div className="mt-1 text-2xl font-bold">{typeof value === "number" ? value.toLocaleString() : value}</div>
       {hint && <div className="mt-0.5 text-[11px] opacity-50">{hint}</div>}
