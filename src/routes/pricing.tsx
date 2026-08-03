@@ -5,6 +5,7 @@ import { useApp } from "@/lib/app-store";
 import { FounderCta, FounderBadge } from "@/components/founder-gate";
 import { usePricing, useFounder, priceLabel, FOUNDER_KEY } from "@/lib/pricing";
 import { fetchPromotionPackages, SLOT_LABEL, type PromotionPackage } from "@/lib/monetization";
+import { XlmAmount } from "@/components/xlm-amount";
 
 
 export const Route = createFileRoute("/pricing")({
@@ -62,7 +63,7 @@ function PricingPage() {
                   {t.highlight && <span className="rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">Popular</span>}
                 </div>
                 {t.tagline && <p className="mt-1 text-xs text-muted-foreground">{t.tagline}</p>}
-                <div className="mt-4 text-2xl font-bold">{t.priceXlm} <span className="text-sm font-normal text-muted-foreground">XLM</span></div>
+                <div className="mt-4 text-2xl font-bold"><XlmAmount xlm={t.priceXlm} /></div>
                 <div className="text-xs text-muted-foreground">{priceLabel(t)}</div>
                 <ul className="mt-4 flex-1 space-y-1.5 text-sm">
                   {t.features.map((f) => (
@@ -133,7 +134,7 @@ function PromotionPackagesSection() {
               </span>
             </div>
             <div className="mt-3 text-2xl font-bold">
-              {p.priceXlm} <span className="text-sm font-normal text-muted-foreground">XLM</span>
+              <XlmAmount xlm={p.priceXlm} />
             </div>
             <div className="text-xs text-muted-foreground">
               {p.priceXlm} XLM / {p.durationDays} days

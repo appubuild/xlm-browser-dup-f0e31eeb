@@ -4,6 +4,7 @@ import { PanelShell } from "@/components/panel-shell";
 import { useApp } from "@/lib/app-store";
 import { toast } from "sonner";
 import { fetchMyTransactions, type TxRecord } from "@/lib/monetization";
+import { XlmAmount } from "@/components/xlm-amount";
 
 export const Route = createFileRoute("/panel/transactions")({
   component: TransactionsPage,
@@ -80,7 +81,7 @@ function TransactionsPage() {
 
         <div className="mt-6 grid gap-4 sm:grid-cols-3">
           <div className="soft-card p-5"><div className="text-xs uppercase tracking-wider text-muted-foreground">Payments</div><div className="mt-1 text-2xl font-bold">{rows.length}</div></div>
-          <div className="soft-card p-5"><div className="text-xs uppercase tracking-wider text-muted-foreground">Total spent</div><div className="mt-1 text-2xl font-bold">{total} XLM</div></div>
+          <div className="soft-card p-5"><div className="text-xs uppercase tracking-wider text-muted-foreground">Total spent</div><div className="mt-1 text-2xl font-bold"><XlmAmount xlm={total} /></div></div>
           <div className="soft-card p-5"><div className="text-xs uppercase tracking-wider text-muted-foreground">Pending</div><div className="mt-1 text-2xl font-bold">{rows.filter((r) => r.status === "pending").length}</div></div>
         </div>
 
@@ -103,7 +104,7 @@ function TransactionsPage() {
                     <td className="p-3 text-muted-foreground">{new Date(r.createdAt).toLocaleString()}</td>
                     <td className="p-3">{KIND_LABEL[r.kind] ?? r.kind}</td>
                     <td className="p-3">{r.description ?? "—"}</td>
-                    <td className="p-3 font-medium">{r.amountXlm} XLM</td>
+                    <td className="p-3 font-medium"><XlmAmount xlm={r.amountXlm} /></td>
                     <td className="p-3"><TxHash hash={r.txHash} /></td>
                     <td className="p-3"><StatusPill status={r.status} /></td>
                   </tr>

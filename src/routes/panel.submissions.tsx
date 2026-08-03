@@ -8,6 +8,7 @@ import { StellarPayDialog } from "@/components/stellar-pay-dialog";
 import { ProjectFormDialog, ProjectDetailsDialog } from "@/components/project-form-dialog";
 import { ProjectBadges } from "@/components/project-badges";
 import { fetchPromotionPackages, createPromotion, SLOT_LABEL, type PromotionPackage, type PromoSlot } from "@/lib/monetization";
+import { XlmAmount } from "@/components/xlm-amount";
 
 
 export const Route = createFileRoute("/panel/submissions")({ component: Submissions });
@@ -61,7 +62,7 @@ function Submissions() {
                       <td className="p-3 text-muted-foreground">{p.dateAdded}</td>
                       <td className="p-3">
                         <div className="flex flex-wrap gap-1">
-                          {needsPay && <button onClick={() => setPayFor(p)} className="rounded bg-primary px-2.5 py-1 text-xs text-primary-foreground">Pay {siteSettings.listingFeeXlm} XLM</button>}
+                          {needsPay && <button onClick={() => setPayFor(p)} className="rounded bg-primary px-2.5 py-1 text-xs text-primary-foreground">Pay <XlmAmount xlm={siteSettings.listingFeeXlm} inline /></button>}
                           {p.isPublic && <button onClick={() => setPromoteFor(p)} className="rounded border px-2.5 py-1 text-xs hover:bg-accent">🚀 Promote</button>}
                           <button onClick={() => setEditFor(p)} className="rounded border px-2.5 py-1 text-xs hover:bg-accent">Edit</button>
                           <button onClick={() => setDetailsFor(p)} className="rounded border px-2.5 py-1 text-xs hover:bg-accent">Details</button>
@@ -127,7 +128,7 @@ function PromoteDialog({ project, onClose }: { project: Project | null; onClose:
                       <button key={p.id} onClick={() => setPicked(p)}
                         className="flex items-center justify-between rounded-lg border p-3 text-left text-sm hover:border-primary hover:bg-accent">
                         <span>{p.durationDays} days</span>
-                        <b>{p.priceXlm} XLM</b>
+                        <b><XlmAmount xlm={p.priceXlm} inline /></b>
                       </button>
                     ))}
                   </div>
