@@ -381,111 +381,43 @@ function Footer() {
   );
 }
 
-function XamanConnect({ onDone }: { onDone: () => void }) {
+function FreighterConnect({ onDone }: { onDone: () => void }) {
   const { connectWallet } = useApp();
-  const signIn = useServerFn(xamanSignIn);
-  const status = useServerFn(xamanStatus);
-  const [payload, setPayload] = useState<{ uuid: string; qrPng: string; deeplink: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [state, setState] = useState<"creating" | "waiting" | "done">("creating");
+  const [busy, setBusy] = useState(false);
 
   const start = useCallback(async () => {
     setError(null);
-    setState("creating");
-    setPayload(null);
+    setBusy(true);
     try {
-      const res = await signIn({ data: {} });
-      let next: XamanSignInPayload | null = null;
-      if (res.ok) next = res.data;
-      else if (shouldUseXamanProxy(res.error)) {
-        const fallback = await callXamanProxy<XamanSignInPayload>({ action: "signin" });
-        if (fallback.ok) next = fallback.data;
-        else { setError(formatXamanConnectError(res.error, fallback.error)); setState("done"); return; }
-      } else { setError(res.error); setState("done"); return; }
-      setPayload({ uuid: next.uuid, qrPng: next.qrPng, deeplink: next.deeplink });
-      setState("waiting");
+      const address = await connectFreighter();
+      await connectWallet("Freighter", address);
+      onDone();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not start Xaman sign-in");
-      setState("done");
+      setError(e instanceof Error ? e.message : "Could not connect to Freighter");
+    } finally {
+      setBusy(false);
     }
-  }, [signIn]);
-
-  useEffect(() => { void start(); }, [start]);
-
-  // Poll the payload until the user approves / rejects / it expires.
-  useEffect(() => {
-    if (!payload || state !== "waiting") return;
-    let stop = false;
-    const tick = async () => {
-      try {
-        const res = await status({ data: { uuid: payload.uuid } });
-        let s: XamanStatusPayload | null = res.ok ? res.data : null;
-        if (!s && !res.ok && shouldUseXamanProxy(res.error)) {
-          const fallback = await callXamanProxy<XamanStatusPayload>({ action: "status", uuid: payload.uuid });
-          if (fallback.ok) s = fallback.data;
-        }
-        if (stop || !s) return;
-        if (s.signed && s.account) {
-          setState("done");
-          await connectWallet("Xaman (Xumm)", s.account);
-          onDone();
-          return;
-        }
-        if (s.cancelled || (s.resolved && !s.signed)) { setError("Sign-in request was rejected in Xaman."); setState("done"); return; }
-        if (s.expired) { setError("The sign-in request expired. Please try again."); setState("done"); return; }
-      } catch {
-        /* transient — keep polling */
-      }
-    };
-    const t = setInterval(() => { void tick(); }, 2500);
-    return () => { stop = true; clearInterval(t); };
-  }, [payload, state, status, connectWallet, onDone]);
-
-  if (error) {
-    return (
-      <div className="space-y-3 text-sm">
-        <div className="whitespace-pre-wrap rounded-md border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">{error}</div>
-        <button onClick={() => void start()} className="w-full rounded-md border px-3 py-2 text-xs hover:bg-muted">Try again</button>
-      </div>
-    );
-  }
+  }, [connectWallet, onDone]);
 
   return (
-    <div className="space-y-3">
-      <div className="grid gap-3 sm:grid-cols-[220px_1fr] sm:items-center">
-        <div className="mx-auto grid h-[236px] w-[236px] place-items-center rounded-lg border bg-white p-2">
-          {payload ? (
-            <img src={payload.qrPng} alt="Xaman sign-in QR" className="h-[220px] w-[220px]" />
-          ) : (
-            <span className="text-xs text-slate-500">Creating sign-in request…</span>
-          )}
-        </div>
-        <div className="space-y-2 text-sm">
-          <div className="font-medium">Scan with Xaman</div>
-          <ol className="ml-4 list-decimal space-y-1 text-xs text-muted-foreground">
-            <li>Open the Xaman app on your phone</li>
-            <li>Tap the scan icon</li>
-            <li>Point at the QR code</li>
-            <li>Approve the sign-in request</li>
-          </ol>
-          {payload && (
-            <a
-              href={payload.deeplink}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-1 inline-flex w-full items-center justify-center rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground hover:opacity-90"
-            >
-              Open in Xaman
-            </a>
-          )}
-          <div className="text-[11px] text-muted-foreground">
-            {state === "waiting" ? "Waiting for approval in Xaman…" : "Preparing…"}
-          </div>
-        </div>
-      </div>
+    <div className="space-y-3 text-sm">
+      <p className="text-muted-foreground">
+        Connect your Stellar account with the Freighter browser extension. Nothing is signed — we only read your public address.
+      </p>
+      {error && <div className="whitespace-pre-wrap rounded-md border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">{error}</div>}
+      <button onClick={() => void start()} disabled={busy}
+        className="w-full rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground disabled:opacity-50">
+        {busy ? "Waiting for Freighter…" : "Connect Freighter"}
+      </button>
+      <p className="text-xs text-muted-foreground">
+        Don't have it yet? Install{" "}
+        <a href="https://freighter.app" target="_blank" rel="noreferrer" className="underline">Freighter</a> and reload this page.
+      </p>
     </div>
   );
 }
+
 
 function XamanConnected({ onClose }: { onClose: () => void }) {
   const { user, disconnectWallet, walletConfig, xlmPrice } = useApp();
