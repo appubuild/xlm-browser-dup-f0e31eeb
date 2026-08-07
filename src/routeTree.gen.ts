@@ -44,6 +44,7 @@ import { Route as CompanyKeyRouteImport } from './routes/company.$key'
 import { Route as DevelopersApiRouteImport } from './routes/developers.api'
 import { Route as DirectoryCategoryRouteImport } from './routes/directory.$category'
 import { Route as MarketsIndexRouteImport } from './routes/markets.index'
+import { Route as MarketsCoinIdRouteImport } from './routes/markets.$coinId'
 import { Route as NewsIndexRouteImport } from './routes/news.index'
 import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 import { Route as PSlugRouteImport } from './routes/p.$slug'
@@ -242,6 +243,11 @@ const MarketsIndexRoute = MarketsIndexRouteImport.update({
   path: '/markets/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketsCoinIdRoute = MarketsCoinIdRouteImport.update({
+  id: '/markets/$coinId',
+  path: '/markets/$coinId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NewsIndexRoute = NewsIndexRouteImport.update({
   id: '/news/',
   path: '/news/',
@@ -382,6 +388,7 @@ export interface FileRoutesByFullPath {
   '/company/$key': typeof CompanyKeyRoute
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
+  '/markets/$coinId': typeof MarketsCoinIdRoute
   '/news/$slug': typeof NewsSlugRoute
   '/p/$slug': typeof PSlugRoute
   '/panel/analytics': typeof PanelAnalyticsRoute
@@ -440,6 +447,7 @@ export interface FileRoutesByTo {
   '/company/$key': typeof CompanyKeyRoute
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
+  '/markets/$coinId': typeof MarketsCoinIdRoute
   '/news/$slug': typeof NewsSlugRoute
   '/p/$slug': typeof PSlugRoute
   '/panel/analytics': typeof PanelAnalyticsRoute
@@ -499,6 +507,7 @@ export interface FileRoutesById {
   '/company/$key': typeof CompanyKeyRoute
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
+  '/markets/$coinId': typeof MarketsCoinIdRoute
   '/news/$slug': typeof NewsSlugRoute
   '/p/$slug': typeof PSlugRoute
   '/panel/analytics': typeof PanelAnalyticsRoute
@@ -559,6 +568,7 @@ export interface FileRouteTypes {
     | '/company/$key'
     | '/developers/api'
     | '/directory/$category'
+    | '/markets/$coinId'
     | '/news/$slug'
     | '/p/$slug'
     | '/panel/analytics'
@@ -617,6 +627,7 @@ export interface FileRouteTypes {
     | '/company/$key'
     | '/developers/api'
     | '/directory/$category'
+    | '/markets/$coinId'
     | '/news/$slug'
     | '/p/$slug'
     | '/panel/analytics'
@@ -675,6 +686,7 @@ export interface FileRouteTypes {
     | '/company/$key'
     | '/developers/api'
     | '/directory/$category'
+    | '/markets/$coinId'
     | '/news/$slug'
     | '/p/$slug'
     | '/panel/analytics'
@@ -733,6 +745,7 @@ export interface RootRouteChildren {
   CategorySlugRoute: typeof CategorySlugRoute
   CompanyKeyRoute: typeof CompanyKeyRoute
   DirectoryCategoryRoute: typeof DirectoryCategoryRoute
+  MarketsCoinIdRoute: typeof MarketsCoinIdRoute
   NewsSlugRoute: typeof NewsSlugRoute
   PSlugRoute: typeof PSlugRoute
   PanelAnalyticsRoute: typeof PanelAnalyticsRoute
@@ -1004,6 +1017,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/markets/$coinId': {
+      id: '/markets/$coinId'
+      path: '/markets/$coinId'
+      fullPath: '/markets/$coinId'
+      preLoaderRoute: typeof MarketsCoinIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/news/': {
       id: '/news/'
       path: '/news'
@@ -1211,6 +1231,7 @@ const rootRouteChildren: RootRouteChildren = {
   CategorySlugRoute: CategorySlugRoute,
   CompanyKeyRoute: CompanyKeyRoute,
   DirectoryCategoryRoute: DirectoryCategoryRoute,
+  MarketsCoinIdRoute: MarketsCoinIdRoute,
   NewsSlugRoute: NewsSlugRoute,
   PSlugRoute: PSlugRoute,
   PanelAnalyticsRoute: PanelAnalyticsRoute,
