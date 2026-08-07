@@ -35,6 +35,7 @@ export default function MarketChart({
           vertLines: { color: "rgba(148,163,184,0.12)" },
           horzLines: { color: "rgba(148,163,184,0.12)" },
         },
+        localization: { locale: "en-US" },
         crosshair: { mode: lc.CrosshairMode.Normal },
         rightPriceScale: { borderColor: "rgba(148,163,184,0.2)" },
         timeScale: { borderColor: "rgba(148,163,184,0.2)", timeVisible: true, secondsVisible: false },
