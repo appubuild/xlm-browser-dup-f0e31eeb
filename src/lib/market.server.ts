@@ -46,10 +46,53 @@ export interface MarketCoin {
   sparkline: number[];
 }
 
+/** Binance 24h tickers for all USDT spot pairs, sorted by quote volume. */
+async function binanceUsdtTickers(): Promise<any[]> {
+  return cached("binance:ticker24h", 30_000, async () => {
+    const raw = await getJson<any[]>("https://api.binance.com/api/v3/ticker/24hr");
+    return raw
+      .filter((t) => typeof t.symbol === "string" && t.symbol.endsWith("USDT") && !/(UP|DOWN|BULL|BEAR)USDT$/.test(t.symbol))
+      .sort((a, b) => Number(b.quoteVolume) - Number(a.quoteVolume));
+  });
+}
+
+function iconFor(symbol: string) {
+  return `https://assets.coincap.io/assets/icons/${symbol.toLowerCase()}@2x.png`;
+}
+
+/** Fallback market list built purely from Binance when CoinGecko is unavailable. */
+async function binanceMarkets(page: number, perPage: number): Promise<MarketCoin[]> {
+  const tickers = await binanceUsdtTickers();
+  const start = (page - 1) * perPage;
+  return tickers.slice(start, start + perPage).map((t, i) => {
+    const base = String(t.symbol).replace(/USDT$/, "");
+    return {
+      id: base.toLowerCase(),
+      symbol: base.toLowerCase(),
+      name: base,
+      image: iconFor(base),
+      current_price: Number(t.lastPrice) || null,
+      market_cap: null,
+      market_cap_rank: start + i + 1,
+      total_volume: Number(t.quoteVolume) || null,
+      high_24h: Number(t.highPrice) || null,
+      low_24h: Number(t.lowPrice) || null,
+      price_change_percentage_24h: Number(t.priceChangePercent) || null,
+      sparkline: [],
+    };
+  });
+}
+
 export async function loadMarkets(page: number, perPage: number): Promise<MarketCoin[]> {
   return cached(`markets:${page}:${perPage}`, 30_000, async () => {
     const url = `${CG}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${perPage}&page=${page}&sparkline=true&price_change_percentage=24h`;
-    const raw = await getJson<any[]>(url, cgHeaders());
+    let raw: any[];
+    try {
+      raw = await getJson<any[]>(url, cgHeaders());
+      if (!Array.isArray(raw) || raw.length === 0) throw new Error("empty");
+    } catch {
+      return binanceMarkets(page, perPage);
+    }
     return raw.map((c) => ({
       id: c.id,
       symbol: c.symbol,
@@ -66,6 +109,7 @@ export async function loadMarkets(page: number, perPage: number): Promise<Market
     }));
   });
 }
+
 
 export interface TrendingCoin {
   id: string;
