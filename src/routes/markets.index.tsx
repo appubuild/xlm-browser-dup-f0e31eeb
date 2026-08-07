@@ -208,7 +208,16 @@ function CoinRow({ coin, livePrice }: { coin: MarketCoin; livePrice?: number }) 
       <td className="px-3 py-3 text-muted-foreground">{coin.market_cap_rank ?? "—"}</td>
       <td className="px-3 py-3">
         <Link to="/markets/$coinId" params={{ coinId: coin.id }} className="flex items-center gap-2 font-medium hover:underline">
-          <img src={coin.image} alt={coin.name} className="h-6 w-6 rounded-full" loading="lazy" />
+          <img
+            src={coin.image}
+            alt={coin.name}
+            className="h-6 w-6 rounded-full bg-muted"
+            loading="lazy"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).style.visibility = "hidden";
+            }}
+          />
+
           <span>{coin.name}</span>
           <span className="text-xs uppercase text-muted-foreground">{coin.symbol}</span>
         </Link>
