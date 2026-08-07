@@ -43,6 +43,7 @@ import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as CompanyKeyRouteImport } from './routes/company.$key'
 import { Route as DevelopersApiRouteImport } from './routes/developers.api'
 import { Route as DirectoryCategoryRouteImport } from './routes/directory.$category'
+import { Route as MarketsIndexRouteImport } from './routes/markets.index'
 import { Route as NewsIndexRouteImport } from './routes/news.index'
 import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 import { Route as PSlugRouteImport } from './routes/p.$slug'
@@ -236,6 +237,11 @@ const DirectoryCategoryRoute = DirectoryCategoryRouteImport.update({
   path: '/directory/$category',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketsIndexRoute = MarketsIndexRouteImport.update({
+  id: '/markets/',
+  path: '/markets/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NewsIndexRoute = NewsIndexRouteImport.update({
   id: '/news/',
   path: '/news/',
@@ -389,6 +395,7 @@ export interface FileRoutesByFullPath {
   '/panel/transactions': typeof PanelTransactionsRoute
   '/project/$slug': typeof ProjectSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/markets/': typeof MarketsIndexRoute
   '/news/': typeof NewsIndexRoute
   '/panel/': typeof PanelIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
@@ -446,6 +453,7 @@ export interface FileRoutesByTo {
   '/panel/transactions': typeof PanelTransactionsRoute
   '/project/$slug': typeof ProjectSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/markets': typeof MarketsIndexRoute
   '/news': typeof NewsIndexRoute
   '/panel': typeof PanelIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
@@ -504,6 +512,7 @@ export interface FileRoutesById {
   '/panel/transactions': typeof PanelTransactionsRoute
   '/project/$slug': typeof ProjectSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/markets/': typeof MarketsIndexRoute
   '/news/': typeof NewsIndexRoute
   '/panel/': typeof PanelIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
@@ -563,6 +572,7 @@ export interface FileRouteTypes {
     | '/panel/transactions'
     | '/project/$slug'
     | '/admin/'
+    | '/markets/'
     | '/news/'
     | '/panel/'
     | '/admin/blog/$id'
@@ -620,6 +630,7 @@ export interface FileRouteTypes {
     | '/panel/transactions'
     | '/project/$slug'
     | '/admin'
+    | '/markets'
     | '/news'
     | '/panel'
     | '/admin/blog/$id'
@@ -677,6 +688,7 @@ export interface FileRouteTypes {
     | '/panel/transactions'
     | '/project/$slug'
     | '/admin/'
+    | '/markets/'
     | '/news/'
     | '/panel/'
     | '/admin/blog/$id'
@@ -734,6 +746,7 @@ export interface RootRouteChildren {
   PanelTransactionsRoute: typeof PanelTransactionsRoute
   ProjectSlugRoute: typeof ProjectSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  MarketsIndexRoute: typeof MarketsIndexRoute
   NewsIndexRoute: typeof NewsIndexRoute
   PanelIndexRoute: typeof PanelIndexRoute
   AdminBlogIdRoute: typeof AdminBlogIdRoute
@@ -984,6 +997,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DirectoryCategoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/markets/': {
+      id: '/markets/'
+      path: '/markets'
+      fullPath: '/markets/'
+      preLoaderRoute: typeof MarketsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/news/': {
       id: '/news/'
       path: '/news'
@@ -1204,6 +1224,7 @@ const rootRouteChildren: RootRouteChildren = {
   PanelTransactionsRoute: PanelTransactionsRoute,
   ProjectSlugRoute: ProjectSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
+  MarketsIndexRoute: MarketsIndexRoute,
   NewsIndexRoute: NewsIndexRoute,
   PanelIndexRoute: PanelIndexRoute,
   AdminBlogIdRoute: AdminBlogIdRoute,
@@ -1216,13 +1237,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
