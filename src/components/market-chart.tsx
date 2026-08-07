@@ -87,6 +87,7 @@ export default function MarketChart({
 }
 
 function setData(series: any, candles: Candle[], type: "candles" | "line") {
+  console.log("CHARTDBG setData", candles.length, type, candles[0]);
   if (!candles.length) return;
   if (type === "line") {
     series.setData(candles.map((c) => ({ time: c.time as any, value: c.close })));
