@@ -15,6 +15,8 @@ export default function MarketChart({
   const chartRef = useRef<any>(null);
   const typeRef = useRef(type);
   typeRef.current = type;
+  const dataRef = useRef(candles);
+  dataRef.current = candles;
 
   useEffect(() => {
     let disposed = false;
@@ -57,7 +59,7 @@ export default function MarketChart({
 
       chartRef.current = chart;
       seriesRef.current = series;
-      setData(series, candles, typeRef.current);
+      setData(series, dataRef.current, typeRef.current);
       chart.timeScale().fitContent();
 
       cleanup = () => {
