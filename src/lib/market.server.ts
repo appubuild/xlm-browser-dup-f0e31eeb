@@ -123,28 +123,76 @@ export interface TrendingCoin {
 
 export async function loadTrending(): Promise<TrendingCoin[]> {
   return cached("trending", 180_000, async () => {
-    const raw = await getJson<any>(`${CG}/search/trending`, cgHeaders());
-    return (raw.coins ?? []).map((entry: any) => {
-      const c = entry.item ?? {};
-      return {
-        id: c.id,
-        symbol: c.symbol,
-        name: c.name,
-        thumb: c.small ?? c.thumb,
-        rank: c.market_cap_rank ?? null,
-        price: typeof c.data?.price === "number" ? c.data.price : Number(c.data?.price) || null,
-        change24h: typeof c.data?.price_change_percentage_24h?.usd === "number" ? c.data.price_change_percentage_24h.usd : null,
-      };
-    });
+    try {
+      const raw = await getJson<any>(`${CG}/search/trending`, cgHeaders());
+      const list = (raw.coins ?? []).map((entry: any) => {
+        const c = entry.item ?? {};
+        return {
+          id: c.id,
+          symbol: c.symbol,
+          name: c.name,
+          thumb: c.small ?? c.thumb,
+          rank: c.market_cap_rank ?? null,
+          price: typeof c.data?.price === "number" ? c.data.price : Number(c.data?.price) || null,
+          change24h: typeof c.data?.price_change_percentage_24h?.usd === "number" ? c.data.price_change_percentage_24h.usd : null,
+        };
+      });
+      if (list.length) return list;
+      throw new Error("empty");
+    } catch {
+      // Fallback: top movers by volume from Binance.
+      const tickers = await binanceUsdtTickers();
+      return tickers
+        .slice(0, 40)
+        .sort((a, b) => Number(b.priceChangePercent) - Number(a.priceChangePercent))
+        .slice(0, 8)
+        .map((t) => {
+          const base = String(t.symbol).replace(/USDT$/, "");
+          return {
+            id: base.toLowerCase(),
+            symbol: base.toLowerCase(),
+            name: base,
+            thumb: iconFor(base),
+            rank: null,
+            price: Number(t.lastPrice) || null,
+            change24h: Number(t.priceChangePercent) || null,
+          };
+        });
+    }
   });
 }
 
 export async function loadCoin(id: string): Promise<MarketCoin | null> {
   return cached(`coin:${id}`, 30_000, async () => {
     const url = `${CG}/coins/markets?vs_currency=usd&ids=${encodeURIComponent(id)}&sparkline=true&price_change_percentage=24h`;
-    const list = await getJson<any[]>(url, cgHeaders());
-    const c = list[0];
-    if (!c) return null;
+    let c: any = null;
+    try {
+      const list = await getJson<any[]>(url, cgHeaders());
+      c = list[0] ?? null;
+    } catch {
+      c = null;
+    }
+    if (!c) {
+      // Fallback: build the coin from the Binance USDT pair.
+      const tickers = await binanceUsdtTickers();
+      const base = id.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+      const t = tickers.find((x) => x.symbol === `${base}USDT`);
+      if (!t) return null;
+      return {
+        id: base.toLowerCase(),
+        symbol: base.toLowerCase(),
+        name: base,
+        image: iconFor(base),
+        current_price: Number(t.lastPrice) || null,
+        market_cap: null,
+        market_cap_rank: null,
+        total_volume: Number(t.quoteVolume) || null,
+        high_24h: Number(t.highPrice) || null,
+        low_24h: Number(t.lowPrice) || null,
+        price_change_percentage_24h: Number(t.priceChangePercent) || null,
+        sparkline: [],
+      };
+    }
     return {
       id: c.id,
       symbol: c.symbol,
@@ -161,6 +209,7 @@ export async function loadCoin(id: string): Promise<MarketCoin | null> {
     };
   });
 }
+
 
 /** Binance symbols that exist as USDT pairs (cached 1h). */
 async function binanceUsdtSymbols(): Promise<Set<string>> {
