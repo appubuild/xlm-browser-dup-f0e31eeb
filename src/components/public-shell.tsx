@@ -203,42 +203,45 @@ export function PublicShell({ children }: { children: ReactNode }) {
           <button
             aria-label="Close menu"
             onClick={() => setMobileNav(false)}
-            className="fixed inset-0 top-14 z-30 bg-black/40 md:hidden"
+            className="fixed inset-0 top-14 z-30 bg-background/40 backdrop-blur-sm md:hidden"
           />
         )}
 
         {/* Sidebar */}
         {!hideSidebar && (
-        <aside className={`${collapsed ? "md:w-14" : "md:w-60"} ${mobileNav ? "fixed inset-y-0 left-0 top-14 z-40 w-64 shadow-xl" : "hidden"} shrink-0 border-r bg-sidebar text-sidebar-foreground transition-all md:static md:z-auto md:block md:shadow-none`}>
+        <aside className={`${collapsed ? "md:w-16" : "md:w-60"} ${mobileNav ? "fixed inset-y-0 left-0 top-14 z-40 w-64 shadow-[var(--elev-3)]" : "hidden"} ${isRetro ? "bg-sidebar" : "glass-rail"} shrink-0 border-r text-sidebar-foreground transition-all duration-300 md:static md:z-auto md:block md:shadow-none`} style={isRetro ? undefined : { transitionTimingFunction: "var(--ease-glass)" }}>
           <nav className="sticky top-16 flex h-[calc(100vh-4rem)] flex-col">
             <div className="hidden justify-end p-2 md:flex">
-              <button onClick={() => setCollapsed((v) => !v)} className="rounded p-1 hover:bg-sidebar-accent" title="Collapse"><ChevronLeft className={`h-4 w-4 transition ${collapsed ? "rotate-180" : ""}`} /></button>
+              <button onClick={() => setCollapsed((v) => !v)} className="m3-nav-item p-1.5" title="Collapse"><ChevronLeft className={`h-4 w-4 transition-transform duration-300 ${collapsed ? "rotate-180" : ""}`} /></button>
             </div>
-            <div className="flex-1 space-y-0.5 overflow-y-auto px-2 pb-4 pt-2 md:pt-0">
+            <div className="flex-1 space-y-1 overflow-y-auto px-2 pb-4 pt-2 md:pt-0">
               {nav.map((n) => {
                 const active = path === n.path || (n.path !== "/" && path.startsWith(n.path));
                 return (
-                  <Link key={n.id} to={n.path} onClick={() => setMobileNav(false)} className={`flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm ${active ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" : "hover:bg-sidebar-accent"}`}>
-                    <span className="text-base">{n.icon}</span>
-                    {!collapsed && <span>{n.label}</span>}
+                  <Link key={n.id} to={n.path} data-active={active} onClick={() => setMobileNav(false)} className="m3-nav-item flex items-center gap-3 px-3 py-2.5 text-sm">
+                    <span className="text-base leading-none">{n.icon}</span>
+                    {!collapsed && <span className="truncate">{n.label}</span>}
                   </Link>
                 );
               })}
             </div>
             {!collapsed && (
-              <div className={isRetro ? "m-2 border border-primary p-2 text-xs" : "soft-card m-2 p-3 text-xs"}>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">XLM</span>
-                  <span className="font-mono font-semibold">${xlmPrice.price.toFixed(4)}</span>
+              <div className={isRetro ? "m-2 border border-primary p-2 text-xs" : "soft-card m-2.5 p-3.5 text-xs"}>
+                <div className="flex items-baseline justify-between">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">XLM</span>
+                  <span className="num text-base font-bold">${xlmPrice.price.toFixed(4)}</span>
                 </div>
-                <div className={`text-right font-mono ${xlmPrice.change >= 0 ? "text-success" : "text-destructive"}`}>{xlmPrice.change >= 0 ? "+" : ""}{xlmPrice.change.toFixed(2)}%</div>
-                <div className="mt-2 flex items-center gap-1.5 text-xs">
+                <div className="mt-1 flex justify-end">
+                  <span className={`m3-chip num ${xlmPrice.change >= 0 ? "text-success" : "text-destructive"}`}>{xlmPrice.change >= 0 ? "▲" : "▼"} {Math.abs(xlmPrice.change).toFixed(2)}%</span>
+                </div>
+                <div className="mt-3 flex items-center gap-1.5 border-t pt-2.5 text-xs">
                   <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-success" /> Mainnet
                 </div>
-                <div className="text-muted-foreground">Ledger #{ledgerIndex.toLocaleString()}</div>
+                <div className="num mt-1 text-muted-foreground">Ledger #{ledgerIndex.toLocaleString()}</div>
                 <div className="text-muted-foreground">Close: ~3-5s</div>
               </div>
             )}
+
           </nav>
         </aside>
         )}
