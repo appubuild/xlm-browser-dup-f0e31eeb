@@ -44,6 +44,10 @@
   --color-warning: var(--warning);
   --font-mono: "VT323", "IBM Plex Mono", "Courier New", monospace;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-num: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --ease-glass: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-spring: cubic-bezier(0.2, 0.9, 0.25, 1.15);
 }
 
 :root {
@@ -313,11 +317,19 @@
   font-size: 0.875rem;
 }
 
+/* Material 3 Expressive surface — tonal, generous radius, layered elevation */
 @utility soft-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  box-shadow: 0 1px 2px oklch(0 0 0 / 0.04), 0 8px 24px -12px oklch(0.5 0.18 250 / 0.15);
+  position: relative;
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--primary) 4%, var(--card)), var(--card));
+  border: 1px solid color-mix(in oklab, var(--border) 80%, var(--primary) 20%);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--elev-1);
+  transition: box-shadow 0.28s var(--ease-glass), transform 0.28s var(--ease-glass), border-color 0.28s var(--ease-glass);
+}
+.soft-card:hover {
+  box-shadow: var(--elev-2);
+  border-color: color-mix(in oklab, var(--border) 55%, var(--primary) 45%);
 }
 
 .retro .soft-card {
@@ -343,3 +355,122 @@
   cursor: pointer;
 }
 .retro-btn:active { border-top-color: #4a4a4a; border-left-color: #4a4a4a; border-right-color: #fff; border-bottom-color: #fff; }
+
+/* ============================================================
+   XLM Browser design layer — Liquid Glass navigation
+   + Material 3 Expressive surfaces, on a data-terminal base
+   ============================================================ */
+
+:root {
+  --elev-1: 0 1px 2px oklch(0 0 0 / 0.05), 0 6px 18px -12px oklch(0.5 0.18 250 / 0.25);
+  --elev-2: 0 2px 4px oklch(0 0 0 / 0.06), 0 18px 40px -20px oklch(0.5 0.18 250 / 0.35);
+  --elev-3: 0 8px 24px -8px oklch(0 0 0 / 0.12), 0 32px 64px -28px oklch(0.5 0.18 250 / 0.45);
+  --glass-bg: oklch(1 0 0 / 0.62);
+  --glass-brd: oklch(1 0 0 / 0.55);
+  --glass-hl: oklch(1 0 0 / 0.75);
+}
+.dark {
+  --elev-1: 0 1px 2px oklch(0 0 0 / 0.35), 0 6px 18px -12px oklch(0 0 0 / 0.6);
+  --elev-2: 0 2px 6px oklch(0 0 0 / 0.4), 0 18px 40px -20px oklch(0 0 0 / 0.7);
+  --elev-3: 0 8px 28px -8px oklch(0 0 0 / 0.5), 0 32px 64px -28px oklch(0 0 0 / 0.8);
+  --glass-bg: oklch(0.22 0.02 260 / 0.55);
+  --glass-brd: oklch(1 0 0 / 0.12);
+  --glass-hl: oklch(1 0 0 / 0.16);
+}
+
+/* Expressive typography: display headings, tabular data numerals */
+@layer base {
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+  .retro h1, .retro h2, .retro h3 { font-family: var(--font-mono); letter-spacing: 0.02em; }
+  .font-mono:not(.retro *) { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+}
+
+@utility num {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* --- Liquid Glass --- */
+@utility glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-brd);
+  backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: var(--elev-2), inset 0 1px 0 var(--glass-hl);
+}
+
+@utility glass-nav {
+  background: var(--glass-bg);
+  border-bottom: 1px solid var(--glass-brd);
+  backdrop-filter: blur(28px) saturate(190%);
+  box-shadow: 0 1px 0 var(--glass-hl) inset, 0 10px 30px -24px oklch(0 0 0 / 0.6);
+  transition: background 0.3s var(--ease-glass), box-shadow 0.3s var(--ease-glass);
+}
+
+@utility glass-rail {
+  background: color-mix(in oklab, var(--sidebar) 72%, transparent);
+  backdrop-filter: blur(20px) saturate(160%);
+}
+
+/* Soft floating action / control: Apple-ish pill with M3 state layer */
+@utility glass-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 9999px;
+  border: 1px solid var(--glass-brd);
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px) saturate(180%);
+  box-shadow: var(--elev-1), inset 0 1px 0 var(--glass-hl);
+  transition: transform 0.22s var(--ease-spring), box-shadow 0.22s var(--ease-glass), background 0.22s var(--ease-glass);
+}
+.glass-pill:hover { box-shadow: var(--elev-2), inset 0 1px 0 var(--glass-hl); transform: translateY(-1px); }
+.glass-pill:active { transform: translateY(0) scale(0.97); }
+
+/* M3 expressive navigation item: shape-morphing active pill */
+@utility m3-nav-item {
+  position: relative;
+  border-radius: 9999px;
+  transition: background 0.25s var(--ease-glass), color 0.25s var(--ease-glass), border-radius 0.35s var(--ease-spring);
+}
+.m3-nav-item:hover { background: color-mix(in oklab, var(--primary) 10%, transparent); }
+.m3-nav-item[data-active="true"] {
+  background: color-mix(in oklab, var(--primary) 16%, transparent);
+  color: var(--primary);
+  font-weight: 600;
+}
+.dark .m3-nav-item[data-active="true"] { background: color-mix(in oklab, var(--primary) 22%, transparent); }
+
+/* M3 tonal chip */
+@utility m3-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 9999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+  color: color-mix(in oklab, var(--primary) 85%, var(--foreground));
+  border: 1px solid color-mix(in oklab, var(--primary) 18%, transparent);
+}
+
+/* Retro theme opts out of all glass/expressive treatment */
+.retro .glass,
+.retro .glass-nav,
+.retro .glass-pill,
+.retro .glass-rail {
+  background: var(--background);
+  backdrop-filter: none;
+  box-shadow: none;
+  border-radius: 0;
+  border-color: var(--primary);
+}
+.retro .m3-nav-item { border-radius: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .soft-card, .glass-pill, .m3-nav-item, .glass-nav { transition: none; }
+}
