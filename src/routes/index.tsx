@@ -104,11 +104,14 @@ function Home() {
       {/* Live Prices */}
       {isVisible("live_prices") && (
         <section className="mx-auto max-w-6xl px-6 py-8">
-          <div className="mb-4 flex items-end justify-between">
+          <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
               <h2 className="text-2xl font-bold">{sectionsByKey.live_prices?.title || "Live Prices"}</h2>
               <p className="text-sm text-muted-foreground">{sectionsByKey.live_prices?.subtitle || "Real-time market data via CoinGecko"}</p>
             </div>
+            <Link to="/markets" className="glass-pill inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium hover:text-primary">
+              View markets <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
           <LivePricesGrid />
         </section>
