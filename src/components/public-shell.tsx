@@ -114,7 +114,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
             {/* Desktop actions */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className={`hidden sm:inline-flex ${isRetro ? "retro-btn" : "rounded-md border p-2 hover:bg-muted"}`} title="Change theme" aria-label="Change theme">
+                <button className={`hidden sm:inline-flex ${isRetro ? "retro-btn" : "glass-pill p-2.5"}`} title="Change theme" aria-label="Change theme">
                   {themeIcon}
                 </button>
               </DropdownMenuTrigger>
