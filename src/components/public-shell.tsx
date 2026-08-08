@@ -90,7 +90,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
                 m.children.length > 0 ? (
                   <DropdownMenu key={m.id}>
                     <DropdownMenuTrigger asChild>
-                      <button className="rounded-md px-3 py-2 text-sm hover:bg-muted">
+                      <button className="m3-nav-item px-3.5 py-2 text-sm">
                         {m.icon && <span className="mr-1.5">{m.icon}</span>}{m.label} ▾
                       </button>
                     </DropdownMenuTrigger>
