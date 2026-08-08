@@ -145,7 +145,17 @@ function CoinDetailsDialog({ coin, onClose }: { coin: CoinMarket | null; onClose
                 )}
               </>
             )}
-            <div className="text-xs text-muted-foreground">Data via CoinGecko · Last updated {new Date(coin.last_updated).toLocaleTimeString()}</div>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="text-xs text-muted-foreground">Data via CoinGecko · Last updated {new Date(coin.last_updated).toLocaleTimeString()}</div>
+              <Link
+                to="/markets/$coinId"
+                params={{ coinId: coin.id }}
+                onClick={onClose}
+                className="inline-flex items-center gap-1 rounded-full border bg-card px-3 py-1.5 text-xs font-medium hover:bg-muted"
+              >
+                Open full market <ExternalLink className="h-3 w-3" />
+              </Link>
+            </div>
           </>
         )}
       </DialogContent>
