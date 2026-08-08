@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { useCoinPrices, fetchCoinDetails, type CoinMarket, type CoinDetails } from "@/hooks/use-coin-prices";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { TrendingUp, TrendingDown, ExternalLink } from "lucide-react";
