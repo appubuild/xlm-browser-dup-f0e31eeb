@@ -72,15 +72,16 @@ export function PublicShell({ children }: { children: ReactNode }) {
       {isRetro && <RetroChrome path={path} loading={routeLoading} />}
 
       {/* Top Nav */}
-      <header className={isRetro ? "sticky top-0 z-40 border-b-2 border-primary bg-background" : "sticky top-0 z-40 border-b bg-background/80 backdrop-blur"}>
+      <header className={isRetro ? "sticky top-0 z-40 border-b-2 border-primary bg-background" : "glass-nav sticky top-0 z-40"}>
         <div className="flex items-center gap-3 px-4 py-2.5">
-          <button onClick={() => setMobileNav((v) => !v)} className="rounded p-1.5 hover:bg-muted md:hidden" aria-label="Menu">
+          <button onClick={() => setMobileNav((v) => !v)} className="m3-nav-item p-2 md:hidden" aria-label="Menu">
             <Menu className="h-5 w-5" />
           </button>
-          <Link to="/" className="flex items-center gap-2">
-            <div className={isRetro ? "grid h-7 w-7 place-items-center border-2 border-primary font-mono text-primary" : "grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-primary to-accent text-primary-foreground"}>X</div>
-            <span className="text-lg font-bold tracking-tight">{siteSettings.siteName}</span>
+          <Link to="/" className="flex items-center gap-2.5">
+            <div className={isRetro ? "grid h-7 w-7 place-items-center border-2 border-primary font-mono text-primary" : "grid h-9 w-9 place-items-center rounded-2xl bg-gradient-to-br from-primary to-accent text-base font-bold text-primary-foreground shadow-[var(--elev-1)]"}>X</div>
+            <span className="text-lg font-bold tracking-tight" style={isRetro ? undefined : { fontFamily: "var(--font-display)" }}>{siteSettings.siteName}</span>
           </Link>
+
 
           {/* Dynamic header menu (admin-managed, supports drop-downs) */}
           {headerMenu.length > 0 && (
