@@ -188,9 +188,10 @@ export function PublicShell({ children }: { children: ReactNode }) {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link to="/login" className={isRetro ? "retro-btn" : "inline-flex items-center gap-1.5 rounded-md border px-3 py-2 text-sm hover:bg-muted"}>
+              <Link to="/login" className={isRetro ? "retro-btn" : "glass-pill px-3.5 py-2 text-sm"}>
                 <UserIcon className="h-4 w-4" /> Sign in
               </Link>
+
             )}
           </div>
         </div>
