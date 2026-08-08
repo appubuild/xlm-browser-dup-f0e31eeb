@@ -142,7 +142,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className={`hidden sm:inline-flex ${isRetro ? "retro-btn" : "items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"}`}>
+                <button className={`hidden sm:inline-flex ${isRetro ? "retro-btn" : "items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-[var(--elev-2)] transition-transform duration-200 hover:-translate-y-0.5 active:scale-95"}`}>
                   <Rocket className="h-4 w-4" /> Launch dApp
                 </button>
               </DropdownMenuTrigger>
