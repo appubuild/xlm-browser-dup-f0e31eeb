@@ -103,7 +103,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 ) : (
-                  <MenuLink key={m.id} item={m} className="rounded-md px-3 py-2 text-sm hover:bg-muted" />
+                  <MenuLink key={m.id} item={m} className="m3-nav-item px-3.5 py-2 text-sm" />
                 ),
               )}
             </nav>
