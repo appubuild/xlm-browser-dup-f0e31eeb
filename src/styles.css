@@ -317,11 +317,19 @@
   font-size: 0.875rem;
 }
 
+/* Material 3 Expressive surface — tonal, generous radius, layered elevation */
 @utility soft-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  box-shadow: 0 1px 2px oklch(0 0 0 / 0.04), 0 8px 24px -12px oklch(0.5 0.18 250 / 0.15);
+  position: relative;
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--primary) 4%, var(--card)), var(--card));
+  border: 1px solid color-mix(in oklab, var(--border) 80%, var(--primary) 20%);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--elev-1);
+  transition: box-shadow 0.28s var(--ease-glass), transform 0.28s var(--ease-glass), border-color 0.28s var(--ease-glass);
+}
+.soft-card:hover {
+  box-shadow: var(--elev-2);
+  border-color: color-mix(in oklab, var(--border) 55%, var(--primary) 45%);
 }
 
 .retro .soft-card {
