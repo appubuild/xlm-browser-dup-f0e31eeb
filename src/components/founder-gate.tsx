@@ -4,9 +4,10 @@ import { toast } from "sonner";
 import { useApp } from "@/lib/app-store";
 import { StellarPayDialog } from "@/components/stellar-pay-dialog";
 import {
-  claimFreeFounder, claimWindowOpen, registerFounderPayment,
+  claimFreeFounder, claimWindowOpen,
   type PricingTier, type PromoSettings,
 } from "@/lib/pricing";
+import { verifyFounderPayment } from "@/lib/payments.functions";
 
 /**
  * Founder Membership call-to-action.
