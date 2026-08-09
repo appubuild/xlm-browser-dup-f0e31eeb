@@ -18,8 +18,8 @@ export const Route = createFileRoute("/admin/auth-setup")({
   }),
 });
 
-const PROJECT_REF = "unhzdlkzuwcgdbmanirb";
-const CALLBACK = `https://${PROJECT_REF}.supabase.co/auth/v1/callback`;
+const SUPABASE_URL = (import.meta.env['VITE_SUPABASE_URL'] as string | undefined)?.replace(/\/+$/, "") ?? "";
+const CALLBACK = `${SUPABASE_URL}/auth/v1/callback`;
 
 function Copy({ value }: { value: string }) {
   return (
