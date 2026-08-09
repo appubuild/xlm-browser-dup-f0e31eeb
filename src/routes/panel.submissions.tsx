@@ -7,14 +7,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { StellarPayDialog } from "@/components/stellar-pay-dialog";
 import { ProjectFormDialog, ProjectDetailsDialog } from "@/components/project-form-dialog";
 import { ProjectBadges } from "@/components/project-badges";
-import { fetchPromotionPackages, createPromotion, SLOT_LABEL, type PromotionPackage, type PromoSlot } from "@/lib/monetization";
+import { fetchPromotionPackages, SLOT_LABEL, type PromotionPackage, type PromoSlot } from "@/lib/monetization";
+import { verifyListingPayment, verifyPromotionPayment } from "@/lib/payments.functions";
 import { XlmAmount } from "@/components/xlm-amount";
 
 
 export const Route = createFileRoute("/panel/submissions")({ component: Submissions });
 
 function Submissions() {
-  const { user, projects, siteSettings, markProjectPaid, updateProject, deleteProject } = useApp();
+  const { user, projects, siteSettings, updateProject, deleteProject } = useApp();
   const mine = projects.filter((p) => p.submitterId === user?.id);
   const [payFor, setPayFor] = useState<Project | null>(null);
   const [promoteFor, setPromoteFor] = useState<Project | null>(null);
@@ -152,11 +153,8 @@ function PromoteDialog({ project, onClose }: { project: Project | null; onClose:
         onPaid={async (txHash, account) => {
           if (!user || !picked) return;
           try {
-            await createPromotion({
-              userId: user.id, projectSlug: project.slug, projectName: project.name,
-              pkg: picked, txHash, account, autoVerify: true,
-            });
-            toast.success("Payment confirmed — your promotion is live");
+            await verifyPromotionPayment({ data: { packageId: picked.id, projectSlug: project.slug, txHash, account } });
+            toast.success("Payment verified on-ledger — your promotion is live");
             setPicked(null);
             onClose();
           } catch (e) {
@@ -168,7 +166,7 @@ function PromoteDialog({ project, onClose }: { project: Project | null; onClose:
   );
 }
 
-function PayDialog({ project, onClose, onPaid }: { project: Project | null; onClose: () => void; onPaid: (p: Project, tx: string) => Promise<void> }) {
+function PayDialog({ project, onClose, onPaid }: { project: Project | null; onClose: () => void; onPaid: (p: Project, tx: string, account: string | null) => Promise<void> }) {
   const { siteSettings } = useApp();
   if (!project) return null;
   return (
@@ -179,7 +177,7 @@ function PayDialog({ project, onClose, onPaid }: { project: Project | null; onCl
       amountXlm={siteSettings.listingFeeXlm}
       memo={`Listing ${project.slug}`.slice(0, 28)}
       onClose={onClose}
-      onPaid={async (txHash) => { await onPaid(project, txHash); }}
+      onPaid={async (txHash, account) => { await onPaid(project, txHash, account ?? null); }}
     />
   );
 }
