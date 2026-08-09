@@ -77,7 +77,7 @@ export function FounderCta({
         onClose={() => setPay(false)}
         onPaid={async (txHash, account) => {
           try {
-            await registerFounderPayment(txHash, price, account);
+            await verifyFounderPayment({ data: { txHash, account } });
             toast.success("Payment confirmed — you are a Founder 🎉");
             setPay(false);
             await onGranted();
