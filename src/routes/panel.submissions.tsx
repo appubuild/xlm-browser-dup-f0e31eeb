@@ -81,11 +81,13 @@ function Submissions() {
         )}
       </div>
 
-      <PayDialog project={payFor} onClose={() => setPayFor(null)} onPaid={async (proj, tx) => {
-        await markProjectPaid(proj.id, tx, siteSettings.listingFeeXlm);
-        toast.success("Payment received — project is now live");
+      <PayDialog project={payFor} onClose={() => setPayFor(null)} onPaid={async (proj, tx, account) => {
+        await verifyListingPayment({ data: { projectId: proj.id, txHash: tx, account } });
+        await updateProject(proj.id, { isPublic: true });
+        toast.success("Payment verified on-ledger — project is now live");
         setPayFor(null);
       }} />
+
 
       <PromoteDialog project={promoteFor} onClose={() => setPromoteFor(null)} />
       <ProjectFormDialog project={editFor} mode="author" onClose={() => setEditFor(null)} />
