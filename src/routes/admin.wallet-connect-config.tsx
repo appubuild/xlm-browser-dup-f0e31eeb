@@ -5,10 +5,17 @@ import { useApp } from "@/lib/app-store";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
-  WALLET_OPTIONS, DEFAULT_WALLETS, connectWallet, disconnectWallet, getStellarBalance,
+  WALLET_OPTIONS, DEFAULT_WALLETS, connectWallet, disconnectWallet, getStellarBalance, HORIZON,
 } from "@/lib/stellar-wallet";
 
 export const Route = createFileRoute("/admin/wallet-connect-config")({ component: WalletConfig });
+
+/** Guard against legacy XRPL endpoints saved before the Stellar migration. */
+function safeHorizon(url: unknown, network: "Mainnet" | "Testnet") {
+  const u = typeof url === "string" ? url.trim() : "";
+  if (!/^https?:\/\//i.test(u) || /xrpl|ripple|xrplcluster/i.test(u)) return HORIZON[network];
+  return u;
+}
 
 function WalletConfig() {
   const { walletConfig, updateWalletConfig, siteSettings, updateSiteSettings } = useApp();
@@ -23,15 +30,17 @@ function WalletConfig() {
       const { data } = await supabase.from("wallet_config" as never).select("*").eq("id", 1).maybeSingle();
       if (!data) return;
       const r = data as Record<string, unknown>;
+      const network = ((r.network as "Mainnet" | "Testnet") ?? "Mainnet");
       updateWalletConfig({
         treasuryAddress: (r.treasury_address as string) ?? "",
-        network: ((r.network as "Mainnet" | "Testnet") ?? "Mainnet"),
-        rpcUrl: (r.rpc_url as string) ?? "https://horizon.stellar.org",
+        network,
+        rpcUrl: safeHorizon(r.rpc_url, network),
       });
       if (Array.isArray(r.enabled_wallets) && r.enabled_wallets.length) setWallets(r.enabled_wallets as string[]);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   const toggle = (id: string) =>
     setWallets((s) => (s.includes(id) ? s.filter((w) => w !== id) : [...s, id]));
