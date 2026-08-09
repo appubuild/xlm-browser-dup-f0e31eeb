@@ -49,18 +49,21 @@ function WalletConfig() {
     if (!wallets.length) { toast.error("Enable at least one wallet"); return; }
     setSaving(true);
     try {
+      const horizon = safeHorizon(walletConfig.rpcUrl, walletConfig.network);
       const { error } = await supabase.from("wallet_config" as never).upsert({
         id: 1,
         treasury_address: walletConfig.treasuryAddress.trim(),
         network: walletConfig.network,
-        rpc_url: walletConfig.rpcUrl,
+        rpc_url: horizon,
         enabled_wallets: wallets,
         updated_at: new Date().toISOString(),
       } as never);
       if (error) throw error;
+      if (horizon !== walletConfig.rpcUrl) updateWalletConfig({ rpcUrl: horizon });
       if (siteSettings.listingPaymentAddress !== walletConfig.treasuryAddress) {
         await updateSiteSettings({ listingPaymentAddress: walletConfig.treasuryAddress });
       }
+
       toast.success("Wallet configuration saved");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not save wallet configuration");
