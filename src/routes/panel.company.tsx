@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
+import { verifyBadgePayment } from "@/lib/payments.functions";
 import { PanelShell } from "@/components/panel-shell";
 import { useApp } from "@/lib/app-store";
 import { toast } from "sonner";
 import { StellarPayDialog } from "@/components/stellar-pay-dialog";
 import {
-  fetchBadgeTiers, fetchMyAuthorProfile, upsertAuthorProfile, purchaseBadge, findCompanyConflict,
+  fetchBadgeTiers, fetchMyAuthorProfile, upsertAuthorProfile, findCompanyConflict,
   type AuthorProfile, type BadgeTier, type SocialLink, type DuplicateField,
 } from "@/lib/monetization";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -216,7 +217,7 @@ function CompanyProfilePage() {
         onPaid={async (txHash, account) => {
           if (!user || !buying) return;
           try {
-            await purchaseBadge(user.id, buying, txHash, account);
+            await verifyBadgePayment({ data: { tierKey: buying.key, txHash, account } });
             toast.success(`${buying.name} badge activated`);
             setBuying(null);
             await load();
