@@ -11,7 +11,9 @@ import { useViewport } from "@/components/browser-viewport";
 import { CryptoTicker } from "@/components/crypto-ticker";
 import { listPages, type SitePage } from "@/lib/cms";
 import { buildMenuTree, listMenus, type MenuItem } from "@/lib/menus";
-import { connectWallet as connectStellarWallet, disconnectWallet as disconnectStellarWallet, getStellarBalance, EXPLORER } from "@/lib/stellar-wallet";
+import { connectWallet as connectStellarWallet, disconnectWallet as disconnectStellarWallet, getStellarBalance, EXPLORER, isMobileDevice } from "@/lib/stellar-wallet";
+import { useWalletUiBusy } from "@/hooks/use-wallet-ui-busy";
+
 
 
 function useWalletBalance(account: string | undefined, network: "Mainnet" | "Testnet") {
