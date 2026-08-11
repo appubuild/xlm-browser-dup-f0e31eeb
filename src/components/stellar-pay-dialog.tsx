@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { XlmAmount } from "@/components/xlm-amount";
+import { useWalletUiBusy } from "@/hooks/use-wallet-ui-busy";
 import {
   connectWallet, loadPublicWalletConfig, payXlm, type PublicWalletConfig,
 } from "@/lib/stellar-wallet";
+
 
 /**
  * Reusable "pay with a Stellar wallet" modal. Opens the Stellar Wallets Kit
