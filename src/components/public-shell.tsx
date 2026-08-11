@@ -255,12 +255,13 @@ export function PublicShell({ children }: { children: ReactNode }) {
 
       {!hideFooter && <Footer />}
 
-      {/* Wallet modal — Freighter (Stellar) */}
-      <Dialog open={walletOpen} onOpenChange={setWalletOpen}>
+      {/* Wallet modal — hidden while the wallet chooser / wallet app is in front */}
+      <Dialog open={walletOpen && !walletBusy} onOpenChange={setWalletOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{user?.walletAddress ? "Freighter wallet connected" : "Connect with Freighter"}</DialogTitle>
+            <DialogTitle>{user?.walletAddress ? "Wallet connected" : "Connect your Stellar wallet"}</DialogTitle>
           </DialogHeader>
+
           {user?.walletAddress ? (
             <FreighterConnected onClose={() => setWalletOpen(false)} />
           ) : (
