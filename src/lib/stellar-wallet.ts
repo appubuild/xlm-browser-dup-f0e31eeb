@@ -73,9 +73,52 @@ export async function loadPublicWalletConfig(): Promise<PublicWalletConfig> {
 
 const SELECTED_KEY = "xlmb.wallet.id";
 
+/* --- App-dialog coordination -------------------------------------------- */
+/* While the wallet chooser (or a wallet app) is in front, our own modals must
+   step aside — otherwise the Radix focus trap swallows clicks on the kit. */
+type BusyListener = (busy: boolean) => void;
+const busyListeners = new Set<BusyListener>();
+let walletUiBusy = false;
+
+export function isWalletUiBusy() { return walletUiBusy; }
+
+export function onWalletUiBusy(listener: BusyListener): () => void {
+  busyListeners.add(listener);
+  return () => busyListeners.delete(listener);
+}
+
+function setWalletUiBusy(v: boolean) {
+  walletUiBusy = v;
+  busyListeners.forEach((l) => l(v));
+}
+
+/** Keep the kit's web-component modal above every app overlay. */
+function ensureKitStyles() {
+  if (typeof document === "undefined" || document.getElementById("swk-z")) return;
+  const style = document.createElement("style");
+  style.id = "swk-z";
+  style.textContent =
+    "stellar-wallets-modal,stellar-wallets-kit-modal,stellar-accounts-selector{position:relative;z-index:2147483000!important}";
+  document.head.appendChild(style);
+}
+
+/** Touch devices open wallet apps (deep link / QR) instead of extensions. */
+export function isMobileDevice(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent);
+}
+
+/** Wallets that can actually complete a connect + sign on a phone. */
+const MOBILE_WALLETS = ["lobstr", "xbull", "albedo", "hana"];
+
+export function getSavedWalletId(): string | null {
+  try { return window.localStorage.getItem(SELECTED_KEY); } catch { return null; }
+}
+
 type Kit = typeof import("@creit.tech/stellar-wallets-kit").StellarWalletsKit;
 
 let kitPromise: Promise<Kit> | null = null;
+
 
 /** Lazily build & init the kit in the browser. Throws when the kit cannot load. */
 async function getKit(cfg: PublicWalletConfig): Promise<Kit> {
