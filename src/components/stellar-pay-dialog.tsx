@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { XlmAmount } from "@/components/xlm-amount";
+import { useWalletUiBusy } from "@/hooks/use-wallet-ui-busy";
 import {
   connectWallet, loadPublicWalletConfig, payXlm, type PublicWalletConfig,
 } from "@/lib/stellar-wallet";
+
 
 /**
  * Reusable "pay with a Stellar wallet" modal. Opens the Stellar Wallets Kit
@@ -27,6 +29,8 @@ export function StellarPayDialog({
   const [step, setStep] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const walletBusy = useWalletUiBusy();
+
 
   useEffect(() => {
     if (!open) return;
@@ -65,8 +69,12 @@ export function StellarPayDialog({
   };
 
   if (!open) return null;
+  // While the wallet chooser / wallet app is in front, step aside so its
+  // buttons stay clickable (Radix would otherwise trap focus and pointers).
+  if (walletBusy) return null;
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+
       <DialogContent className="max-w-lg">
         <DialogHeader><DialogTitle>{title}</DialogTitle></DialogHeader>
         <div className="space-y-3 text-sm">

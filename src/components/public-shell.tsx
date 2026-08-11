@@ -1,6 +1,6 @@
 import { UserAvatar } from "@/components/user-avatar";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Sun, Moon, Terminal, Wallet, Rocket, Menu, User as UserIcon, Bell, Search, ChevronLeft, Shield } from "lucide-react";
 import { useApp } from "@/lib/app-store";
 
@@ -11,7 +11,9 @@ import { useViewport } from "@/components/browser-viewport";
 import { CryptoTicker } from "@/components/crypto-ticker";
 import { listPages, type SitePage } from "@/lib/cms";
 import { buildMenuTree, listMenus, type MenuItem } from "@/lib/menus";
-import { connectWallet as connectStellarWallet, disconnectWallet as disconnectStellarWallet, getStellarBalance, EXPLORER } from "@/lib/stellar-wallet";
+import { connectWallet as connectStellarWallet, disconnectWallet as disconnectStellarWallet, getStellarBalance, EXPLORER, isMobileDevice } from "@/lib/stellar-wallet";
+import { useWalletUiBusy } from "@/hooks/use-wallet-ui-busy";
+
 
 
 function useWalletBalance(account: string | undefined, network: "Mainnet" | "Testnet") {
@@ -40,6 +42,8 @@ function useWalletBalance(account: string | undefined, network: "Mainnet" | "Tes
 
 export function PublicShell({ children }: { children: ReactNode }) {
   const { theme, setTheme, toggleTheme, user, logout, connectWallet, disconnectWallet, projects, xlmPrice, ledgerIndex, siteSettings, sidebarItems, isAdmin, walletConfig } = useApp();
+  const walletBusy = useWalletUiBusy();
+
   const path = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const [walletOpen, setWalletOpen] = useState(false);
@@ -255,12 +259,13 @@ export function PublicShell({ children }: { children: ReactNode }) {
 
       {!hideFooter && <Footer />}
 
-      {/* Wallet modal — Freighter (Stellar) */}
-      <Dialog open={walletOpen} onOpenChange={setWalletOpen}>
+      {/* Wallet modal — hidden while the wallet chooser / wallet app is in front */}
+      <Dialog open={walletOpen && !walletBusy} onOpenChange={setWalletOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{user?.walletAddress ? "Freighter wallet connected" : "Connect with Freighter"}</DialogTitle>
+            <DialogTitle>{user?.walletAddress ? "Wallet connected" : "Connect your Stellar wallet"}</DialogTitle>
           </DialogHeader>
+
           {user?.walletAddress ? (
             <FreighterConnected onClose={() => setWalletOpen(false)} />
           ) : (
@@ -392,12 +397,13 @@ function FreighterConnect({ onDone }: { onDone: () => void }) {
   const { connectWallet } = useApp();
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const started = useRef(false);
 
-  const start = useCallback(async () => {
+  const start = useCallback(async (forceChooser = false) => {
     setError(null);
     setBusy(true);
     try {
-      const { address, via } = await connectStellarWallet();
+      const { address, via } = await connectStellarWallet(undefined, { forceChooser });
       await connectWallet(via === "kit" ? "Stellar Wallet" : "Freighter", address);
       if (via === "freighter") toast("Wallet chooser unavailable — connected with Freighter");
       onDone();
@@ -408,23 +414,34 @@ function FreighterConnect({ onDone }: { onDone: () => void }) {
     }
   }, [connectWallet, onDone]);
 
+  // One click: open the wallet chooser (or reconnect the saved wallet) right away.
+  useEffect(() => {
+    if (started.current) return;
+    started.current = true;
+    void start();
+  }, [start]);
+
   return (
     <div className="space-y-3 text-sm">
       <p className="text-muted-foreground">
-        Connect your Stellar account with Freighter, xBull, Albedo, Rabet, Lobstr or Hana. Nothing is signed — we only read your public address.
+        {isMobileDevice()
+          ? "Pick your wallet app — it opens directly or shows a QR code to scan. Nothing is signed here; we only read your public address."
+          : "Connect with Freighter, xBull, Albedo, Rabet, LOBSTR or Hana. Nothing is signed — we only read your public address."}
       </p>
       {error && <div className="whitespace-pre-wrap rounded-md border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">{error}</div>}
-      <button onClick={() => void start()} disabled={busy}
+      <button onClick={() => void start(true)} disabled={busy}
         className="w-full rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground disabled:opacity-50">
-        {busy ? "Waiting for your wallet…" : "Connect wallet"}
+        {busy ? "Waiting for your wallet…" : error ? "Try another wallet" : "Choose a wallet"}
       </button>
       <p className="text-xs text-muted-foreground">
         No wallet yet? Install{" "}
-        <a href="https://freighter.app" target="_blank" rel="noreferrer" className="underline">Freighter</a> and reload this page.
+        <a href="https://freighter.app" target="_blank" rel="noreferrer" className="underline">Freighter</a> (desktop) or{" "}
+        <a href="https://lobstr.co" target="_blank" rel="noreferrer" className="underline">LOBSTR</a> (mobile).
       </p>
     </div>
   );
 }
+
 
 
 
