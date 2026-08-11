@@ -69,8 +69,12 @@ export function StellarPayDialog({
   };
 
   if (!open) return null;
+  // While the wallet chooser / wallet app is in front, step aside so its
+  // buttons stay clickable (Radix would otherwise trap focus and pointers).
+  if (walletBusy) return null;
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+
       <DialogContent className="max-w-lg">
         <DialogHeader><DialogTitle>{title}</DialogTitle></DialogHeader>
         <div className="space-y-3 text-sm">
