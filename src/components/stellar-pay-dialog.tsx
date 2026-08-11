@@ -29,6 +29,8 @@ export function StellarPayDialog({
   const [step, setStep] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const walletBusy = useWalletUiBusy();
+
 
   useEffect(() => {
     if (!open) return;
