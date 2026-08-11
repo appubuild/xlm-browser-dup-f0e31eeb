@@ -40,6 +40,8 @@ function useWalletBalance(account: string | undefined, network: "Mainnet" | "Tes
 
 export function PublicShell({ children }: { children: ReactNode }) {
   const { theme, setTheme, toggleTheme, user, logout, connectWallet, disconnectWallet, projects, xlmPrice, ledgerIndex, siteSettings, sidebarItems, isAdmin, walletConfig } = useApp();
+  const walletBusy = useWalletUiBusy();
+
   const path = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const [walletOpen, setWalletOpen] = useState(false);
