@@ -209,14 +209,32 @@ export async function connectFreighter(): Promise<string> {
 }
 
 /**
- * Open the Stellar Wallets Kit modal so the user can pick any supported wallet.
- * If the kit fails for any reason (module load, modal error, wallet unsupported)
- * we automatically fall back to a direct Freighter connection.
+ * Connect a Stellar account.
+ * - Reuses the last picked wallet (one click, no chooser) when possible.
+ * - Otherwise opens the Stellar Wallets Kit chooser; on phones it only lists
+ *   wallets that can open their app or show a QR code.
+ * - Falls back to a direct Freighter connection if the kit cannot run.
  */
-export async function connectWallet(cfg?: PublicWalletConfig): Promise<{ address: string; via: "kit" | "freighter" }> {
+export async function connectWallet(
+  cfg?: PublicWalletConfig,
+  opts?: { forceChooser?: boolean },
+): Promise<{ address: string; via: "kit" | "freighter" }> {
   const config = cfg ?? (await loadPublicWalletConfig());
+  setWalletUiBusy(true);
   try {
     const kit = await getKit(config);
+
+    // 1) Silent reconnect with the previously selected wallet.
+    const saved = getSavedWalletId();
+    if (saved && !opts?.forceChooser) {
+      try {
+        await (kit as unknown as { setWallet: (id: string) => Promise<void> | void }).setWallet(saved);
+        const { address } = await kit.getAddress();
+        if (address) return { address, via: "kit" };
+      } catch { /* fall through to the chooser */ }
+    }
+
+    // 2) Wallet chooser.
     const { address } = await kit.authModal();
     try {
       const id = (kit.selectedModule as { productId?: string } | undefined)?.productId;
@@ -230,6 +248,8 @@ export async function connectWallet(cfg?: PublicWalletConfig): Promise<{ address
     if (/clos|cancel|reject|denied/i.test(msg)) throw new Error(msg);
     const address = await connectFreighter();
     return { address, via: "freighter" };
+  } finally {
+    setWalletUiBusy(false);
   }
 }
 
@@ -243,6 +263,7 @@ export async function disconnectWallet(): Promise<void> {
 
 /** Sign an XDR with the active kit wallet, falling back to Freighter. */
 async function signXdr(xdr: string, networkPassphrase: string, address: string): Promise<string> {
+  setWalletUiBusy(true);
   try {
     const mod = await import("@creit.tech/stellar-wallets-kit/sdk");
     const res = await mod.StellarWalletsKit.signTransaction(xdr, { networkPassphrase, address });
@@ -255,8 +276,11 @@ async function signXdr(xdr: string, networkPassphrase: string, address: string):
     const signed = await api.signTransaction(xdr, { networkPassphrase, address });
     if (signed.error) throw new Error(String(signed.error));
     return signed.signedTxXdr;
+  } finally {
+    setWalletUiBusy(false);
   }
 }
+
 
 export async function getStellarBalance(
   account: string,
