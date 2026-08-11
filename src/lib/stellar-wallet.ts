@@ -131,8 +131,13 @@ async function getKit(cfg: PublicWalletConfig): Promise<Kit> {
       import("@creit.tech/stellar-wallets-kit/types"),
     ]);
 
-    const wanted = new Set(cfg.enabledWallets.length ? cfg.enabledWallets : DEFAULT_WALLETS);
+    ensureKitStyles();
+    const enabled = cfg.enabledWallets.length ? cfg.enabledWallets : DEFAULT_WALLETS;
+    // On phones only show wallets that can open their app / scan a QR code.
+    const usable = isMobileDevice() ? enabled.filter((w) => MOBILE_WALLETS.includes(w)) : enabled;
+    const wanted = new Set(usable.length ? usable : enabled);
     const modules: unknown[] = [];
+
 
     if (wanted.has("freighter")) {
       const m = await import("@creit.tech/stellar-wallets-kit/modules/freighter");
