@@ -1,0 +1,28 @@
+ACCOUNTS=[
+"GDI24DPPUJUWUQ4OCKIK5CIBRUHRJPPXMLVJY264CJLEUDMA3MS4OGKA",
+"GAXXIYGSPGWGIHNLMPOAFNWNMYI7H325TAA7X6UPLYUSWVGJVTJJOAFU"
+]
+
+[DOCUMENTATION]
+ORG_NAME="XlmBrowser"
+ORG_DBA="XlmBrowser"
+ORG_URL="https://www.xlmbrowser.com/"
+ORG_LOGO="https://toofundex.io/xlmbrowser.png"
+ORG_DESCRIPTION="XLMBrowser.com is an independent, next-generation Stellar blockchain explorer, search engine, and ecosystem discovery platform. Designed to simplify access to the Stellar network, XLMBrowser unifies blockchain exploration, real-time ledger analytics, digital assets, decentralized applications, market intelligence, and developer resources in one seamless experience. Discover innovative ecosystem tools, an interactive Token Simulator, and two distinctive browsing experiences: nostalgic 1999 Mode and modern 2026 Mode. Built for users, developers, and innovators, XLMBrowser is creating a comprehensive gateway to discover, analyze, and navigate the evolving Stellar ecosystem."
+ORG_OFFICIAL_EMAIL="partner@skipads.ai"
+
+[[PRINCIPALS]]
+name="Admin"
+email="partner@skipads.ai"
+
+# asset with meta info
+[[CURRENCIES]]
+code="Browser"
+issuer="GDI24DPPUJUWUQ4OCKIK5CIBRUHRJPPXMLVJY264CJLEUDMA3MS4OGKA"
+status="live"
+display_decimals=7
+name="XlmBrower"
+desc="XLMBrowser.com is an independent, next-generation Stellar blockchain explorer, search engine, and ecosystem discovery platform."
+image="https://toofundex.io/xlmbrowser.png"
+is_asset_anchored=false
+fixed_number=21000000
