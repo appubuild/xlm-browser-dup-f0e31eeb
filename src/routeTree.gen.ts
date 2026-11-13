@@ -16,6 +16,7 @@ import { Route as DevelopersRouteImport } from './routes/developers'
 import { Route as EcosystemRouteImport } from './routes/ecosystem'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as ImadesRouteImport } from './routes/imades'
+import { Route as ImagesRouteImport } from './routes/images'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -29,6 +30,7 @@ import { Route as AdminAuthSetupRouteImport } from './routes/admin.auth-setup'
 import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
 import { Route as AdminContactRouteImport } from './routes/admin.contact'
 import { Route as AdminFooterRouteImport } from './routes/admin.footer'
+import { Route as AdminImagesRouteImport } from './routes/admin.images'
 import { Route as AdminLandingRouteImport } from './routes/admin.landing'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminMenusRouteImport } from './routes/admin.menus'
@@ -46,6 +48,7 @@ import { Route as DevelopersApiRouteImport } from './routes/developers.api'
 import { Route as DirectoryCategoryRouteImport } from './routes/directory.$category'
 import { Route as MarketsIndexRouteImport } from './routes/markets.index'
 import { Route as MarketsCoinIdRouteImport } from './routes/markets.$coinId'
+import { Route as MediaSplatRouteImport } from './routes/media.$'
 import { Route as NewsIndexRouteImport } from './routes/news.index'
 import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 import { Route as PSlugRouteImport } from './routes/p.$slug'
@@ -101,6 +104,11 @@ const HelpRoute = HelpRouteImport.update({
 const ImadesRoute = ImadesRouteImport.update({
   id: '/imades',
   path: '/imades',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImagesRoute = ImagesRouteImport.update({
+  id: '/images',
+  path: '/images',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -166,6 +174,11 @@ const AdminContactRoute = AdminContactRouteImport.update({
 const AdminFooterRoute = AdminFooterRouteImport.update({
   id: '/admin/footer',
   path: '/admin/footer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminImagesRoute = AdminImagesRouteImport.update({
+  id: '/admin/images',
+  path: '/admin/images',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLandingRoute = AdminLandingRouteImport.update({
@@ -252,6 +265,11 @@ const MarketsIndexRoute = MarketsIndexRouteImport.update({
 const MarketsCoinIdRoute = MarketsCoinIdRouteImport.update({
   id: '/markets/$coinId',
   path: '/markets/$coinId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MediaSplatRoute = MediaSplatRouteImport.update({
+  id: '/media/$',
+  path: '/media/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NewsIndexRoute = NewsIndexRouteImport.update({
@@ -368,6 +386,7 @@ export interface FileRoutesByFullPath {
   '/ecosystem': typeof EcosystemRoute
   '/help': typeof HelpRoute
   '/imades': typeof ImadesRoute
+  '/images': typeof ImagesRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -380,6 +399,7 @@ export interface FileRoutesByFullPath {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/footer': typeof AdminFooterRoute
+  '/admin/images': typeof AdminImagesRoute
   '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/menus': typeof AdminMenusRoute
@@ -396,6 +416,7 @@ export interface FileRoutesByFullPath {
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
   '/markets/$coinId': typeof MarketsCoinIdRoute
+  '/media/$': typeof MediaSplatRoute
   '/news/$slug': typeof NewsSlugRoute
   '/p/$slug': typeof PSlugRoute
   '/panel/analytics': typeof PanelAnalyticsRoute
@@ -428,6 +449,7 @@ export interface FileRoutesByTo {
   '/ecosystem': typeof EcosystemRoute
   '/help': typeof HelpRoute
   '/imades': typeof ImadesRoute
+  '/images': typeof ImagesRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -440,6 +462,7 @@ export interface FileRoutesByTo {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/footer': typeof AdminFooterRoute
+  '/admin/images': typeof AdminImagesRoute
   '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/menus': typeof AdminMenusRoute
@@ -456,6 +479,7 @@ export interface FileRoutesByTo {
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
   '/markets/$coinId': typeof MarketsCoinIdRoute
+  '/media/$': typeof MediaSplatRoute
   '/news/$slug': typeof NewsSlugRoute
   '/p/$slug': typeof PSlugRoute
   '/panel/analytics': typeof PanelAnalyticsRoute
@@ -489,6 +513,7 @@ export interface FileRoutesById {
   '/ecosystem': typeof EcosystemRoute
   '/help': typeof HelpRoute
   '/imades': typeof ImadesRoute
+  '/images': typeof ImagesRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -501,6 +526,7 @@ export interface FileRoutesById {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/contact': typeof AdminContactRoute
   '/admin/footer': typeof AdminFooterRoute
+  '/admin/images': typeof AdminImagesRoute
   '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/menus': typeof AdminMenusRoute
@@ -517,6 +543,7 @@ export interface FileRoutesById {
   '/developers/api': typeof DevelopersApiRoute
   '/directory/$category': typeof DirectoryCategoryRoute
   '/markets/$coinId': typeof MarketsCoinIdRoute
+  '/media/$': typeof MediaSplatRoute
   '/news/$slug': typeof NewsSlugRoute
   '/p/$slug': typeof PSlugRoute
   '/panel/analytics': typeof PanelAnalyticsRoute
@@ -551,6 +578,7 @@ export interface FileRouteTypes {
     | '/ecosystem'
     | '/help'
     | '/imades'
+    | '/images'
     | '/login'
     | '/pricing'
     | '/privacy'
@@ -563,6 +591,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/contact'
     | '/admin/footer'
+    | '/admin/images'
     | '/admin/landing'
     | '/admin/login'
     | '/admin/menus'
@@ -579,6 +608,7 @@ export interface FileRouteTypes {
     | '/developers/api'
     | '/directory/$category'
     | '/markets/$coinId'
+    | '/media/$'
     | '/news/$slug'
     | '/p/$slug'
     | '/panel/analytics'
@@ -611,6 +641,7 @@ export interface FileRouteTypes {
     | '/ecosystem'
     | '/help'
     | '/imades'
+    | '/images'
     | '/login'
     | '/pricing'
     | '/privacy'
@@ -623,6 +654,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/contact'
     | '/admin/footer'
+    | '/admin/images'
     | '/admin/landing'
     | '/admin/login'
     | '/admin/menus'
@@ -639,6 +671,7 @@ export interface FileRouteTypes {
     | '/developers/api'
     | '/directory/$category'
     | '/markets/$coinId'
+    | '/media/$'
     | '/news/$slug'
     | '/p/$slug'
     | '/panel/analytics'
@@ -671,6 +704,7 @@ export interface FileRouteTypes {
     | '/ecosystem'
     | '/help'
     | '/imades'
+    | '/images'
     | '/login'
     | '/pricing'
     | '/privacy'
@@ -683,6 +717,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/contact'
     | '/admin/footer'
+    | '/admin/images'
     | '/admin/landing'
     | '/admin/login'
     | '/admin/menus'
@@ -699,6 +734,7 @@ export interface FileRouteTypes {
     | '/developers/api'
     | '/directory/$category'
     | '/markets/$coinId'
+    | '/media/$'
     | '/news/$slug'
     | '/p/$slug'
     | '/panel/analytics'
@@ -732,6 +768,7 @@ export interface RootRouteChildren {
   EcosystemRoute: typeof EcosystemRoute
   HelpRoute: typeof HelpRoute
   ImadesRoute: typeof ImadesRoute
+  ImagesRoute: typeof ImagesRoute
   LoginRoute: typeof LoginRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -744,6 +781,7 @@ export interface RootRouteChildren {
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminContactRoute: typeof AdminContactRoute
   AdminFooterRoute: typeof AdminFooterRoute
+  AdminImagesRoute: typeof AdminImagesRoute
   AdminLandingRoute: typeof AdminLandingRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminMenusRoute: typeof AdminMenusRoute
@@ -759,6 +797,7 @@ export interface RootRouteChildren {
   CompanyKeyRoute: typeof CompanyKeyRoute
   DirectoryCategoryRoute: typeof DirectoryCategoryRoute
   MarketsCoinIdRoute: typeof MarketsCoinIdRoute
+  MediaSplatRoute: typeof MediaSplatRoute
   NewsSlugRoute: typeof NewsSlugRoute
   PSlugRoute: typeof PSlugRoute
   PanelAnalyticsRoute: typeof PanelAnalyticsRoute
@@ -832,6 +871,13 @@ declare module '@tanstack/react-router' {
       path: '/imades'
       fullPath: '/imades'
       preLoaderRoute: typeof ImadesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/images': {
+      id: '/images'
+      path: '/images'
+      fullPath: '/images'
+      preLoaderRoute: typeof ImagesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -923,6 +969,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/footer'
       fullPath: '/admin/footer'
       preLoaderRoute: typeof AdminFooterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/images': {
+      id: '/admin/images'
+      path: '/admin/images'
+      fullPath: '/admin/images'
+      preLoaderRoute: typeof AdminImagesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/landing': {
@@ -1042,6 +1095,13 @@ declare module '@tanstack/react-router' {
       path: '/markets/$coinId'
       fullPath: '/markets/$coinId'
       preLoaderRoute: typeof MarketsCoinIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/media/$': {
+      id: '/media/$'
+      path: '/media/$'
+      fullPath: '/media/$'
+      preLoaderRoute: typeof MediaSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/news/': {
@@ -1226,6 +1286,7 @@ const rootRouteChildren: RootRouteChildren = {
   EcosystemRoute: EcosystemRoute,
   HelpRoute: HelpRoute,
   ImadesRoute: ImadesRoute,
+  ImagesRoute: ImagesRoute,
   LoginRoute: LoginRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
@@ -1238,6 +1299,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminContactRoute: AdminContactRoute,
   AdminFooterRoute: AdminFooterRoute,
+  AdminImagesRoute: AdminImagesRoute,
   AdminLandingRoute: AdminLandingRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminMenusRoute: AdminMenusRoute,
@@ -1253,6 +1315,7 @@ const rootRouteChildren: RootRouteChildren = {
   CompanyKeyRoute: CompanyKeyRoute,
   DirectoryCategoryRoute: DirectoryCategoryRoute,
   MarketsCoinIdRoute: MarketsCoinIdRoute,
+  MediaSplatRoute: MediaSplatRoute,
   NewsSlugRoute: NewsSlugRoute,
   PSlugRoute: PSlugRoute,
   PanelAnalyticsRoute: PanelAnalyticsRoute,

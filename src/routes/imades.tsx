@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import xlmBrowserLogo from "@/assets/xlm-browser-logo.png.asset.json";
+const xlmBrowserLogo = { url: "/images/logo-1024.png" };
 
 export const Route = createFileRoute("/imades")({
   head: () => ({

@@ -11,3 +11,5 @@
 
 ## Brand image route
 - Keep `/imades` as a dedicated page rendering the supplied brand image so the requested no-extension URL displays the logo directly.
+- Brand logos live as real files in `public/images/` (not CDN pointers) so `/images/logo-*.png` URLs serve PNGs directly on any domain.
+- Admin-uploaded gallery images are stored in the private `gallery` bucket (public buckets are blocked) and served through the `/media/*` server route.

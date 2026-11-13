@@ -4,7 +4,7 @@ import { useApp } from "@/lib/app-store";
 import { UserAvatar } from "@/components/user-avatar";
 import { Bell, LogOut, ExternalLink, Sun, Moon, Menu, X } from "lucide-react";
 import { toast } from "sonner";
-import xlmBrowserLogo from "@/assets/xlm-browser-logo.png.asset.json";
+const xlmBrowserLogo = { url: "/images/logo-512.png" };
 
 
 const ADMIN_GROUPS = [
@@ -48,6 +48,7 @@ const ADMIN_GROUPS = [
       { to: "/admin/auth-setup", label: "Social Login Setup", icon: "🔐" },
       { to: "/admin/wallet-connect-config", label: "Wallet Config", icon: "👛" },
       { to: "/admin/monetization", label: "Monetization", icon: "💎" },
+      { to: "/admin/images", label: "Image Gallery", icon: "🖼️" },
       { to: "/admin/site-settings", label: "Site Settings", icon: "⚙️" },
     ],
   },

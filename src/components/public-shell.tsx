@@ -13,7 +13,7 @@ import { listPages, type SitePage } from "@/lib/cms";
 import { buildMenuTree, listMenus, type MenuItem } from "@/lib/menus";
 import { connectWallet as connectStellarWallet, disconnectWallet as disconnectStellarWallet, getStellarBalance, EXPLORER, isMobileDevice } from "@/lib/stellar-wallet";
 import { useWalletUiBusy } from "@/hooks/use-wallet-ui-busy";
-import xlmBrowserLogo from "@/assets/xlm-browser-logo.png.asset.json";
+const xlmBrowserLogo = { url: "/images/logo-512.png" };
 
 
 
