@@ -13,6 +13,7 @@ import { listPages, type SitePage } from "@/lib/cms";
 import { buildMenuTree, listMenus, type MenuItem } from "@/lib/menus";
 import { connectWallet as connectStellarWallet, disconnectWallet as disconnectStellarWallet, getStellarBalance, EXPLORER, isMobileDevice } from "@/lib/stellar-wallet";
 import { useWalletUiBusy } from "@/hooks/use-wallet-ui-busy";
+import xlmBrowserLogo from "@/assets/xlm-browser-logo.png.asset.json";
 
 
 
@@ -82,7 +83,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
             <Menu className="h-5 w-5" />
           </button>
           <Link to="/" className="flex items-center gap-2.5">
-            <div className={isRetro ? "grid h-7 w-7 place-items-center border-2 border-primary font-mono text-primary" : "grid h-9 w-9 place-items-center rounded-2xl bg-gradient-to-br from-primary to-accent text-base font-bold text-primary-foreground shadow-[var(--elev-1)]"}>X</div>
+            <img src={xlmBrowserLogo.url} alt="XLM Browser logo" className={isRetro ? "h-8 w-8 object-contain" : "h-9 w-9 rounded-xl object-contain"} />
             <span className="text-lg font-bold tracking-tight" style={isRetro ? undefined : { fontFamily: "var(--font-display)" }}>{siteSettings.siteName}</span>
           </Link>
 

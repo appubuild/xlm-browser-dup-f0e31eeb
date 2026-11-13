@@ -15,6 +15,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DevelopersRouteImport } from './routes/developers'
 import { Route as EcosystemRouteImport } from './routes/ecosystem'
 import { Route as HelpRouteImport } from './routes/help'
+import { Route as ImadesRouteImport } from './routes/imades'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -95,6 +96,11 @@ const EcosystemRoute = EcosystemRouteImport.update({
 const HelpRoute = HelpRouteImport.update({
   id: '/help',
   path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImadesRoute = ImadesRouteImport.update({
+  id: '/imades',
+  path: '/imades',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -361,6 +367,7 @@ export interface FileRoutesByFullPath {
   '/developers': typeof DevelopersRouteWithChildren
   '/ecosystem': typeof EcosystemRoute
   '/help': typeof HelpRoute
+  '/imades': typeof ImadesRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -420,6 +427,7 @@ export interface FileRoutesByTo {
   '/developers': typeof DevelopersRouteWithChildren
   '/ecosystem': typeof EcosystemRoute
   '/help': typeof HelpRoute
+  '/imades': typeof ImadesRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -480,6 +488,7 @@ export interface FileRoutesById {
   '/developers': typeof DevelopersRouteWithChildren
   '/ecosystem': typeof EcosystemRoute
   '/help': typeof HelpRoute
+  '/imades': typeof ImadesRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -541,6 +550,7 @@ export interface FileRouteTypes {
     | '/developers'
     | '/ecosystem'
     | '/help'
+    | '/imades'
     | '/login'
     | '/pricing'
     | '/privacy'
@@ -600,6 +610,7 @@ export interface FileRouteTypes {
     | '/developers'
     | '/ecosystem'
     | '/help'
+    | '/imades'
     | '/login'
     | '/pricing'
     | '/privacy'
@@ -659,6 +670,7 @@ export interface FileRouteTypes {
     | '/developers'
     | '/ecosystem'
     | '/help'
+    | '/imades'
     | '/login'
     | '/pricing'
     | '/privacy'
@@ -719,6 +731,7 @@ export interface RootRouteChildren {
   DevelopersRoute: typeof DevelopersRouteWithChildren
   EcosystemRoute: typeof EcosystemRoute
   HelpRoute: typeof HelpRoute
+  ImadesRoute: typeof ImadesRoute
   LoginRoute: typeof LoginRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -812,6 +825,13 @@ declare module '@tanstack/react-router' {
       path: '/help'
       fullPath: '/help'
       preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/imades': {
+      id: '/imades'
+      path: '/imades'
+      fullPath: '/imades'
+      preLoaderRoute: typeof ImadesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -1205,6 +1225,7 @@ const rootRouteChildren: RootRouteChildren = {
   DevelopersRoute: DevelopersRouteWithChildren,
   EcosystemRoute: EcosystemRoute,
   HelpRoute: HelpRoute,
+  ImadesRoute: ImadesRoute,
   LoginRoute: LoginRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,

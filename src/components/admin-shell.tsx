@@ -4,6 +4,7 @@ import { useApp } from "@/lib/app-store";
 import { UserAvatar } from "@/components/user-avatar";
 import { Bell, LogOut, ExternalLink, Sun, Moon, Menu, X } from "lucide-react";
 import { toast } from "sonner";
+import xlmBrowserLogo from "@/assets/xlm-browser-logo.png.asset.json";
 
 
 const ADMIN_GROUPS = [
@@ -112,7 +113,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const sidebar = (
     <>
       <Link to="/admin" onClick={() => setDrawer(false)} className="mb-4 flex items-center gap-2 px-2 py-2">
-        <div className="grid h-8 w-8 place-items-center rounded-md bg-gradient-to-br from-sky-500 to-indigo-500 font-bold text-white">X</div>
+        <img src={xlmBrowserLogo.url} alt="XLM Browser logo" className="h-8 w-8 rounded-md object-contain" />
         <div>
           <div className="text-sm font-semibold">XLM Browser</div>
           <div className={`text-[10px] uppercase tracking-wider ${c.subtle}`}>Admin</div>
