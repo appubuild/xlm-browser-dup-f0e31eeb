@@ -9,7 +9,19 @@ import { useViewport } from "@/components/browser-viewport";
 import { ProjectTicker, LivePricesGrid } from "@/components/crypto-ticker";
 import { GalaxyBg } from "@/components/galaxy-bg";
 
-export const Route = createFileRoute("/")({ component: Home });
+export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "XLM Browser — Stellar Explorer and Ecosystem" },
+      { name: "description", content: "Explore the Stellar ecosystem, discover wallets and projects, and follow live cryptocurrency markets on XLM Browser." },
+      { property: "og:title", content: "XLM Browser — Stellar Explorer and Ecosystem" },
+      { property: "og:description", content: "Discover Stellar wallets, projects and live cryptocurrency markets." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: Home,
+});
 
 function Home() {
   const { projects, theme, tickers, landingSections } = useApp();
